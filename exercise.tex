@@ -1,0 +1,64 @@
+\documentclass{article}
+
+\usepackage{amsmath,amsthm}
+
+\newcommand{\Ex}[1]{\subsection*{Exercise #1}}
+
+\title{Reading Log of \\ \emph{Types and Programming Languages}}
+\author{Seiya Tokui}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+nothing.
+
+\section{Mathematical Preliminaries}
+
+\subsection{Ordered Sets}
+
+\Ex{2.2.4}
+
+$R'$ is reflexive by definition, so let us show that any reflexive relation $R''$
+  that contains $R$ also contains $R'$.
+Let $(s, t) \in R'$.
+If $s = t$, then it holds that $(s, t) = (s, s) \in R''$ as $R''$ is reflexive.
+Otherwise, $(s, t) \in R \subseteq R''$. \qed
+
+\Ex{2.2.7}
+
+Let $s, t, u$ satisfy $(s, t), (t, u) \in R^+ = \bigcup_i R_i$.
+Since $(R_i)_i$ is a non-decreasing sequence of relations,
+  there exists $k$ that satisfies $(s, t), (t, u) \in R_k$.
+It then holds that $(s, u) \in R_{k + 1} \subseteq R^+$.
+Therefore, the relation $R^+$ is transitive.
+
+Let $R'$ be a transitive relation that contains $R$.
+We show $R_i \subseteq R'$ by induction on $i$.
+By definition, $R_0 = R \subseteq R'$.
+Assume $R_i \subseteq R'$ for some $i$.
+Let $(s, u) \in R_{i + 1}$.
+If $(s, u) \in R_i$, then $(s, u) \in R'$.
+Otherwise, there exists $t$ such that $(s, t), (t, u) \in R_i$.
+Then, $(s, t), (t, u) \in R'$, which implies $(s, u) \in R'$ by transitivity of $R'$.
+Therefore, $R_{i + 1} \subseteq R'$.
+By taking the union, it holds that $R^+ = \bigcup_i R_i \subseteq R'$. \qed
+
+\Ex{2.2.8}
+
+W.l.o.g., we can assume $R$ is reflexive by replacing it with its reflexive closure.
+Suppose that $R^\star$ is constructed from $R$ as $R^+$ in Exercise 2.2.7.
+We show by induction on $i$ that $P$ is preserved by $R_i$.
+First, $P$ is preserved by $R_0 = R$.
+Assume that $P$ is preserved by $R_i$ for some $i$.
+If $s \in P$ and $(s, u) \in R_{i + 1}$,
+  it holds that $(s, u) \in R_i$
+  or there exists $t$ such that $(s, t), (t, u) \in R_i$.
+By inductive hypothesis,
+  in the former case, $u \in P$,
+  and in the latter case, $t \in P$ and thus $u \in P$.
+Therefore, $P$ is preserved by $R_{i + 1}$, concluding the induction.
+It then holds that $P$ is preserved by $R^\star = \bigcup_i R_i$. \qed
+
+\end{document}
