@@ -1,8 +1,21 @@
 \documentclass{article}
 
-\usepackage{amsmath,amsthm}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bussproofs}
 
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Bigstep}{\Downarrow}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
+\newcommand{\False}{\code{false}}
+\newcommand{\IfThenElse}[3]{\code{if}~#1~\code{then}~#2~\code{else}~#3}
+\newcommand{\IsZero}[1]{\code{iszero}~#1}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Pred}[1]{\code{pred}~#1}
+\newcommand{\Rule}[1]{\textsc{#1}}
+\newcommand{\Succ}[1]{\code{succ}~#1}
+\newcommand{\True}{\code{true}}
+\newcommand{\Wrong}{\code{wrong}}
+\newcommand{\Zero}{\code0}
 
 \title{Reading Log of \\ \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
@@ -15,8 +28,6 @@
 nothing.
 
 \section{Mathematical Preliminaries}
-
-\subsection{Ordered Sets}
 
 \Ex{2.2.4}
 
@@ -48,17 +59,280 @@ By taking the union, it holds that $R^+ = \bigcup_i R_i \subseteq R'$. \qed
 \Ex{2.2.8}
 
 W.l.o.g., we can assume $R$ is reflexive by replacing it with its reflexive closure.
-Suppose that $R^\star$ is constructed from $R$ as $R^+$ in Exercise 2.2.7.
+Suppose that $R^*$ is constructed from $R$ as $R^+$ in Exercise 2.2.7.
 We show by induction on $i$ that $P$ is preserved by $R_i$.
 First, $P$ is preserved by $R_0 = R$.
 Assume that $P$ is preserved by $R_i$ for some $i$.
 If $s \in P$ and $(s, u) \in R_{i + 1}$,
   it holds that $(s, u) \in R_i$
   or there exists $t$ such that $(s, t), (t, u) \in R_i$.
-By inductive hypothesis,
+By induction hypothesis,
   in the former case, $u \in P$,
   and in the latter case, $t \in P$ and thus $u \in P$.
 Therefore, $P$ is preserved by $R_{i + 1}$, concluding the induction.
-It then holds that $P$ is preserved by $R^\star = \bigcup_i R_i$. \qed
+It then holds that $P$ is preserved by $R^* = \bigcup_i R_i$. \qed
+
+\section{Untyped Arithmetic Expressions}
+
+\Ex{3.2.4}
+
+We have $|S_0| = 0$ and $|S_{i + 1}| = 3 + 3|S_i| + |S_i|^3$,
+  we thus get $|S_3| = 59439$.
+
+\Ex{3.2.5}
+
+We show it by induction on $i$.
+We have $S_0 = \emptyset \subseteq S_1$.
+Suppose $S_{i - 1} \subseteq S_i$ for given $i \in \{1, 2, \dots\}$.
+Then, by definition of $S_{i + 1}$, we have
+\begin{alignat*}{2}
+  S_{i + 1} &=~
+  && \{ \True, \False, \Zero \} \\
+  & && \cup \{
+    \Succ{\code t_1}, \Pred{\code t_1}, \IsZero{\code t_1}
+    \mid \code t_1 \in S_i
+  \} \\
+  & && \cup \{
+    \IfThenElse{\code t_1}{\code t_2}{\code t_3}
+    \mid \code t_1, \code t_2, \code t_3 \in S_i
+  \} \\
+  &\supseteq~
+  && \{ \True, \False, \Zero \} \\
+  & && \cup \{
+    \Succ{\code t_1}, \Pred{\code t_1}, \IsZero{\code t_1}
+    \mid \code t_1 \in S_{i - 1}
+  \} \\
+  & && \cup \{
+    \IfThenElse{\code t_1}{\code t_2}{\code t_3}
+    \mid \code t_1, \code t_2, \code t_3 \in S_{i - 1}
+  \} \\
+  &=&& S_i.
+\end{alignat*}
+\qed
+
+\Ex{3.3.4}
+
+\paragraph{Induction on depth or size}
+Let $Q(n) = \{ \code s \in S \mid depth(\code s) \le n \}$.
+We have $S = \bigcup_{n\in\N} Q(n)$.
+Induction on depth implies that,
+  given $P(\code s)$ holds for all $\code s \in Q(n)$,
+  $P(\code s)$ holds for all $\code s \in Q(n + 1)$.
+By induction on $n$, $P(\code s)$ holds for all $\code s \in S$.
+Induction on size can be derived by replacing $depth$ with $size$.
+
+\paragraph{Structural induction}
+Given $P(\code s)$ holds for all $\code s \in S_i$,
+  we have $P(\code t)$ for
+\begin{alignat*}{2}
+  \code t &
+  \in && ~\{
+    \Succ{\code s}, ~\Pred{\code s}, \IsZero{\code s}
+    \mid \code s \in S_i
+  \} \\
+  & &&\cup \{
+    \IfThenElse{\code s_1}{\code s_2}{\code s_3}
+    \mid \code s_1, \code s_2, \code s_3 \in S_i
+  \}
+\end{alignat*}
+by induction hypothesis.
+Together with constant terms, which all satisfy $P$ as they contain no subterms,
+  we have $P(\code t)$ for all $\code t \in S_{i + 1}$.
+We conclude that $P(\code s)$ holds for all $\code s \in S$ by induction on $i$.
+\qed
+
+\Ex{3.5.5}
+
+If, for each derivation $D$, \\
+\quad given $P(D')$ holds for all immediate subderivations $D'$ of $D$ \\
+\quad we have $P(D)$, \\
+then $P(D)$ holds for all $D$.
+
+\Ex{3.5.10}
+
+\begin{center}
+  \AxiomC{$\code t \to^* \code t$}
+  \DisplayProof
+  \quad
+  \AxiomC{$\code t \to \code t'$}
+  \UnaryInfC{$\code t \to^* \code t'$}
+  \DisplayProof
+  \quad
+  \AxiomC{$\code t \to^* \code t'$}
+  \AxiomC{$\code t' \to^* \code t''$}
+  \BinaryInfC{$\code t \to^* \code t''$}
+  \DisplayProof
+\end{center}
+
+\Ex{3.5.13}
+
+\begin{enumerate}
+  \item Theorems 3.5.7, 3.5.8, and 3.5.12 hold.
+  \item Theorems 3.5.7, 3.5.8, 3.5.11, and 3.5.12 hold.
+        The proof of Theorem 3.5.11 should be changed to not rely on Theorem 3.5.4
+          (which does not hold anymore).
+\end{enumerate}
+
+\Ex{3.5.14}
+
+We use induction on derivation as is done in Theorem 3.5.4.
+Suppose we have $\code t \to \code t'$ and $\code t \to \code t''$.
+If $\code t$ is a conditional expression,
+  then we repeat the discussion in the proof of Theorem 3.5.4
+  to get $\code t' = \code t''$ using the induction hypothesis.
+Otherwise, $\code t$ is either a successor, predecessor, or zero test.
+
+If $\code t = \Succ{\code s}$ for some term $\code s$,
+  the last rule used to derive both $\code t \to \code t'$
+  and $\code t \to \code t''$ is \Rule{E-Succ}.
+We then have $\code t' = \Succ{\code s'}$ for some term $\code s'$,
+  and the statement $\Succ{\code s} \to \Succ{\code s'}$ is derived from
+  $\code s \to \code s'$.
+Similarly, we have $\code t'' = \Succ{\code s''}$ for some term $\code s''$,
+  and the statement $\Succ{\code s} \to \Succ{\code s''}$ is derived from
+  $\code s \to \code s''$.
+We now have $\code s \to \code s'$ and $\code s \to \code s''$,
+  and then we get $\code s' = \code s''$ by induction hypothesis.
+It implies $\code t' = \Succ{\code s'} = \Succ{\code s''} = \code t''$.
+
+If $\code t = \Pred{\code s}$ for some term $\code s$,
+  the last rules used to derive
+  $\code t \to \code t'$ and $\code t \to \code t''$ are
+  either \Rule{E-PredZero}, \Rule{E-PredSucc}, or \Rule{E-Pred}.
+These rules do not \emph{overlap},
+  i.e., if $\code t \to \code t'$ is derived from one of the rules,
+  then $\code t \to \code t''$ is also derived from the same rule.
+To see this,
+  we need to check if the left hand side $\Pred{\code t_1}$ of the statement
+  derived by \Rule{E-Pred} does not conflict with the left hand side
+  $\Pred{\Succ{\code{nv}_1}}$ of \Rule{E-PredSucc}.
+Assume they conflict.
+We then, for some $\code t'_1$,
+  have $\Pred{\Succ{\code{nv}_1}} \to \Pred{\code t'_1}$
+  derived by \Rule{E-Pred}.
+The premise of this one-step derivation is $\Succ{\code{nv}_1} \to \code t'_1$.
+The rule \Rule{E-Succ} is the only rule that may derive this statement,
+  with which we have $\code{nv}_1 \to \code t'_2$ for some $\code t'_2$.
+It contradicts with the fact that $\code{nv}_1$ is a normal form.
+Therefore, we have shown that these three rules do not conflict with eath other.
+Within these cases,
+  \Rule{E-PredZero} and \Rule{E-PredSucc} both have a numeric value
+  on the right hand side of the derived statement,
+  and thus we have $\code t' = \code t''$.
+For \Rule{E-Pred},
+  we repeat the same discussion as \Rule{E-Succ} to get
+  $\code t' = \code t''$ by induction hypothesis.
+
+If $\code t = \IsZero{\code s}$ for some term $\code s$,
+  a similar discussion is applied as the previous case of $\code t = \Pred{\code s}$,
+  where the three rules are replaced with
+  \Rule{E-IsZeroZero}, \Rule{E-IsZeroSucc}, and \Rule{E-IsZero},
+  and we handle boolean values instead of numeric ones in some places. \qed
+
+\Ex{3.5.16}
+
+\begin{itemize}
+  \item[(1)]
+    \textsc{Proposition}:
+    Let $\code t$ be any arithmetic expression.
+    If $\code t$ is evaluated to a value,
+      then it is evaluated to the same value in the augmented language.
+    The term $\code t$ is evaluated to a stuck state
+      iff it is evaluated to $\Wrong$ in the augmented language.
+  \item[(2)] 
+    \textsc{Proof}:
+    Note first that the augmented evaluation rules are deterministic,
+      since the added rules do not conflict with existing ones and with each other.
+    Since the augmented language accomodates all the evaluation rules that
+      the original language have,
+      any expression evaluated to a value in the original language
+      is evaluated by the same derivation to the same value in the augmented one.
+    Assume $\code t$ is evaluated to a stuck state in the original language.
+    Then, the term $\code t$ is in an either form of the left hand side of
+      the added rules.
+    Therefore, it is evaluated to $\Wrong$ in the augmented language.
+    Conversely, assume $\code t$ is evaluated to $\Wrong$ in the augmented language.
+    Since $\code t$ is an arithmetic expression,
+      it is not $\Wrong$ itself,
+      and thus is the result of an evaluation by one of the added rules.
+    The left hand side of each added rule is a normal form in the original language,
+      and thus is a stuck state. \qed
+\end{itemize}
+
+\Ex{3.5.17}
+
+First, we show $\code t \Bigstep \code v$ given $\code t \to^* \code v$
+  by induction on the number of small steps consisting $\code t \to^* \code v$.
+If there are zero steps, i.e., $\code t = \code v$,
+  then it holds that $\code t \Bigstep \code v$ by \Rule{B-Value}.
+Consider the general case.
+By induction hypothesis,
+  there exists a term $\code t'$ that satisfies
+  $\code t \to \code t'$,
+  $\code t' \to^* \code v$,
+  and $\code t' \Bigstep \code v$.
+Then $\code t \Bigstep \code v$ is shown by examining all the cases for
+  the direct derivation of $\code t \to \code t'$.
+For example, if it is derived by \Rule{E-IfTrue},
+  $\code t$ is written as $\code t = \IfThenElse{\True}{\code t'}{\code t''}$.
+We have $\True \Bigstep \True$ by \Rule{B-Value}
+  and $\code t' \Bigstep \code v$ by the hypothesis.
+By applying \Rule{B-IfTrue} to them,
+  we obtain $\IfThenElse{\True}{\code t'}{\code t''} \Bigstep \code v$.
+Another example: if it is derived by \Rule{E-If},
+  $\code t$ and $\code t'$ are written as
+  $\code t = \IfThenElse{\code t_1}{\code t_2}{\code t_3}$ and
+  $\code t' = \IfThenElse{\code t'_1}{\code t'_2}{\code t'_3}$, respectively.
+We also have $\code t_1 \to \code t'_1$.
+Since $\code t' \to^* \code v$,
+  it holds that $\code t'_1 \to^* \code v_1$ with $\code v_1 \in \{\True, \False\}$.
+We thus obtain $\code t_1 \to^* \code v_1$.
+Suppose $\code v_1 = \True$.
+Then, in the same way, we obtain $\code t_2 \to^* \code v$.
+By induction hypothesis,
+  we have $\code t_1 \Bigstep \True$ and $\code t_2 \Bigstep \code v$.
+By applying \Rule{B-IfTrue},
+  we get $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \Bigstep \code v$.
+Almost same discussions apply for the case of $\code v_1 = \False$.
+The other cases also follow in a similar manner.
+
+Next, we show $\code t \to^* \code v$ given $\code t \Bigstep \code v$
+  by induction on derivation of $\code t \Bigstep \code v$.
+When $\code t = \code v$, it obviously holds that $\code v \to^* \code v$.
+Induction step is made by examining all the evaluation rules except for \Rule{B-Value}.
+For example, if the last step is \Rule{B-IfTrue},
+  we have $\code t = \IfThenElse{\code t_1}{\code t_2}{\code t_3}$
+  with $\code t_1 \Bigstep \True$ and $\code t_2 \Bigstep \code v$.
+By induction hypothesis,
+  we have $\code t_1 \to^* \True$ and $\code t_2 \to^* \code v$.
+By applying \Rule{E-If} multiple times with premises given by
+  individual small steps consisting $\code t_1 \to^* \True$,
+  we obtain
+  $
+    \IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^*
+    \IfThenElse{\True}{\code t_2}{\code t_3}
+  $.
+Next, we apply \Rule{E-IfTrue} to the right hand side to obtain
+  $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^* \code t_2$.
+Combining it with $\code t_2 \to^* \code v$,
+  we get $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^* \code v$.
+Similar discussions are applied to the other cases. \qed
+
+\Ex{3.5.18}
+
+The evaluation rules involving $\code{if}$ expression is modified as follows.
+\begin{center}
+  \AxiomC{$\IfThenElse{\True}{\code v_1}{\code v_2} \to \code v_1$} \DisplayProof
+  \quad
+  \AxiomC{$\IfThenElse{\False}{\code v_1}{\code v_2} \to \code v_2$} \DisplayProof
+  \\ \vspace{1em}
+  \AxiomC{$\code t_2 \to \code t'_2$}
+  \UnaryInfC{$\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to
+              \IfThenElse{\code t_1}{\code t'_2}{\code t_3}$} \DisplayProof
+  \\ \vspace{1em}
+  \AxiomC{$\code t_2 \to \code t'_2$}
+  \UnaryInfC{$\IfThenElse{\code t_1}{\code v}{\code t_2} \to
+              \IfThenElse{\code t_1}{\code v}{\code t'_2}$} \DisplayProof
+\end{center}
 
 \end{document}
