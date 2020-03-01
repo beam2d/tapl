@@ -23,11 +23,15 @@
 \newcommand{\lmd}[1]{\lambda \texttt{#1.}}
 \newcommand{\Lmd}[2]{\lambda \texttt{#1}#2\texttt{.}}
 \newcommand{\phantomrel}[1]{\phantom{{}#1{}}}
+\newcommand{\proofbreak}{\\ \vspace{1em}}
+\newcommand{\proofsep}{\quad}
+\newcommand{\subst}[1]{[#1]\,}
 
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
 \newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
 \newcommand{\Iszero}{|iszero|~}
+\newcommand{\LambdaNB}{$\lambda$\textbf{NB}}
 \newcommand{\Lm}{\lambda}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
@@ -170,11 +174,11 @@ then $P(D)$ holds for all $D$.
 \begin{center}
   \AxiomC{$|t| \to^* |t|$}
   \DisplayProof
-  \quad
+  \proofsep
   \AxiomC{$|t| \to |t|'$}
   \UnaryInfC{$|t| \to^* |t|'$}
   \DisplayProof
-  \quad
+  \proofsep
   \AxiomC{$|t| \to^* |t|'$}
   \AxiomC{$|t|' \to^* |t|''$}
   \BinaryInfC{$|t| \to^* |t|''$}
@@ -340,13 +344,13 @@ Similar discussions are applied to the other cases. \qed
 The evaluation rules involving $\code{if}$ expression is modified as follows.
 \begin{center}
   \AxiomC{$\IfThenElse{|true|}{|v|_1}{|v|_2} \to |v|_1$} \DisplayProof
-  \quad
+  \proofsep
   \AxiomC{$\IfThenElse{|false|}{|v|_1}{|v|_2} \to |v|_2$} \DisplayProof
-  \\ \vspace{1em}
+  \proofbreak
   \AxiomC{$|t|_2 \to |t|'_2$}
   \UnaryInfC{$\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to
               \IfThenElse{|t|_1}{|t|'_2}{|t|_3}$} \DisplayProof
-  \\ \vspace{1em}
+  \proofbreak
   \AxiomC{$|t|_2 \to |t|'_2$}
   \UnaryInfC{$\IfThenElse{|t|_1}{|v|}{|t|_2} \to
               \IfThenElse{|t|_1}{|v|}{|t|'_2}$} \DisplayProof
@@ -477,5 +481,184 @@ A |tail| function can be defined by copying a list into another list,
   dcons = $\lmd h \lmd p$ pair (snd p) (cons h (snd p));
   tail  = $\lmd t$ fst (t dcons (pair nil nil));
 \end{Code}
+
+\Ex{5.2.9}
+In the main text,
+  |if| is used instead of |test| to avoid evaluating unused branches,
+  which otherwise makes the evaluation diverge.
+To use |test|,
+  we need to prevent the unused branches from being evaluated
+  by hiding the branches behind lambda abstractions and evaluating it later.
+A dummy value |c|$_0$ is used to evaluate the lazy function.
+\begin{Code}
+  g$'$ = $\lmd{fct} \lmd n$
+      test (iszro n) ($\lmd x$ c$_1$) ($\lmd x$ times n (fct (prd n) c$_0$)) c$_0$;
+  factorial$'$ = fix g$'$;
+\end{Code}
+
+\Ex{5.2.10}
+\begin{Code}
+  churchnat = fix ($\lmd f \lmd n$
+      if iszero n then c$_0$ else scc (f (pred n)))
+\end{Code}
+
+\Ex{5.2.11}
+\begin{Code}
+  sum = fix ($\lmd f \lmd l$ test (isnil l)
+                          ($\lmd x$ c$_0$)
+                          ($\lmd x$ plus (head l) (f (tail l) c$_0$)))
+\end{Code}
+
+\Ex{5.3.3}
+We prove it by induction on term size.
+Iff |t| is a varaible, it holds that $size(|t|) = 1 = \card{FV(|t|)}$.
+Suppose |t| is a non-variable term.
+There are two cases.
+\begin{enumerate}
+  \item If $|t| = \lmd x |t|_1$, it holds that
+        $\card{FV(|t|)} \le \card{FV(|t|_1)}$ and
+        $size(|t|) = size(|t|_1) + 2$.
+        By induction hypothesis, we have $\card{FV(|t|_1)} \le size(|t|_1)$.
+        Combining them gives
+        $\card{FV(|t|)} \le \card{FV(|t|_1)} \le size(|t|_1) \le size(|t|)$.
+  \item Otherwise, |t| is written as $|t| = |t|_1 ~ |t|_2$.
+        It holds that $\card{FV(|t|)} \le \card{FV(|t|_1)} + \card{FV(|t|_2)}$
+        and $size(|t|) = size(|t|_1) + size(|t|_2) + 1$.
+        By induction hypothesis, we have
+        $\card{FV(|t|_1)} \le size(|t|_1)$ and $\card{FV(|t|_2)} \le size(|t|_2)$.
+        Combining them gives
+        $\card{FV(|t|)} \le size(|t|_1) + size(|t|_2) < size(|t|)$.
+\end{enumerate}
+\qed
+
+\Ex{5.3.6}
+
+\paragraph{Full beta-reduction}
+Syntax is not changed (indeed, the category of values is not used).
+Evaluation rules are as follows.
+\begin{center}
+  \AxiomC{$|t|_1 \to |t|'_1$}
+  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|'_1 ~ |t|_2$}
+  \DisplayProof \proofsep
+  \AxiomC{$|t|_2 \to |t|'_2$}
+  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|_1 ~ |t|'_2$}
+  \DisplayProof \proofsep
+  \AxiomC{$|t| \to |t|'$}
+  \UnaryInfC{$\lmd x ~|t| \to \lmd x ~|t|'$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
+  \DisplayProof
+\end{center}
+
+\paragraph{Normal order}
+Syntax is changed as follows.
+\begin{Code}
+  $\dots$
+  nf $::=$
+        $\lmd x$ nf
+        nanf
+  nanf $::=$
+        x
+        nanf nf
+  na $::=$
+        x
+        t t
+\end{Code}
+Evaluation rules are as follows.
+\begin{center}
+  \AxiomC{$|na|_1 \to |na|'_1$}
+  \UnaryInfC{$|na|_1 ~|t|_2 \to |na|'_1 ~|t|_2$}
+  \DisplayProof \proofsep
+  \AxiomC{$|t|_2 \to |t|'_2$}
+  \UnaryInfC{$|nanf|_1 ~|t|_2 \to |nanf|_1 ~|t|'_2$}
+  \DisplayProof \proofsep
+  \AxiomC{$|t| \to |t|'$}
+  \UnaryInfC{$\lmd x ~|t| \to \lmd x ~|t|'$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
+  \DisplayProof
+\end{center}
+
+\paragraph{Lazy evaluation}
+Syntax is not changed. Evaluation rules are as follows.
+\begin{center}
+  \AxiomC{$|t|_1 \to |t|'_1$}
+  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|'_1 ~ |t|_2$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
+  \DisplayProof
+\end{center}
+
+\Ex{5.3.7}
+Add the following syntactic categories to \LambdaNB.
+\begin{Code}
+  badnat $::=$
+        wrong
+        true
+        false
+        $\lmd x$ t
+
+  badbool $::=$
+        wrong
+        nv
+        $\lmd x$ t
+
+  badabs $::=$
+        wrong
+        true
+        false
+        nv
+\end{Code}
+Augment the evaluation relation with the following rules.
+\begin{center}
+  \AxiomC{$|if badbool then| ~|t|_1 ~|else| ~|t|_2 \to |wrong|$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|succ badnat| \to |wrong|$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|pred badnat| \to |wrong|$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|iszero badnat| \to |wrong|$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|badabs| ~|t| \to |wrong|$}
+  \DisplayProof
+\end{center}
+
+\Ex{5.3.8}
+\begin{center}
+  \AxiomC{$\lmd x ~|t| \to \lmd x ~|t|$}
+  \DisplayProof \proofbreak
+  \AxiomC{$|t|_1 \Bigstep \lmd x ~|t|'_1$}
+  \AxiomC{$|t|_2 \Bigstep |v|_2$}
+  \AxiomC{$\subst{|x| \mapsto |v|_2} |t|'_1 \Bigstep |v|_3$}
+  \TrinaryInfC{$|t|_1 ~|t|_2 \Bigstep |v|_3$}
+  \DisplayProof
+\end{center}
+
+\section{Nameless Representation of Terms}
+
+\Ex{6.1.1}
+\begin{Code}
+  c$_0$    = $\lmd{} \lmd{}$ 0;
+  c$_2$    = $\lmd{} \lmd{}$ 1 (1 0);
+  plus = $\lmd{} \lmd{} \lmd{} \lmd{}$ 3 1 (2 0 1);
+  fix  = $\lmd{}$ ($\lmd{}$ 1 ($\lmd{}$ (1 1) 0)) ($\lmd{}$ 1 ($\lmd{}$ (1 1) 0));
+  foo  = ($\lmd{}$ ($\lmd{}$ 0)) ($\lmd{}$ 0);
+\end{Code}
+
+\Ex{6.1.4}
+Define a family of sets $S_{ij}, ~i, j \in \N$ inductively as follows.
+\begin{align*}
+  S_{i,0} &= \{ 0, \dots, i - 1 \}, ~i \in \N, \\
+  S_{ij} &= S_{i, j - 1}
+         \cup \{ \lmd{} |t| \mid |t| \in S_{i + 1, j - 1} \}
+         \cup \{ |t|_1 ~|t|_2 \mid |t|_1, |t|_2 \in S_{i, j - 1} \}, \\
+         & \hspace{20em} i \in \N, j \in \N \setminus \{ 0 \}
+\end{align*}
+Then, define a family of sets
+  $\mathcal S = \{\mathcal S_0, \mathcal S_1, \mathcal S_2, \dots \}$ by
+  $\mathcal S_i = \bigcup_j S_{ij}, ~i \in \N$.
+Each set $\mathcal S_i$ in this family coincides with $\mathcal T_i$.
+
+\paragraph{Proof} \textbf{TODO...}
 
 \end{document}
