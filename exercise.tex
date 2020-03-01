@@ -2,20 +2,37 @@
 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{bussproofs}
+\usepackage{listings}
 
-\newcommand{\code}[1]{\texttt{#1}}
+\lstnewenvironment{Code}{
+  \lstset{
+    basewidth=0.5em,
+    basicstyle=\ttfamily,
+    gobble=2,
+    mathescape,
+    xleftmargin=1em,
+  }
+}{}
+
+% Use |x| as a short verb also available in math mode.
+\catcode`|=\active
+\def|#1|{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
+
+\newcommand{\card}[1]{\vert#1\vert}
+\newcommand{\code}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily]{#1}}}
+\newcommand{\lmd}[1]{\lambda \texttt{#1.}}
+\newcommand{\Lmd}[2]{\lambda \texttt{#1}#2\texttt{.}}
+\newcommand{\phantomrel}[1]{\phantom{{}#1{}}}
+
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
-\newcommand{\False}{\code{false}}
-\newcommand{\IfThenElse}[3]{\code{if}~#1~\code{then}~#2~\code{else}~#3}
-\newcommand{\IsZero}[1]{\code{iszero}~#1}
+\newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
+\newcommand{\Iszero}{|iszero|~}
+\newcommand{\Lm}{\lambda}
 \newcommand{\N}{\mathbb N}
-\newcommand{\Pred}[1]{\code{pred}~#1}
+\newcommand{\Pred}{|pred|~}
 \newcommand{\Rule}[1]{\textsc{#1}}
-\newcommand{\Succ}[1]{\code{succ}~#1}
-\newcommand{\True}{\code{true}}
-\newcommand{\Wrong}{\code{wrong}}
-\newcommand{\Zero}{\code0}
+\newcommand{\Succ}{|succ|~}
 
 \title{Reading Log of \\ \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
@@ -76,8 +93,8 @@ It then holds that $P$ is preserved by $R^* = \bigcup_i R_i$. \qed
 
 \Ex{3.2.4}
 
-We have $|S_0| = 0$ and $|S_{i + 1}| = 3 + 3|S_i| + |S_i|^3$,
-  we thus get $|S_3| = 59439$.
+We have $\card{S_0} = 0$ and $\card{S_{i + 1}} = 3 + 3\card{S_i} + \card{S_i}^3$,
+  we thus get $\card{S_3} = 59439$.
 
 \Ex{3.2.5}
 
@@ -87,24 +104,24 @@ Suppose $S_{i - 1} \subseteq S_i$ for given $i \in \{1, 2, \dots\}$.
 Then, by definition of $S_{i + 1}$, we have
 \begin{alignat*}{2}
   S_{i + 1} &=~
-  && \{ \True, \False, \Zero \} \\
+  && \{ |true|, |false|, |0| \} \\
   & && \cup \{
-    \Succ{\code t_1}, \Pred{\code t_1}, \IsZero{\code t_1}
-    \mid \code t_1 \in S_i
+    \Succ |t|_1, ~\Pred |t|_1, ~\Iszero |t|_1
+    \mid |t|_1 \in S_i
   \} \\
   & && \cup \{
-    \IfThenElse{\code t_1}{\code t_2}{\code t_3}
-    \mid \code t_1, \code t_2, \code t_3 \in S_i
+    \IfThenElse{|t|_1}{|t|_2}{|t|_3}
+    \mid |t|_1, |t|_2, |t|_3 \in S_i
   \} \\
   &\supseteq~
-  && \{ \True, \False, \Zero \} \\
+  && \{ |true|, |false|, |0| \} \\
   & && \cup \{
-    \Succ{\code t_1}, \Pred{\code t_1}, \IsZero{\code t_1}
-    \mid \code t_1 \in S_{i - 1}
+    \Succ |t|_1, ~\Pred |t|_1, ~\Iszero |t|_1
+    \mid |t|_1 \in S_{i - 1}
   \} \\
   & && \cup \{
-    \IfThenElse{\code t_1}{\code t_2}{\code t_3}
-    \mid \code t_1, \code t_2, \code t_3 \in S_{i - 1}
+    \IfThenElse{|t|_1}{|t|_2}{|t|_3}
+    \mid |t|_1, |t|_2, |t|_3 \in S_{i - 1}
   \} \\
   &=&& S_i.
 \end{alignat*}
@@ -113,32 +130,32 @@ Then, by definition of $S_{i + 1}$, we have
 \Ex{3.3.4}
 
 \paragraph{Induction on depth or size}
-Let $Q(n) = \{ \code s \in S \mid depth(\code s) \le n \}$.
+Let $Q(n) = \{ |s| \in S \mid depth(|s|) \le n \}$.
 We have $S = \bigcup_{n\in\N} Q(n)$.
 Induction on depth implies that,
-  given $P(\code s)$ holds for all $\code s \in Q(n)$,
-  $P(\code s)$ holds for all $\code s \in Q(n + 1)$.
-By induction on $n$, $P(\code s)$ holds for all $\code s \in S$.
+  given $P(|s|)$ holds for all $|s| \in Q(n)$,
+  $P(|s|)$ holds for all $|s| \in Q(n + 1)$.
+By induction on $n$, $P(|s|)$ holds for all $|s| \in S$.
 Induction on size can be derived by replacing $depth$ with $size$.
 
 \paragraph{Structural induction}
-Given $P(\code s)$ holds for all $\code s \in S_i$,
-  we have $P(\code t)$ for
+Given $P(|s|)$ holds for all $|s| \in S_i$,
+  we have $P(|t|)$ for
 \begin{alignat*}{2}
-  \code t &
+  |t| &
   \in && ~\{
-    \Succ{\code s}, ~\Pred{\code s}, \IsZero{\code s}
-    \mid \code s \in S_i
+    \Succ |s|, ~\Pred |s|, ~\Iszero |s|
+    \mid |s| \in S_i
   \} \\
   & &&\cup \{
-    \IfThenElse{\code s_1}{\code s_2}{\code s_3}
-    \mid \code s_1, \code s_2, \code s_3 \in S_i
+    \IfThenElse{|s|_1}{|s|_2}{|s|_3}
+    \mid |s|_1, |s|_2, |s|_3 \in S_i
   \}
 \end{alignat*}
 by induction hypothesis.
 Together with constant terms, which all satisfy $P$ as they contain no subterms,
-  we have $P(\code t)$ for all $\code t \in S_{i + 1}$.
-We conclude that $P(\code s)$ holds for all $\code s \in S$ by induction on $i$.
+  we have $P(|t|)$ for all $|t| \in S_{i + 1}$.
+We conclude that $P(|s|)$ holds for all $|s| \in S$ by induction on $i$.
 \qed
 
 \Ex{3.5.5}
@@ -151,16 +168,16 @@ then $P(D)$ holds for all $D$.
 \Ex{3.5.10}
 
 \begin{center}
-  \AxiomC{$\code t \to^* \code t$}
+  \AxiomC{$|t| \to^* |t|$}
   \DisplayProof
   \quad
-  \AxiomC{$\code t \to \code t'$}
-  \UnaryInfC{$\code t \to^* \code t'$}
+  \AxiomC{$|t| \to |t|'$}
+  \UnaryInfC{$|t| \to^* |t|'$}
   \DisplayProof
   \quad
-  \AxiomC{$\code t \to^* \code t'$}
-  \AxiomC{$\code t' \to^* \code t''$}
-  \BinaryInfC{$\code t \to^* \code t''$}
+  \AxiomC{$|t| \to^* |t|'$}
+  \AxiomC{$|t|' \to^* |t|''$}
+  \BinaryInfC{$|t| \to^* |t|''$}
   \DisplayProof
 \end{center}
 
@@ -176,55 +193,55 @@ then $P(D)$ holds for all $D$.
 \Ex{3.5.14}
 
 We use induction on derivation as is done in Theorem 3.5.4.
-Suppose we have $\code t \to \code t'$ and $\code t \to \code t''$.
-If $\code t$ is a conditional expression,
+Suppose we have $|t| \to |t|'$ and $|t| \to |t|''$.
+If |t| is a conditional expression,
   then we repeat the discussion in the proof of Theorem 3.5.4
-  to get $\code t' = \code t''$ using the induction hypothesis.
-Otherwise, $\code t$ is either a successor, predecessor, or zero test.
+  to get $|t|' = |t|''$ using the induction hypothesis.
+Otherwise, |t| is either a successor, predecessor, or zero test.
 
-If $\code t = \Succ{\code s}$ for some term $\code s$,
-  the last rule used to derive both $\code t \to \code t'$
-  and $\code t \to \code t''$ is \Rule{E-Succ}.
-We then have $\code t' = \Succ{\code s'}$ for some term $\code s'$,
-  and the statement $\Succ{\code s} \to \Succ{\code s'}$ is derived from
-  $\code s \to \code s'$.
-Similarly, we have $\code t'' = \Succ{\code s''}$ for some term $\code s''$,
-  and the statement $\Succ{\code s} \to \Succ{\code s''}$ is derived from
-  $\code s \to \code s''$.
-We now have $\code s \to \code s'$ and $\code s \to \code s''$,
-  and then we get $\code s' = \code s''$ by induction hypothesis.
-It implies $\code t' = \Succ{\code s'} = \Succ{\code s''} = \code t''$.
+If $|t| = \Succ |s|$ for some term |s|,
+  the last rule used to derive both $|t| \to |t|'$
+  and $|t| \to |t|''$ is \Rule{E-Succ}.
+We then have $|t|' = \Succ |s|'$ for some term $|s|'$,
+  and the statement $\Succ |s| \to \Succ |s|'$ is derived from
+  $|s| \to |s|'$.
+Similarly, we have $|t|'' = \Succ |s|''$ for some term $|s|''$,
+  and the statement $\Succ |s| \to \Succ |s|''$ is derived from
+  $|s| \to |s|''$.
+We now have $|s| \to |s|'$ and $|s| \to |s|''$,
+  and then we get $|s|' = |s|''$ by induction hypothesis.
+It implies $|t|' = \Succ |s|' = \Succ |s|'' = |t|''$.
 
-If $\code t = \Pred{\code s}$ for some term $\code s$,
+If $|t| = \Pred |s|$ for some term |s|,
   the last rules used to derive
-  $\code t \to \code t'$ and $\code t \to \code t''$ are
+  $|t| \to |t|'$ and $|t| \to |t|''$ are
   either \Rule{E-PredZero}, \Rule{E-PredSucc}, or \Rule{E-Pred}.
 These rules do not \emph{overlap},
-  i.e., if $\code t \to \code t'$ is derived from one of the rules,
-  then $\code t \to \code t''$ is also derived from the same rule.
+  i.e., if $|t| \to |t|'$ is derived from one of the rules,
+  then $|t| \to |t|''$ is also derived from the same rule.
 To see this,
-  we need to check if the left hand side $\Pred{\code t_1}$ of the statement
+  we need to check if the left hand side $\Pred |t|_1$ of the statement
   derived by \Rule{E-Pred} does not conflict with the left hand side
-  $\Pred{\Succ{\code{nv}_1}}$ of \Rule{E-PredSucc}.
+  $\Pred \Succ |nv|_1$ of \Rule{E-PredSucc}.
 Assume they conflict.
-We then, for some $\code t'_1$,
-  have $\Pred{\Succ{\code{nv}_1}} \to \Pred{\code t'_1}$
+We then, for some $|t|'_1$,
+  have $\Pred \Succ |nv|_1 \to \Pred |t|'_1$
   derived by \Rule{E-Pred}.
-The premise of this one-step derivation is $\Succ{\code{nv}_1} \to \code t'_1$.
+The premise of this one-step derivation is $\Succ |nv|_1 \to |t|'_1$.
 The rule \Rule{E-Succ} is the only rule that may derive this statement,
-  with which we have $\code{nv}_1 \to \code t'_2$ for some $\code t'_2$.
-It contradicts with the fact that $\code{nv}_1$ is a normal form.
+  with which we have $|nv|_1 \to |t|'_2$ for some $|t|'_2$.
+It contradicts with the fact that $|nv|_1$ is a normal form.
 Therefore, we have shown that these three rules do not conflict with eath other.
 Within these cases,
   \Rule{E-PredZero} and \Rule{E-PredSucc} both have a numeric value
   on the right hand side of the derived statement,
-  and thus we have $\code t' = \code t''$.
+  and thus we have $|t|' = |t|''$.
 For \Rule{E-Pred},
   we repeat the same discussion as \Rule{E-Succ} to get
-  $\code t' = \code t''$ by induction hypothesis.
+  $|t|' = |t|''$ by induction hypothesis.
 
-If $\code t = \IsZero{\code s}$ for some term $\code s$,
-  a similar discussion is applied as the previous case of $\code t = \Pred{\code s}$,
+If $|t| = \Iszero |s|$ for some term |s|,
+  a similar discussion is applied as the previous case of $|t| = \Pred |s|$,
   where the three rules are replaced with
   \Rule{E-IsZeroZero}, \Rule{E-IsZeroSucc}, and \Rule{E-IsZero},
   and we handle boolean values instead of numeric ones in some places. \qed
@@ -234,11 +251,11 @@ If $\code t = \IsZero{\code s}$ for some term $\code s$,
 \begin{itemize}
   \item[(1)]
     \textsc{Proposition}:
-    Let $\code t$ be any arithmetic expression.
-    If $\code t$ is evaluated to a value,
+    Let |t| be any arithmetic expression.
+    If |t| is evaluated to a value,
       then it is evaluated to the same value in the augmented language.
-    The term $\code t$ is evaluated to a stuck state
-      iff it is evaluated to $\Wrong$ in the augmented language.
+    The term |t| is evaluated to a stuck state
+      iff it is evaluated to |wrong| in the augmented language.
   \item[(2)] 
     \textsc{Proof}:
     Note first that the augmented evaluation rules are deterministic,
@@ -247,13 +264,13 @@ If $\code t = \IsZero{\code s}$ for some term $\code s$,
       the original language have,
       any expression evaluated to a value in the original language
       is evaluated by the same derivation to the same value in the augmented one.
-    Assume $\code t$ is evaluated to a stuck state in the original language.
-    Then, the term $\code t$ is in an either form of the left hand side of
+    Assume |t| is evaluated to a stuck state in the original language.
+    Then, the term |t| is in an either form of the left hand side of
       the added rules.
-    Therefore, it is evaluated to $\Wrong$ in the augmented language.
-    Conversely, assume $\code t$ is evaluated to $\Wrong$ in the augmented language.
-    Since $\code t$ is an arithmetic expression,
-      it is not $\Wrong$ itself,
+    Therefore, it is evaluated to |wrong| in the augmented language.
+    Conversely, assume |t| is evaluated to |wrong| in the augmented language.
+    Since |t| is an arithmetic expression,
+      it is not |wrong| itself,
       and thus is the result of an evaluation by one of the added rules.
     The left hand side of each added rule is a normal form in the original language,
       and thus is a stuck state. \qed
@@ -261,78 +278,204 @@ If $\code t = \IsZero{\code s}$ for some term $\code s$,
 
 \Ex{3.5.17}
 
-First, we show $\code t \Bigstep \code v$ given $\code t \to^* \code v$
-  by induction on the number of small steps consisting $\code t \to^* \code v$.
-If there are zero steps, i.e., $\code t = \code v$,
-  then it holds that $\code t \Bigstep \code v$ by \Rule{B-Value}.
+First, we show $|t| \Bigstep |v|$ given $|t| \to^* |v|$
+  by induction on the number of small steps consisting $|t| \to^* |v|$.
+If there are zero steps, i.e., $|t| = |v|$,
+  then it holds that $|t| \Bigstep |v|$ by \Rule{B-Value}.
 Consider the general case.
 By induction hypothesis,
-  there exists a term $\code t'$ that satisfies
-  $\code t \to \code t'$,
-  $\code t' \to^* \code v$,
-  and $\code t' \Bigstep \code v$.
-Then $\code t \Bigstep \code v$ is shown by examining all the cases for
-  the direct derivation of $\code t \to \code t'$.
+  there exists a term $|t|'$ that satisfies
+  $|t| \to |t|'$,
+  $|t|' \to^* |v|$,
+  and $|t|' \Bigstep |v|$.
+Then $|t| \Bigstep |v|$ is shown by examining all the cases for
+  the direct derivation of $|t| \to |t|'$.
 For example, if it is derived by \Rule{E-IfTrue},
-  $\code t$ is written as $\code t = \IfThenElse{\True}{\code t'}{\code t''}$.
-We have $\True \Bigstep \True$ by \Rule{B-Value}
-  and $\code t' \Bigstep \code v$ by the hypothesis.
+  |t| is written as $|t| = \IfThenElse{|true|}{|t|'}{|t|''}$.
+We have $|true| \Bigstep |true|$ by \Rule{B-Value}
+  and $|t|' \Bigstep |v|$ by the hypothesis.
 By applying \Rule{B-IfTrue} to them,
-  we obtain $\IfThenElse{\True}{\code t'}{\code t''} \Bigstep \code v$.
+  we obtain $\IfThenElse{|true|}{|t|'}{|t|''} \Bigstep |v|$.
 Another example: if it is derived by \Rule{E-If},
-  $\code t$ and $\code t'$ are written as
-  $\code t = \IfThenElse{\code t_1}{\code t_2}{\code t_3}$ and
-  $\code t' = \IfThenElse{\code t'_1}{\code t'_2}{\code t'_3}$, respectively.
-We also have $\code t_1 \to \code t'_1$.
-Since $\code t' \to^* \code v$,
-  it holds that $\code t'_1 \to^* \code v_1$ with $\code v_1 \in \{\True, \False\}$.
-We thus obtain $\code t_1 \to^* \code v_1$.
-Suppose $\code v_1 = \True$.
-Then, in the same way, we obtain $\code t_2 \to^* \code v$.
+  |t| and $|t|'$ are written as
+  $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$ and
+  $|t|' = \IfThenElse{|t|'_1}{|t|'_2}{|t|'_3}$, respectively.
+We also have $|t|_1 \to |t|'_1$.
+Since $|t|' \to^* |v|$,
+  it holds that $|t|'_1 \to^* |v|_1$ with $|v|_1 \in \{|true|, |false|\}$.
+We thus obtain $|t|_1 \to^* |v|_1$.
+Suppose $|v|_1 = |true|$.
+Then, in the same way, we obtain $|t|_2 \to^* |v|$.
 By induction hypothesis,
-  we have $\code t_1 \Bigstep \True$ and $\code t_2 \Bigstep \code v$.
+  we have $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By applying \Rule{B-IfTrue},
-  we get $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \Bigstep \code v$.
-Almost same discussions apply for the case of $\code v_1 = \False$.
+  we get $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \Bigstep |v|$.
+Almost same discussions apply for the case of $|v|_1 = |false|$.
 The other cases also follow in a similar manner.
 
-Next, we show $\code t \to^* \code v$ given $\code t \Bigstep \code v$
-  by induction on derivation of $\code t \Bigstep \code v$.
-When $\code t = \code v$, it obviously holds that $\code v \to^* \code v$.
+Next, we show $|t| \to^* |v|$ given $|t| \Bigstep |v|$
+  by induction on derivation of $|t| \Bigstep |v|$.
+When $|t| = |v|$, it obviously holds that $|v| \to^* |v|$.
 Induction step is made by examining all the evaluation rules except for \Rule{B-Value}.
 For example, if the last step is \Rule{B-IfTrue},
-  we have $\code t = \IfThenElse{\code t_1}{\code t_2}{\code t_3}$
-  with $\code t_1 \Bigstep \True$ and $\code t_2 \Bigstep \code v$.
+  we have $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$
+  with $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By induction hypothesis,
-  we have $\code t_1 \to^* \True$ and $\code t_2 \to^* \code v$.
+  we have $|t|_1 \to^* |true|$ and $|t|_2 \to^* |v|$.
 By applying \Rule{E-If} multiple times with premises given by
-  individual small steps consisting $\code t_1 \to^* \True$,
+  individual small steps consisting $|t|_1 \to^* |true|$,
   we obtain
   $
-    \IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^*
-    \IfThenElse{\True}{\code t_2}{\code t_3}
+    \IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^*
+    \IfThenElse{|true|}{|t|_2}{|t|_3}
   $.
 Next, we apply \Rule{E-IfTrue} to the right hand side to obtain
-  $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^* \code t_2$.
-Combining it with $\code t_2 \to^* \code v$,
-  we get $\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to^* \code v$.
+  $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^* |t|_2$.
+Combining it with $|t|_2 \to^* |v|$,
+  we get $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^* |v|$.
 Similar discussions are applied to the other cases. \qed
 
 \Ex{3.5.18}
 
 The evaluation rules involving $\code{if}$ expression is modified as follows.
 \begin{center}
-  \AxiomC{$\IfThenElse{\True}{\code v_1}{\code v_2} \to \code v_1$} \DisplayProof
+  \AxiomC{$\IfThenElse{|true|}{|v|_1}{|v|_2} \to |v|_1$} \DisplayProof
   \quad
-  \AxiomC{$\IfThenElse{\False}{\code v_1}{\code v_2} \to \code v_2$} \DisplayProof
+  \AxiomC{$\IfThenElse{|false|}{|v|_1}{|v|_2} \to |v|_2$} \DisplayProof
   \\ \vspace{1em}
-  \AxiomC{$\code t_2 \to \code t'_2$}
-  \UnaryInfC{$\IfThenElse{\code t_1}{\code t_2}{\code t_3} \to
-              \IfThenElse{\code t_1}{\code t'_2}{\code t_3}$} \DisplayProof
+  \AxiomC{$|t|_2 \to |t|'_2$}
+  \UnaryInfC{$\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to
+              \IfThenElse{|t|_1}{|t|'_2}{|t|_3}$} \DisplayProof
   \\ \vspace{1em}
-  \AxiomC{$\code t_2 \to \code t'_2$}
-  \UnaryInfC{$\IfThenElse{\code t_1}{\code v}{\code t_2} \to
-              \IfThenElse{\code t_1}{\code v}{\code t'_2}$} \DisplayProof
+  \AxiomC{$|t|_2 \to |t|'_2$}
+  \UnaryInfC{$\IfThenElse{|t|_1}{|v|}{|t|_2} \to
+              \IfThenElse{|t|_1}{|v|}{|t|'_2}$} \DisplayProof
 \end{center}
+
+\section{An ML Implementation of Arithmetic Expressions}
+
+Rust implementation is put at \code{src/bin/arith.rs}.
+
+\Ex{4.2.1}
+Omitted since I cannot talk about a good programming style in ML.
+
+\Ex{4.2.2}
+Omitted.
+It can be implemented by fully evaluating arguments of each expression recursively.
+
+\section{The Untyped Lambda-Calculus}
+
+\Ex{5.2.1}
+\begin{Code}
+  or  = $\lmd b \lmd c$ b tru c;
+  not = $\lmd b$ b fls tru;
+\end{Code}
+
+\Ex{5.2.2}
+\begin{Code}
+  scc = $\lmd n \lmd s \lmd z$ n s (s z);
+\end{Code}
+
+\Ex{5.2.3}
+\begin{Code}
+  times$'$ = $\lmd m \lmd n \lmd s$ m (n s);
+\end{Code}
+For example, $3 \times 2$ is evaluated as follows.
+\begin{Code}
+     times$'$ c$_3$ c$_2$ s z
+  $=$   ($\lmd m \lmd n \Lmd s' \Lmd z'$ m (n s$'$) z$'$) c$_3$ c$_2$ s z
+  $\to$ ($\lmd n \Lmd s' \Lmd z'$ c$_3$ (n s$'$) z$'$) c$_2$ s z
+  $\to$ ($\Lmd s' \Lmd z'$ c$_3$ (c$_2$ s$'$) z$'$) s z
+  $\to$ ($\Lmd z'$ c$_3$ (c$_2$ s) z$'$) z
+  $\to$ c$_3$ (c$_2$ s) z
+  $=$   c$_3$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) s) z
+  $\to$ c$_3$ ($\Lmd z'$ s (s z$'$)) z
+  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ (s$'$ z$'$))) ($\Lmd z'$ s (s z$'$)) z
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))) z
+  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) z))
+  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (s (s z)))
+  $\to$ ($\Lmd z'$ s (s z$'$)) (s (s (s (s z))))
+  $\to$ s (s (s (s (s (s z)))))$.$
+\end{Code}
+
+\Ex{5.2.4}
+
+There are at least two ways to define a power function.
+\begin{Code}
+  pow = $\lmd m \lmd n$ m (times n) c$_1$;
+  pow$'$ = $\lmd m \lmd n$ m n;
+\end{Code}
+The first one is analogous to the definition of \code{times}.
+The second one is simpler but trickier.
+Here, an application of $\code{pow}'$ is evaluated as
+\begin{align*}
+  |pow|'~|c|_m~|c|_n~|s|~|z|
+  \to |c|_m~|c|_n~|s|~|z|
+  \to \underbrace{|c|_n~(|c|_n~(\cdots~(|c|_n}_{m}~|s|)\cdots))~|z|.
+\end{align*}
+Then, applying $|c|_n$ once multiplies the number of occurences of |s| by $n$.
+Since it happens $m$ times, it results in $n^m$ occurences of |s| in total.
+
+For example, $2^3$ is evaluated as follows.
+\begin{Code}
+     pow$'$ c$_3$ c$_2$ s z
+  $=$   ($\lmd m \lmd n$ m n) c$_3$ c$_2$ s z
+  $\to$ ($\lmd n$ c$_3$ n) c$_2$ s z
+  $\to$ c$_3$ c$_2$ s z
+  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ (s$'$ z$'$))) c$_2$ s z
+  $\to$ ($\Lmd z'$ c$_2$ (c$_2$ (c$_2$ z$'$))) s z
+  $\to$ c$_2$ (c$_2$ (c$_2$ s)) z
+  $=$   c$_2$ (c$_2$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) s)) z
+  $\to$ c$_2$ (c$_2$ ($\Lmd z'$ s (s z$'$))) z
+  $=$   c$_2$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) ($\Lmd z'$ s (s z$'$))) z
+  $\to$ c$_2$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z
+  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ ($\Lmd z{'''}$ s (s z$'''$)) (($\Lmd z{'''}$ s (s z$'''$)) z$''$))
+           (($\Lmd z{''}$ ($\Lmd z{'''}$ s (s z$'''$)) (($\Lmd z{'''}$ s (s z$'''$)) z$''$)) z$'$)
+     ) z
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
+        (($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z)
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
+        (($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) z))
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
+        (($\Lmd z'$ s (s z$'$)) (s (s z)))
+  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) (s (s (s (s z))))
+  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (s (s (s (s z)))))
+  $\to$ ($\Lmd z'$ s (s z$'$)) (s (s (s (s (s (s z))))))
+  $\to$ (s (s (s (s (s (s (s (s z))))))))
+\end{Code}
+
+\Ex{5.2.5}
+\begin{Code}
+  subtract = $\lmd m \lmd n$ n prd m;
+\end{Code}
+It reads "apply |prd| for |n| times to |m|".
+
+\Ex{5.2.6}
+Full evaluation of |prd| |c|$_n$ involves applications of |ss|
+  $n$ times starting from |pair c|$_0$~| c|$_0$ and selecting |fst|.
+The evaluation thus completes in $O(n)$ steps.
+
+\Ex{5.2.7}
+\begin{Code}
+  equal = $\lmd m \lmd n$ and (iszro (m prd n)) (iszro (n prd m));
+\end{Code}
+
+\Ex{5.2.8}
+\begin{Code}
+  nil   = $\lmd c \lmd n$ n;
+  cons  = $\lmd h \lmd t \lmd c \lmd n$ c h (t c n);
+  isnil = $\lmd t$ t ($\lmd x \lmd y$ fls) tru;
+  head  = $\lmd t$ t ($\lmd x \lmd y$ x) nil;
+\end{Code}
+Here, we use |nil| for the default value of |head| when the argument is
+  |nil|.
+
+A |tail| function can be defined by copying a list into another list,
+  simultaneously bookkeeping the list in the previous step using a pair.
+\begin{Code}
+  dcons = $\lmd h \lmd p$ pair (snd p) (cons h (snd p));
+  tail  = $\lmd t$ fst (t dcons (pair nil nil));
+\end{Code}
 
 \end{document}
