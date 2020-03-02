@@ -25,7 +25,9 @@
 \newcommand{\phantomrel}[1]{\phantom{{}#1{}}}
 \newcommand{\proofbreak}{\\ \vspace{1em}}
 \newcommand{\proofsep}{\quad}
+\newcommand{\dshift}{\uparrow}
 \newcommand{\subst}[1]{[#1]\,}
+\newcommand{\where}{~ \text{where} ~}
 
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
@@ -646,19 +648,87 @@ Augment the evaluation relation with the following rules.
 \end{Code}
 
 \Ex{6.1.4}
-Define a family of sets $S_{ij}, ~i, j \in \N$ inductively as follows.
+Define a family of sets $S_{ni}, ~n, i \in \N$ inductively as follows.
 \begin{align*}
-  S_{i,0} &= \{ 0, \dots, i - 1 \}, ~i \in \N, \\
-  S_{ij} &= S_{i, j - 1}
-         \cup \{ \lmd{} |t| \mid |t| \in S_{i + 1, j - 1} \}
-         \cup \{ |t|_1 ~|t|_2 \mid |t|_1, |t|_2 \in S_{i, j - 1} \}, \\
-         & \hspace{20em} i \in \N, j \in \N \setminus \{ 0 \}
+  S_{n,0} &= \{ 0, \dots, n - 1 \}, ~n \in \N, \\
+  S_{ni} &= S_{n, i - 1}
+         \cup \{ \lmd{} |t| \mid |t| \in S_{n + 1, i - 1} \}
+         \cup \{ |(| |t|_1 ~|t|_2 |)| \mid |t|_1, |t|_2 \in S_{n, i - 1} \}, \\
+         & \hspace{20em} n \in \N, i \in \N \setminus \{ 0 \}
 \end{align*}
 Then, define a family of sets
   $\mathcal S = \{\mathcal S_0, \mathcal S_1, \mathcal S_2, \dots \}$ by
-  $\mathcal S_i = \bigcup_j S_{ij}, ~i \in \N$.
-Each set $\mathcal S_i$ in this family coincides with $\mathcal T_i$.
+  $\mathcal S_n = \bigcup_i S_{ni}, ~n \in \N$.
+Each set $\mathcal S_n$ in this family coincides with $\mathcal T_n$.
 
-\paragraph{Proof} \textbf{TODO...}
+\paragraph{Proof}
+We first prove $S_{ni} \subseteq \mathcal T_n$ for all $n$ by induction on $i$.
+By definition, it holds $S_{n, 0} \subseteq \mathcal T_n$.
+For $i>0$, suppose $|t| \in S_{ni}$.
+There are three cases to consider.
+\begin{itemize}
+  \item If $|t| \in S_{n, i - 1}$, by induction hypothesis,
+      we have $|t| \in \mathcal T_n$.
+  \item If $|t| = \lmd{} |s|$ for some $|s| \in S_{n + 1, i - 1}$,
+      by induction hypothesis, we have $|s| \in \mathcal T_{n + 1}$.
+    Following \textsc{Definition 6.1.2.2},
+      we obtain $|t| = \in \mathcal T_{n}$.
+  \item Otherwise, we can write $|t| = |(| |s|_1 ~ |s|_2 |)|$
+      for some $|s|_1, |s|_2 \in S_{n, i - 1}$.
+    By induction hypothesis, we have $|s|_1, |s|_2 \in \mathcal T_n$.
+    Following \textsc{Definition 6.1.2.3},
+      we obtain $|t| \in \mathcal T_n$.
+\end{itemize}
+Therefore, $S_{ni} \subseteq \mathcal T_n$ holds for all $n, i$.
+We thus obtain $\mathcal S_n = \bigcup_i S_{ni} \subseteq \mathcal T_n$.
+
+Next, we prove $\mathcal T_n \subseteq \mathcal S_n$ for all $n$.
+To prove it, we show that
+  the three conditions of \textsc{Definition 6.1.2} hold
+  when replacing $\mathcal T_n$ with $\mathcal S_n$.
+Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathcal S_n$.
+\begin{enumerate}
+  \item By definition, it holds that $|k| \in S_{n,0} \subseteq \mathcal S_n$
+      whenever $0 \le |k| < n$.
+  \item If $|t| \in \mathcal S_n$, there exists $i$ such that $|t| \in S_{ni}$.
+    By definition, it holds $\lmd{} |t| \in S_{n - 1, i + 1} \subseteq \mathcal S_{n - 1}$.
+  \item If $|t|_1, |t|_2 \in \mathcal S_n$,
+      there exist $i_1, i_2$ such that $|t|_1 \in S_{ni_1}$ and $|t|_2 \in S_{ni_2}$.
+    Let $i = \max\{ i_1, i_2 \}$,
+      then we have $|t|_1, |t|_2 \in S_{ni}$.
+    By definition, we have $|(| |t|_1 ~ |t|_2 |)| \in S_{n, i + 1} \subseteq \mathcal S_n$.
+\end{enumerate}
+\qed
+
+\Ex{6.1.5}
+\begin{enumerate}
+  \item
+    \begin{alignat*}{2}
+      &removenames_\Gamma(|x|) &&= (\text{index of the rightmost |x| in } \Gamma), \\
+      &removenames_\Gamma(\lmd x |s|) &&= \lmd{} removenames_{\Gamma, |x|}(|s|), \\
+      &removenames_\Gamma(|t|_1 ~ |t|_2)
+        &&= removenames_\Gamma(|t|_1) ~ removenames_\Gamma(|t|_2).
+    \end{alignat*}
+  \item Let $newname(\Gamma)$ be
+      the first variable name in $\mathcal V \setminus dom(\Gamma)$.
+    \begin{alignat*}{3}
+      &restorenames_\Gamma(|k|)
+        &&= |x|_{|k|}
+        && \where \Gamma = |x|_n, \dots, |x|_0, \\
+      &restorenames_\Gamma(\lmd{} |s|)
+        &&= \lmd x restorenames_{\Gamma, |x|}(|s|)
+        && \where |x| = newname(\Gamma), \\
+      &restorenames_\Gamma(|t|_1 ~ |t|_2)
+        &&= restorenames_\Gamma(|t|_1) ~ restorenames_\Gamma(|t|_2). &&
+    \end{alignat*}
+\end{enumerate}
+
+\Ex{6.2.2}
+\begin{enumerate}
+  \item $\dshift^2(\lmd{} \lmd{} ~|1 (0 2)|) = \lmd{} \lmd{} ~|1 (0 4)|$.
+  \item
+    $\dshift^2(\lmd{} ~|0 1 (| \lmd{} ~|0 1 2)|)
+     = \lmd{} ~|0 3 (| \lmd{} ~|0 1 4)|$.
+\end{enumerate}
 
 \end{document}
