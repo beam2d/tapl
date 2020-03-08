@@ -20,6 +20,7 @@
 \def|#1|{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
 
 \newcommand{\card}[1]{\vert#1\vert}
+\newcommand{\Case}{\textit{Case} }
 \newcommand{\code}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily]{#1}}}
 \newcommand{\lmd}[1]{\lambda \texttt{#1.}}
 \newcommand{\Lmd}[2]{\lambda \texttt{#1}#2\texttt{.}}
@@ -885,7 +886,7 @@ By induction hypothesis, we have
 \qed
 
 \Ex{6.3.1}
-In the argument of $\dshift^{-1}$ in \textsc{E-AppAbs},
+In the argument of $\dshift^{-1}$ in \Rule{E-AppAbs},
   the variable |0| is substituted away with $\dshift^1(|v|_2)$,
   which does not refer |0| due to the shift operator.
 Therefore, the negative shift does not cause any ill-formed terms.
@@ -895,5 +896,66 @@ Therefore, the negative shift does not cause any ill-formed terms.
 
 \section{An ML Implementation of the Lambda Calculus}
 Rust implementation of |untyped| is put at |src/bin/untyped.rs|.
+
+\section{Typed Arithmetic Expressions}
+
+\Ex{8.2.3}
+It immediately follows from 3, 5, 6, and 7 of \textsc{Lemma 8.2.2}.
+
+\Ex{8.3.4}
+We proceed by case analysis on the final rule in the evaluation derivation.
+
+\Case\textsc{E-IfTrue}:
+We have $|t| = |if true then t|_1~|else t|_2 \to |t|_1$.
+By the inversion lemma, we have $|t|_1~|: T|$.
+\textsc{E-IfFalse} case is similar.
+
+\Case\textsc{E-If}:
+We have $|t| = |if t|_1~|then t|_2~|else t|_3$
+  and $|t|' = |if t|'_1~|then t|_2~|else t|_3$
+  where $|t|_1 \to |t|'_1$.
+Since |t : T|,
+  we have $|t|_1~|: Bool|$, $|t|_2~|: T|$, and $|t|_3~|: T|$ by the inversion lemma.
+By induction hypothesis, it holds that $|t|'_1~|: Bool|$.
+We thus conclude $|t|'~|: T|$.
+
+\Case\textsc{E-Succ}:
+We have $|t| = |succ t|_1$ and $|t|' = |succ t|'_1$
+  where $|t|_1 \to |t|'_1$.
+It holds that $|T| = |Nat|$ and, by the inversion lemma, $|t|_1~|: Nat|$.
+We can derive $|t|'_1~|: Nat|$ by induction hypothesis.
+Therefore, we conclude $|t|'~|: Nat|$.
+We can apply similar discussions to \Rule{E-Pred} and \Rule{E-IsZero}.
+
+\Case\textsc{E-PredZero}:
+It is obvious that |pred 0 : Nat| and |0 : Nat|.
+The other remaining cases immediately follow from the definition in the same way.
+\qed
+
+\Ex{8.3.5}
+Simply removing \Rule{E-PredZero} breaks the progress property
+  because, by |0 : Nat| and \Rule{T-Pred}, we have |pred 0 : Nat|,
+  which could not be evaluated anymore.
+
+\Ex{8.3.6}
+This property does not hold.
+For example, let $|t| = |if true then 0 else true|$,
+  then $|t| \to |0|$ and |0 : Nat|,
+  while |t| is ill-typed.
+
+\Ex{8.3.7}
+\begin{itemize}
+  \item If |t| is a well typed term, then |t| is evaluated to a value |v|, i.e.,
+        $|t| \Bigstep |v|$.
+  \item If |t : T| and $|t| \Bigstep |v|$, then |v : T|.
+\end{itemize}
+
+\Ex{8.3.8}
+Every term, either typed or untyped, is evaluated to some value,
+  so the progress property trivially holds.
+The preservation property also holds because |wrong| has no type
+  and any typed term is not evaluated to a stuck state with the original rules,
+  which indicates that such a term is not evaluated to |wrong| with the augmented
+  ones.
 
 \end{document}
