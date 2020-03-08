@@ -1,3 +1,4 @@
+use std::cmp;
 use std::fmt;
 use std::ops::Range;
 use std::process;
@@ -39,6 +40,7 @@ pub struct Span {
 }
 
 impl Span {
+    /// Creates a span from a range.
     pub fn new(range: Range<usize>) -> Span {
         Span {
             start: range.start,
@@ -46,6 +48,14 @@ impl Span {
         }
     }
 
+    /// Creates a span covering two spans.
+    pub fn cover(left: Span, right: Span) -> Span {
+        let start = cmp::min(left.start, right.start);
+        let end = cmp::max(left.end, right.end);
+        Span { start, end }
+    }
+
+    /// Converts to `Range`.
     pub fn range(self) -> Range<usize> {
         self.start..self.end
     }

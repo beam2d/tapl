@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{bussproofs}
 \usepackage{listings}
+\usepackage{parskip}
 
 \lstnewenvironment{Code}{
   \lstset{
@@ -40,7 +41,7 @@
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\Succ}{|succ|~}
 
-\title{Reading Log of \\ \emph{Types and Programming Languages}}
+\title{Excercise Solutions for \\ \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
 
 \begin{document}
@@ -730,5 +731,169 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
     $\dshift^2(\lmd{} ~|0 1 (| \lmd{} ~|0 1 2)|)
      = \lmd{} ~|0 3 (| \lmd{} ~|0 1 4)|$.
 \end{enumerate}
+
+\Ex{6.2.3}
+We show it by structural induction.
+
+If |t| is a variable, then $\dshift_c^d(|t|)$ is a $(n + d)$-term by definition.
+
+If |t| is written as $|t| = \lmd{} |t|_1$, 
+  $|t|_1$ is an $(n + 1)$-term.
+By induction hypothesis, $\dshift_{c+1}^d(|t|_1)$ is an $(n + d + 1)$-term.
+Therefore,
+  $\dshift_c^d(\lmd{} |t|_1) = \lmd{} \dshift_{c+1}^d(|t|_1)$ is an $(n + d)$-term.
+
+If |t| is written as $|t| = |t|_1 ~ |t|_2$,
+  $|t|_1$ and $|t|_2$ are both $n$-terms.
+By induction hypothesis,
+  $\dshift_c^d(|t|_1)$ and $\dshift_c^d(|t|_2)$ re $(n + d)$-terms.
+Therefore,
+  $\dshift_c^d(|t|_1 ~ |t|_2) = \dshift_c^d(|t|_1) ~ \dshift_c^d(|t|_2)$ is an
+  $(n + d)$-term. \qed
+
+\Ex{6.2.5}
+\begin{enumerate}
+  \item \begin{align*}
+      \subst{|0| \mapsto |1|} |(0 (| \lmd{} \lmd{} |2))|
+      &= |1 (| \subst{|0| \mapsto |1|} \lmd{} \lmd{} |2)| \\
+      &= |1 (| \lmd{} \lmd{} \subst{|2| \mapsto |3|} |2)| \\
+      &= |1 (| \lmd{} \lmd{} |3)|.
+  \end{align*}
+  \item \begin{align*}
+      \subst{|0| \mapsto |1 (| \lmd{} |2)|} |(0 (| \lmd{} |1))|
+      &= |1 (| \lmd{} |2) (| \subst{|0| \mapsto |1 (| \lmd{} |2)|} \lmd{} |1)| \\
+      &= |1 (| \lmd{} |2) (| \lmd{} \subst{|1| \mapsto |2 (| \lmd{} |3)|} |1)| \\
+      &= |1 (| \lmd{} |2) (| \lmd{} |2 (| \lmd{} |3))|.
+  \end{align*}
+  \item \begin{align*}
+      \subst{|0| \mapsto |1|} |(| \lmd{} |0 2)|
+      &= \lmd{} \subst{|1| \mapsto |2|} |0 2| \\
+      &= \lmd{} |0 2|.
+  \end{align*}
+  \item \begin{align*}
+      \subst{|0| \mapsto |1|} |(| \lmd{} |1 0)|
+      &= \lmd{} \subst{|1| \mapsto |2|} |1 0| \\
+      &= \lmd{} |2 0|.
+  \end{align*}
+\end{enumerate}
+
+\Ex{6.2.6}
+We show it by structural induction on |t|.
+
+If |t| is a variable,
+  $\subst{|j| \mapsto |s|} |t|$ is |s| if $|j| = |t|$
+  or |t| otherwise.
+In either case, it is an $n$-term.
+
+If $|t| = \lmd{} |t|_1$,
+  we have $\subst{|j| \mapsto |s|} |t|
+           = \lmd{} \subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$.
+Since both $|t|_1$ and $\dshift^1(|s|)$ are $(n + 1)$-terms and $|j| + 1 \le n + 1$,
+  by induction hypothesis,
+  $\subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$ is an $(n + 1)$-term.
+Therefore, $\lmd{} \subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$ is an $n$-term.
+
+Otherwise, we can write $|t| = |t|_1 ~ |t|_2$.
+In this case, both $|t|_1$ and $|t|_2$ are $n$-terms,
+  and $\subst{|j| \mapsto |s|} |t|
+       = |(| \subst{|j| \mapsto |s|} |t|_1 |) (| \subst{|j| \mapsto |s|} |t|_2 |)|$.
+By induction hypothesis,
+  both terms in the right hand side are $n$-terms,
+  and thus the right hand side as a whole is also an $n$-term.
+\qed
+
+\Ex{6.2.7}
+Omitted.
+
+\Ex{6.2.8}
+\textsc{Theorem}:
+Let $\Gamma$ be any naming context.
+We overload the notation $removenames_\Gamma(|x|)$ for a variable |x| to
+  denote the index of |x| in $\Gamma$ counting from the right.
+Then, $removenames_\Gamma$ commutes with substitution;
+  i.e., for any ordinary terms |t|, |s|, and variable |x|,
+  \begin{align}
+    &\phantomrel=
+      removenames_\Gamma(\subst{|x| \mapsto |s|} |t|) \notag \\
+    &= \subst{removenames_\Gamma(|x|) \mapsto removenames_\Gamma(|s|)}
+      (removenames_\Gamma(|t|)).
+      \label{eq:6.2.8}
+  \end{align}
+
+\textsc{Proof}:
+Abbreviate $removenames_\Gamma$ by $rem_\Gamma$.
+We prove it by structural induction on |t|.
+
+If $|t| = |x|$, the both sides of Eq. \ref{eq:6.2.8} are $rem_\Gamma(|s|)$.
+
+If $|t| = |y| \neq |x|$,
+  we also have $rem_\Gamma(|x|) \neq rem_\Gamma(|y|)$,
+  so the both sides of Eq. \ref{eq:6.2.8} are $rem_\Gamma(|y|)$.
+
+If $|t| = \lmd y |t|_1$ where $|y| \neq |x|$ and $|y| \notin FV(|s|)$,
+  we have
+\[
+  rem_\Gamma(\subst{|x| \mapsto |s|} |(| \lmd y |t|_1 |)|)
+   = rem_\Gamma(\lmd y \subst{|x| \mapsto |s|} |t|_1) \\
+   = \lmd{} rem_{\Gamma, |y|}(\subst{|x| \mapsto |s|} |t|_1).
+\]
+By induction hypothesis,
+  the rightmost side is
+\[
+  \lmd{} \subst{rem_{\Gamma, |y|}(|x|)
+                \mapsto rem_{\Gamma, |y|}(|s|)}
+         rem_{\Gamma, |y|}(|t|_1).
+\]
+Since $|y| \notin FV(|s|) \cup \{|x|\}$,
+  $rem_{\Gamma, |y|}(|x|) = rem_\Gamma(|x|) + 1$ and
+  $rem_{\Gamma, |y|}(|s|) = \dshift^1 rem_\Gamma(|s|)$.
+Therefore, the above term is
+\[
+  \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+    \lmd{} rem_{\Gamma, |y|}(|t|_1)
+  = \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+     rem_\Gamma(\lmd y |t|_1).
+\]
+This is equal to the right hand side of Eq. \ref{eq:6.2.8}.
+
+Otherwise, $|t| = |t|_1 ~ |t|_2$. We have
+\begin{align*}
+  rem_\Gamma(\subst{|x| \mapsto |s|} |(| |t|_1 ~ |t|_2 |)|)
+  &= rem_\Gamma(|(| \subst{|x| \mapsto |s|} |t|_1 |)| ~
+                        |(| \subst{|x| \mapsto |s|} |t|_2 |)|) \\
+  &= rem_\Gamma(\subst{|x| \mapsto |s|} |t|_1) ~
+     rem_\Gamma(\subst{|x| \mapsto |s|} |t|_2).
+\end{align*}
+By induction hypothesis, we have
+\begin{align*}
+  &\phantomrel=
+    rem_\Gamma(\subst{|x| \mapsto |s|} |t|_1) ~
+    rem_\Gamma(\subst{|x| \mapsto |s|} |t|_2) \\
+  &= |(|
+       \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+       rem_\Gamma(|t|_1)
+     |)| ~
+     |(|
+       \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+       rem_\Gamma(|t|_2)
+     |)| \\
+  &= \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+     |(| rem_\Gamma(|t|_1) ~ rem_\Gamma(|t|_2) |)| \\
+  &= \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
+      rem_\Gamma(|t|_1 ~ |t|_2).
+\end{align*}
+\qed
+
+\Ex{6.3.1}
+In the argument of $\dshift^{-1}$ in \textsc{E-AppAbs},
+  the variable |0| is substituted away with $\dshift^1(|v|_2)$,
+  which does not refer |0| due to the shift operator.
+Therefore, the negative shift does not cause any ill-formed terms.
+
+\Ex{6.3.2}
+\textsc{Todo}
+
+\section{An ML Implementation of the Lambda Calculus}
+Rust implementation of |untyped| is put at |src/bin/untyped.rs|.
 
 \end{document}
