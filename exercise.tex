@@ -31,7 +31,11 @@
 \newcommand{\subst}[1]{[#1]\,}
 \newcommand{\where}{~ \text{where} ~}
 
+\newcommand{\Ab}[1]{\lambda #1 \texttt{.}}
+\newcommand{\AbTy}[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
 \newcommand{\Bigstep}{\Downarrow}
+\newcommand{\CParen}[1]{\texttt( #1 \texttt)}
+\newcommand{\Ctx}[2]{#1 \vdash #2}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
 \newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
 \newcommand{\Iszero}{|iszero|~}
@@ -40,7 +44,10 @@
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
 \newcommand{\Rule}[1]{\textsc{#1}}
+\newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Succ}{|succ|~}
+\newcommand{\TypeRel}[2]{#1 ~|:|~ #2}
+\newcommand{\CtxTypeRel}[3]{\Ctx{#1}{\TypeRel{#2}{#3}}}
 
 \title{Excercise Solutions for \\ \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
@@ -957,5 +964,147 @@ The preservation property also holds because |wrong| has no type
   and any typed term is not evaluated to a stuck state with the original rules,
   which indicates that such a term is not evaluated to |wrong| with the augmented
   ones.
+
+\section{Simply Typed Lambda-Calculus}
+
+\Ex{9.2.1}
+The only type constructor of the pure simply typed lambda-calculus with no base types
+  is $\to$,
+  which requires two types as the arguments.
+Therefore, there is no finite sequence of symbols that conform to the language of
+  types,
+  which means we cannot write any abstraction term with an argument type annotation.
+
+\Ex{9.2.2}
+1. Let $b = |f:Bool| \to |Bool|$ and $\Gamma = b$ be the typing context
+     with only one binding $b$.
+\begin{center} \scriptsize
+  \AxiomC{$b \in \Gamma$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\Ctx{\Gamma}{b}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-True} \UnaryInfC{$\CtxTypeRel{\Gamma}{|true|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
+  \RuleLabel{T-If}
+  \TrinaryInfC{$\CtxTypeRel{\Gamma}{|if false then true else false|}{|Bool|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTypeRel{\Gamma}{|f (if false then true else false)|}{|Bool|}$}
+  \DisplayProof
+\end{center}
+
+2. Let $b = |f:Bool| \to |Bool|$ and $\Gamma = (b, |x:Bool|)$.
+\begin{center} \small
+  \AxiomC{$b \in \Gamma$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\Ctx{\Gamma}{b}$}
+  \AxiomC{$|x:Bool| \in \Gamma$}
+    \RuleLabel{T-Var} \UnaryInfC{$\CtxTypeRel{\Gamma}{|x|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
+  \AxiomC{$|x:Bool| \in \Gamma$}
+    \RuleLabel{T-Var} \UnaryInfC{$\CtxTypeRel{\Gamma}{|x|}{|Bool|}$}
+  \RuleLabel{T-If}
+  \TrinaryInfC{
+    $\CtxTypeRel{\Gamma}{|if x then false else x|}{|Bool|}$
+  }
+  \RuleLabel{T-App}
+  \BinaryInfC{
+    $\CtxTypeRel{\Gamma}{|f (if x then false else x)|}{|Bool| \to |Bool|}$
+  }
+  \RuleLabel{T-Abs}
+  \UnaryInfC{
+    $\CtxTypeRel{b}{\lmd{x:Bool} |f (if x then false else x)|}{|Bool| \to |Bool|}$
+  }
+  \DisplayProof
+\end{center}
+
+\Ex{9.2.3}
+An example is $|f:Bool| \to |Bool| \to |Bool|, |x:Bool|, |y:Bool|$.
+Any such context is written as $|f:T|_1 \to |T|_2 \to |Bool|, |x:T|_1, |y:T|_2$
+  where $|T|_1$ and $|T|_2$ are arbitrary types.
+
+\Ex{9.3.2}
+\textbf{No}.
+\textsc{Proof}:
+Assume, for contradiction, that there exists a context $\Gamma$ and a type |T|
+  such that $\CtxTypeRel{\Gamma}{|x x|}{|T|}$.
+By the inversion lemma,
+  there is a type |S| that satisfies
+  $\CtxTypeRel{\Gamma}{|x|}{|S| \to |T|}$ and $\CtxTypeRel{\Gamma}{|x|}{|S|}$.
+By the inversion lemma again,
+  it holds that $|x:S| \to |T| \in \Gamma$ and $|x:S| \in \Gamma$.
+Since any environment can hold only one type binding for one variable,
+  we can derive $|S| \to |T| = |S|$.
+However, the sizes of the both hand sides do not match.
+This contradicts to the equality.
+\qed
+
+\Ex{9.3.9}
+We show it by induction on derivations of $\CtxTypeRel{\Gamma}{|t|}{|T|}$.
+We prove each induction step by case analysis of the derivation rule
+  used at the last derivation step.
+
+\Case\Rule{T-True}, \Rule{T-False}, and \Rule{T-Abs}:
+In these cases, |t| is a value,
+  so there is no evaluation rule that derives $|t| \to |t|'$ for any $|t|'$,
+  and the statement vacuously holds.
+
+\Case\Rule{T-If}:
+In this case, we can write $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$
+  with subderivations of
+  $\CtxTypeRel{\Gamma}{|t|_1}{|Bool|}$,
+  $\CtxTypeRel{\Gamma}{|t|_2}{|T|}$, and
+  $\CtxTypeRel{\Gamma}{|t|_3}{|T|}$.
+We show this case by case analysis of the evaluation rule applied to $|t|$.
+\begin{itemize}
+  \item \Case\Rule{E-IfTrue}:
+    In this case, we have $|t|_1 = |true|$ and $|t| \to |t|_2$.
+    By the uniqueness of evaluation, it holds $|t|' = |t|_2$.
+    We then immediately obtain $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+  \item \Case\Rule{E-IfFalse}: Same as \Rule{E-IfTrue} case.
+  \item \Case\Rule{E-If}:
+    In this case, we have $|t|_1 \to |t|'_1$
+      and $|t| \to \IfThenElse{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
+    By induction hypothesis, it holds $\CtxTypeRel{\Gamma}{|t|'_1}{|Bool|}$.
+    Therefore, we get $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+\end{itemize}
+
+\Case\Rule{T-Var}:
+In this case,
+  $|t| = |x|$ is a variable
+  and therefore there is no evaluation rule that evaluates $|t|$.
+
+\Case\Rule{T-App}:
+In this case,
+  we can write $|t| = |t|_1 ~ |t|_2$
+  with subderivations of
+  $\CtxTypeRel{\Gamma}{|t|_1}{|S| \to |T|}$ and
+  $\CtxTypeRel{\Gamma}{|t|_2}{|S|}$ for some type |S|.
+There are three cases of the evaluation rule that derives $|t| \to |t|'$.
+\begin{itemize}
+  \item \Case\Rule{E-App1}
+    In this case, we have $|t|_1 \to |t|'_1$ and $|t| \to |t|'_1 ~ |t|_2$.
+    By induction hypothesis,
+      it holds $\CtxTypeRel{\Gamma}{|t|'_1}{|S| \to |T|}$.
+    By applying the typing rule \Rule{T-App} to
+      this typing relation and $\CtxTypeRel{\Gamma}{|t|_2}{|S|}$,
+      we get $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+  \item \Case\Rule{E-App2}
+    We can prove for this case similarly as \Rule{E-App1} case.
+  \item \Case\Rule{E-AppAbs}:
+    In this case,
+      we can write $|t| = \CParen{\AbTy{|x|}{|S|} |t|_{12}} |v|_2$ and
+      $|t|' = \subst{|x| \mapsto |v|_2} |t|_{12}$
+    By the inversion lemma of typing relations,
+      we have
+      $\CtxTypeRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}$
+      and
+      $\CtxTypeRel{\Gamma}{|v|_2}{|S|}$.
+    The former relation is derived by \Rule{T-Abs},
+      with which we have $\CtxTypeRel{\Gamma, |x:S|}{|t|_{12}}{|T|}$.
+    By the substitution lemma,
+      we get $\CtxTypeRel{\Gamma}{\subst{|x| \mapsto |v|_2} |t|_{12}}{|T|}$,
+      which is what we wanted to prove.
+\end{itemize}
+\qed
 
 \end{document}
