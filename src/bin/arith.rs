@@ -6,7 +6,7 @@ use std::io::{prelude::*, BufReader};
 use std::iter::Peekable;
 use std::str::CharIndices;
 
-use tapl::{hash_map, matches, Error, Result, Span};
+use tapl::{hash_map, Error, Result, Span};
 
 fn syntax_error(at: Span, summary: &str) -> Error {
     Error::new("SyntaxError").at(at).summary(summary)
@@ -152,7 +152,7 @@ impl Node {
 
     /// Examines if the node represents a value.
     fn is_val(&self) -> bool {
-        self.is_nv() || tapl::matches!(self.expr.as_ref(), Expr::False | Expr::True)
+        self.is_nv() || matches!(self.expr.as_ref(), Expr::False | Expr::True)
     }
 
     /// Single step evaluation of the node.

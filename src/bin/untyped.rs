@@ -11,7 +11,7 @@ use std::io::{prelude::*, BufReader};
 use std::iter::Peekable;
 use std::str::CharIndices;
 
-use tapl::{matches, Error, Result, Span};
+use tapl::{Error, Result, Span};
 
 fn syntax_error(at: Span, summary: &str) -> Error {
     Error::new("SyntaxError").at(at).summary(summary)

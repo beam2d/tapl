@@ -11,16 +11,6 @@ macro_rules! hash_map {
     };
 }
 
-#[macro_export]
-macro_rules! matches {
-    ($expr:expr, $($pat:pat)|+ $(if $guard:expr)?) => {
-        match $expr {
-            $($pat)|+ $(if $guard)? => true,
-            _ => false,
-        }
-    };
-}
-
 /// Unwraps the result or exist process.
 pub fn unwrap_or_die<T, E: fmt::Display>(r: result::Result<T, E>) -> T {
     match r {
