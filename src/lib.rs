@@ -1,7 +1,7 @@
 use std::cmp;
+use std::env;
 use std::fmt;
 use std::ops::Range;
-use std::process;
 use std::result;
 
 #[macro_export]
@@ -17,7 +17,7 @@ pub fn unwrap_or_die<T, E: fmt::Display>(r: result::Result<T, E>) -> T {
         Ok(v) => v,
         Err(e) => {
             println!("{}", e);
-            process::exit(1);
+            panic!()
         }
     }
 }
@@ -56,15 +56,20 @@ impl Span {
 pub struct Error {
     name: &'static str,
     summary: String,
+    note: String,
     span: Option<Span>,
 }
 
 impl Error {
     /// Creates a new error.
     pub fn new(name: &'static str) -> Error {
+        if let Ok(_) = env::var("RUST_BACKTRACE") {
+            panic!(name);
+        }
         Error {
             name,
             summary: String::new(),
+            note: String::new(),
             span: None,
         }
     }
@@ -78,6 +83,13 @@ impl Error {
     /// Attaches a summary text.
     pub fn summary(mut self, summary: impl Into<String>) -> Error {
         self.summary = summary.into();
+        self
+    }
+
+    /// Attaches a text that compares expected and actual types/values.
+    pub fn expect_actual(mut self, expect: &str, actual: &str) -> Error {
+        self.note
+            .push_str(&format!("\texpect: {}\n\tactual: {}\n", expect, actual));
         self
     }
 }

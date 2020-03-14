@@ -43,6 +43,7 @@
 \newcommand{\Lm}{\lambda}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
+\newcommand{\Proof}{\textsc{Proof}}
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Succ}{|succ|~}
@@ -272,7 +273,7 @@ If $|t| = \Iszero |s|$ for some term |s|,
     The term |t| is evaluated to a stuck state
       iff it is evaluated to |wrong| in the augmented language.
   \item[(2)] 
-    \textsc{Proof}:
+    \Proof:
     Note first that the augmented evaluation rules are deterministic,
       since the added rules do not conflict with existing ones and with each other.
     Since the augmented language accomodates all the evaluation rules that
@@ -670,7 +671,7 @@ Then, define a family of sets
   $\mathcal S_n = \bigcup_i S_{ni}, ~n \in \N$.
 Each set $\mathcal S_n$ in this family coincides with $\mathcal T_n$.
 
-\paragraph{Proof}
+\Proof:
 We first prove $S_{ni} \subseteq \mathcal T_n$ for all $n$ by induction on $i$.
 By definition, it holds $S_{n, 0} \subseteq \mathcal T_n$.
 For $i>0$, suppose $|t| \in S_{ni}$.
@@ -828,7 +829,7 @@ Then, $removenames_\Gamma$ commutes with substitution;
       \label{eq:6.2.8}
   \end{align}
 
-\textsc{Proof}:
+\Proof:
 Abbreviate $removenames_\Gamma$ by $rem_\Gamma$.
 We prove it by structural induction on |t|.
 
@@ -1024,7 +1025,7 @@ Any such context is written as $|f:T|_1 \to |T|_2 \to |Bool|, |x:T|_1, |y:T|_2$
 
 \Ex{9.3.2}
 \textbf{No}.
-\textsc{Proof}:
+\Proof:
 Assume, for contradiction, that there exists a context $\Gamma$ and a type |T|
   such that $\CtxTypeRel{\Gamma}{|x x|}{|T|}$.
 By the inversion lemma,
@@ -1060,7 +1061,7 @@ We show this case by case analysis of the evaluation rule applied to $|t|$.
     In this case, we have $|t|_1 = |true|$ and $|t| \to |t|_2$.
     By the uniqueness of evaluation, it holds $|t|' = |t|_2$.
     We then immediately obtain $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
-  \item \Case\Rule{E-IfFalse}: Same as \Rule{E-IfTrue} case.
+  \item \Case\Rule{E-IfFalse}: Similar as \Rule{E-IfTrue} case.
   \item \Case\Rule{E-If}:
     In this case, we have $|t|_1 \to |t|'_1$
       and $|t| \to \IfThenElse{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
@@ -1106,5 +1107,26 @@ There are three cases of the evaluation rule that derives $|t| \to |t|'$.
       which is what we wanted to prove.
 \end{itemize}
 \qed
+
+\Ex{9.3.10}
+\textbf{No}.
+For example,
+  let $\Gamma = \TypeRel{|y|}{|Bool| \to |Bool|}$
+  and $|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} ~|y|$.
+Applying \Rule{E-AppAbs} yields
+  $|t| \to |t|' = \subst{|x| \mapsto |y|} |x| = |y|$.
+Using \Rule{T-Var}, we can derive $\CtxTypeRel{\Gamma}{|t|'}{|Bool| \to |Bool|}$.
+However, it is obvious that |t| is not typed under $\Gamma$,
+  so $\CtxTypeRel{\Gamma}{|t|}{|Bool| \to |Bool|}$ does not hold.
+
+\Ex{9.4.1}
+|Bool|: \Rule{T-True} and \Rule{T-False} are the introduction rules,
+  and \Rule{T-If} is the elimination rule.
+
+|Nat|: \Rule{T-Zero} and \Rule{T-Succ} are the introduction rules,
+  and \Rule{T-Pred} and \Rule{T-IsZero} are the elimination rules.
+
+\section{An ML Implementation of Simple Types}
+Rust implementation is put at |src/bin/simplebool.rs|.
 
 \end{document}
