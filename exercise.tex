@@ -36,10 +36,16 @@
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\CParen}[1]{\texttt( #1 \texttt)}
 \newcommand{\Ctx}[2]{#1 \vdash #2}
+\newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
+\newcommand{\Ctxx}[3]{#2 \vdash^{#1} #3}
+\newcommand{\CtxxTyRel}[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
+\newcommand{\EqComment}[1]{[\text{\small #1}]}
+\newcommand{\EqDef}{\stackrel{\text{def}}{=}}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
 \newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
 \newcommand{\Iszero}{|iszero|~}
 \newcommand{\LambdaNB}{$\lambda$\textbf{NB}}
+\newcommand{\Let}[2]{\texttt{let} ~ #1 = #2 ~ \texttt{in} ~}
 \newcommand{\Lm}{\lambda}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
@@ -47,8 +53,7 @@
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Succ}{|succ|~}
-\newcommand{\TypeRel}[2]{#1 ~|:|~ #2}
-\newcommand{\CtxTypeRel}[3]{\Ctx{#1}{\TypeRel{#2}{#3}}}
+\newcommand{\TyRel}[2]{#1 ~|:|~ #2}
 
 \title{Excercise Solutions for \\ \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
@@ -983,13 +988,13 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
-  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
-  \AxiomC{} \RuleLabel{T-True} \UnaryInfC{$\CtxTypeRel{\Gamma}{|true|}{|Bool|}$}
-  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTyRel{\Gamma}{|false|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-True} \UnaryInfC{$\CtxTyRel{\Gamma}{|true|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTyRel{\Gamma}{|false|}{|Bool|}$}
   \RuleLabel{T-If}
-  \TrinaryInfC{$\CtxTypeRel{\Gamma}{|if false then true else false|}{|Bool|}$}
+  \TrinaryInfC{$\CtxTyRel{\Gamma}{|if false then true else false|}{|Bool|}$}
   \RuleLabel{T-App}
-  \BinaryInfC{$\CtxTypeRel{\Gamma}{|f (if false then true else false)|}{|Bool|}$}
+  \BinaryInfC{$\CtxTyRel{\Gamma}{|f (if false then true else false)|}{|Bool|}$}
   \DisplayProof
 \end{center}
 
@@ -999,21 +1004,21 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
   \AxiomC{$|x:Bool| \in \Gamma$}
-    \RuleLabel{T-Var} \UnaryInfC{$\CtxTypeRel{\Gamma}{|x|}{|Bool|}$}
-  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTypeRel{\Gamma}{|false|}{|Bool|}$}
+    \RuleLabel{T-Var} \UnaryInfC{$\CtxTyRel{\Gamma}{|x|}{|Bool|}$}
+  \AxiomC{} \RuleLabel{T-False} \UnaryInfC{$\CtxTyRel{\Gamma}{|false|}{|Bool|}$}
   \AxiomC{$|x:Bool| \in \Gamma$}
-    \RuleLabel{T-Var} \UnaryInfC{$\CtxTypeRel{\Gamma}{|x|}{|Bool|}$}
+    \RuleLabel{T-Var} \UnaryInfC{$\CtxTyRel{\Gamma}{|x|}{|Bool|}$}
   \RuleLabel{T-If}
   \TrinaryInfC{
-    $\CtxTypeRel{\Gamma}{|if x then false else x|}{|Bool|}$
+    $\CtxTyRel{\Gamma}{|if x then false else x|}{|Bool|}$
   }
   \RuleLabel{T-App}
   \BinaryInfC{
-    $\CtxTypeRel{\Gamma}{|f (if x then false else x)|}{|Bool| \to |Bool|}$
+    $\CtxTyRel{\Gamma}{|f (if x then false else x)|}{|Bool| \to |Bool|}$
   }
   \RuleLabel{T-Abs}
   \UnaryInfC{
-    $\CtxTypeRel{b}{\lmd{x:Bool} |f (if x then false else x)|}{|Bool| \to |Bool|}$
+    $\CtxTyRel{b}{\lmd{x:Bool} |f (if x then false else x)|}{|Bool| \to |Bool|}$
   }
   \DisplayProof
 \end{center}
@@ -1027,10 +1032,10 @@ Any such context is written as $|f:T|_1 \to |T|_2 \to |Bool|, |x:T|_1, |y:T|_2$
 \textbf{No}.
 \Proof:
 Assume, for contradiction, that there exists a context $\Gamma$ and a type |T|
-  such that $\CtxTypeRel{\Gamma}{|x x|}{|T|}$.
+  such that $\CtxTyRel{\Gamma}{|x x|}{|T|}$.
 By the inversion lemma,
   there is a type |S| that satisfies
-  $\CtxTypeRel{\Gamma}{|x|}{|S| \to |T|}$ and $\CtxTypeRel{\Gamma}{|x|}{|S|}$.
+  $\CtxTyRel{\Gamma}{|x|}{|S| \to |T|}$ and $\CtxTyRel{\Gamma}{|x|}{|S|}$.
 By the inversion lemma again,
   it holds that $|x:S| \to |T| \in \Gamma$ and $|x:S| \in \Gamma$.
 Since any environment can hold only one type binding for one variable,
@@ -1040,7 +1045,7 @@ This contradicts to the equality.
 \qed
 
 \Ex{9.3.9}
-We show it by induction on derivations of $\CtxTypeRel{\Gamma}{|t|}{|T|}$.
+We show it by induction on derivations of $\CtxTyRel{\Gamma}{|t|}{|T|}$.
 We prove each induction step by case analysis of the derivation rule
   used at the last derivation step.
 
@@ -1052,21 +1057,21 @@ In these cases, |t| is a value,
 \Case\Rule{T-If}:
 In this case, we can write $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$
   with subderivations of
-  $\CtxTypeRel{\Gamma}{|t|_1}{|Bool|}$,
-  $\CtxTypeRel{\Gamma}{|t|_2}{|T|}$, and
-  $\CtxTypeRel{\Gamma}{|t|_3}{|T|}$.
+  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
+  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
 We show this case by case analysis of the evaluation rule applied to $|t|$.
 \begin{itemize}
   \item \Case\Rule{E-IfTrue}:
     In this case, we have $|t|_1 = |true|$ and $|t| \to |t|_2$.
     By the uniqueness of evaluation, it holds $|t|' = |t|_2$.
-    We then immediately obtain $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+    We then immediately obtain $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
   \item \Case\Rule{E-IfFalse}: Similar as \Rule{E-IfTrue} case.
   \item \Case\Rule{E-If}:
     In this case, we have $|t|_1 \to |t|'_1$
       and $|t| \to \IfThenElse{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
-    By induction hypothesis, it holds $\CtxTypeRel{\Gamma}{|t|'_1}{|Bool|}$.
-    Therefore, we get $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+    By induction hypothesis, it holds $\CtxTyRel{\Gamma}{|t|'_1}{|Bool|}$.
+    Therefore, we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
 \end{itemize}
 
 \Case\Rule{T-Var}:
@@ -1078,17 +1083,17 @@ In this case,
 In this case,
   we can write $|t| = |t|_1 ~ |t|_2$
   with subderivations of
-  $\CtxTypeRel{\Gamma}{|t|_1}{|S| \to |T|}$ and
-  $\CtxTypeRel{\Gamma}{|t|_2}{|S|}$ for some type |S|.
+  $\CtxTyRel{\Gamma}{|t|_1}{|S| \to |T|}$ and
+  $\CtxTyRel{\Gamma}{|t|_2}{|S|}$ for some type |S|.
 There are three cases of the evaluation rule that derives $|t| \to |t|'$.
 \begin{itemize}
   \item \Case\Rule{E-App1}
     In this case, we have $|t|_1 \to |t|'_1$ and $|t| \to |t|'_1 ~ |t|_2$.
     By induction hypothesis,
-      it holds $\CtxTypeRel{\Gamma}{|t|'_1}{|S| \to |T|}$.
+      it holds $\CtxTyRel{\Gamma}{|t|'_1}{|S| \to |T|}$.
     By applying the typing rule \Rule{T-App} to
-      this typing relation and $\CtxTypeRel{\Gamma}{|t|_2}{|S|}$,
-      we get $\CtxTypeRel{\Gamma}{|t|'}{|T|}$.
+      this typing relation and $\CtxTyRel{\Gamma}{|t|_2}{|S|}$,
+      we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
   \item \Case\Rule{E-App2}
     We can prove for this case similarly as \Rule{E-App1} case.
   \item \Case\Rule{E-AppAbs}:
@@ -1097,13 +1102,13 @@ There are three cases of the evaluation rule that derives $|t| \to |t|'$.
       $|t|' = \subst{|x| \mapsto |v|_2} |t|_{12}$
     By the inversion lemma of typing relations,
       we have
-      $\CtxTypeRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}$
+      $\CtxTyRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}$
       and
-      $\CtxTypeRel{\Gamma}{|v|_2}{|S|}$.
+      $\CtxTyRel{\Gamma}{|v|_2}{|S|}$.
     The former relation is derived by \Rule{T-Abs},
-      with which we have $\CtxTypeRel{\Gamma, |x:S|}{|t|_{12}}{|T|}$.
+      with which we have $\CtxTyRel{\Gamma, |x:S|}{|t|_{12}}{|T|}$.
     By the substitution lemma,
-      we get $\CtxTypeRel{\Gamma}{\subst{|x| \mapsto |v|_2} |t|_{12}}{|T|}$,
+      we get $\CtxTyRel{\Gamma}{\subst{|x| \mapsto |v|_2} |t|_{12}}{|T|}$,
       which is what we wanted to prove.
 \end{itemize}
 \qed
@@ -1111,13 +1116,13 @@ There are three cases of the evaluation rule that derives $|t| \to |t|'$.
 \Ex{9.3.10}
 \textbf{No}.
 For example,
-  let $\Gamma = \TypeRel{|y|}{|Bool| \to |Bool|}$
+  let $\Gamma = \TyRel{|y|}{|Bool| \to |Bool|}$
   and $|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} ~|y|$.
 Applying \Rule{E-AppAbs} yields
   $|t| \to |t|' = \subst{|x| \mapsto |y|} |x| = |y|$.
-Using \Rule{T-Var}, we can derive $\CtxTypeRel{\Gamma}{|t|'}{|Bool| \to |Bool|}$.
+Using \Rule{T-Var}, we can derive $\CtxTyRel{\Gamma}{|t|'}{|Bool| \to |Bool|}$.
 However, it is obvious that |t| is not typed under $\Gamma$,
-  so $\CtxTypeRel{\Gamma}{|t|}{|Bool| \to |Bool|}$ does not hold.
+  so $\CtxTyRel{\Gamma}{|t|}{|Bool| \to |Bool|}$ does not hold.
 
 \Ex{9.4.1}
 |Bool|: \Rule{T-True} and \Rule{T-False} are the introduction rules,
@@ -1128,5 +1133,120 @@ However, it is obvious that |t| is not typed under $\Gamma$,
 
 \section{An ML Implementation of Simple Types}
 Rust implementation is put at |src/bin/simplebool.rs|.
+
+\section{Simple Extensions}
+
+\Ex{11.2.1}
+Define $|t|_1 = |unit|$ and
+\[
+  |t|_{n + 1} = \CParen{
+    \AbTy{|f|}{|Unit| \to |Unit|} ~|f (f unit)|
+  } ~ \CParen{
+    \AbTy{|x|}{|Unit|} |t|_n
+  }
+\]
+  for $n = 1, 2, \dots$.
+It is obvious that the size of $|t|_n$ grows linearly with $n$.
+Evaluation of $|t|_{n + 1}$ proceeds as follows.
+\begin{align*}
+  &&&\phantomrel\to |t|_{n + 1} \\
+  &\EqComment{\Rule{E-AppAbs}} &&\to
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~
+    \CParen{ \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~|unit|} \\
+  &\EqComment{\Rule{E-AppAbs}} &&\to
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~
+    |t|_n \\
+  &\EqComment{evaluate $|t|_n$} &&\to^*
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~ |unit| \\
+  &\EqComment{\Rule{E-AppAbs}} &&\to |t|_n \\
+  &\EqComment{evaluate $|t|_n$} &&\to^* |unit|.
+\end{align*}
+During the evaluation,
+  $|t|_n$ is evaluated twice,
+  so we can show by induction that the number of steps to evaluate $|t|_n$ is $O(2^n)$.
+\qed
+
+\Ex{11.3.2}
+Let $e : \lambda^E \to \lambda^I$ be the elaboration function.
+We show for typing and evaluation both by induction on structure of |t|.
+
+Typing rule:
+\begin{center}
+  \AxiomC{$\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$}
+  \UnaryInfC{$\CtxTyRel{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$}
+  \DisplayProof
+\end{center}
+If $\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$,
+  it is derived from $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$.
+By induction hypothesis,
+  it holds $\CtxxTyRel I{\Gamma}{e(|t|_2)}{|T|_2}$.
+Choose a variable name |x| from the outside of $\Gamma$.
+Then, weakining yields $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$,
+  from which we can derive
+  $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$.
+
+If $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$
+  where $|x| \notin \Gamma$ and $|x| \notin FV(|t|_2)$,
+  it is derived from $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$.
+By induction hypothesis,
+  it holds $\CtxxTyRel E{\Gamma, |x:T|_1}{|t|_2}{|T|_2}$.
+Since $|x|$ does not appear in $|t|_2$ as a free variable,
+  we can omit it from the context as $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$,
+  from which we can derive
+  $\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$.
+
+Evaluation rule:
+\begin{center}
+  \AxiomC{$\CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2 \to |t|_{12}$}
+  \DisplayProof
+\end{center}
+If $|t| \to_E |t|'$,
+  we should only care about the case when |t| is written as
+  $|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2$,
+  or otherwise $e(|t|) \to_I e(|t|')$ follows immediately from
+  the induction hypothesis.
+However, even this case is obvious as we have $|t|' = |t|_{12}$
+  and, by choosing $|x| \notin FV(|t|_{12})$,
+  we can derive
+  $
+    e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} ~ |v|_2
+           \to_I e(|t|_{12})
+           = e(|t|')
+  $.
+
+If $e(|t|) \to_I e(|t|')$,
+  we again should only care about the case when $|t|$ is written as
+  $|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2$.
+In this case,
+  we have $e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} ~ |v|_2$
+  where the name |x| is chosen arbitrarily from the outside of $FV(|t|_{12})$.
+It is then derived that $e(|t|') = e(|t|_{12})$, while we have $|t| \to |t|_{12}$.
+Note that this is what we can show; see the errata of the text.
+
+\Ex{11.4.1}
+\begin{itemize}
+  \item[(1)]
+    We can define a derived form as
+      $|t as T| \EqDef \CParen{\AbTy{|x|}{|T|} |x|} ~ |t|$.
+    The evaluation and typing rules are derived directly from those of the
+      inner language.
+  \item[(2)]
+    To delay the evalution of |t|, we define a derived form as follows.
+    \[
+      |t as T| \EqDef
+        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} ~
+        \CParen{\AbTy{|_|}{|Unit|} |t|}.
+    \]
+    The right hand side is evaluated as follows.
+    \begin{align*}
+      &&&\phantomrel\to
+        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} ~
+          \CParen{\AbTy{|_|}{|Unit|} |t|} \\
+      &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|_|}{|Unit|} |t|} ~ |unit| \\
+      &\EqComment{\Rule{E-AppAbs}} &&\to |t|.
+    \end{align*}
+    Note that it requires two steps to evaluate the desugared form.
+    Equivalence of typing is straightforward.
+\end{itemize}
 
 \end{document}
