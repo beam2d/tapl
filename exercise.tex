@@ -14,6 +14,7 @@
     xleftmargin=1em,
   }
 }{}
+\theoremstyle{definition}
 
 % Use |x| as a short verb also available in math mode.
 \catcode`|=\active
@@ -35,7 +36,7 @@
 \newcommand{\AbTy}[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\CParen}[1]{\texttt( #1 \texttt)}
-\newcommand{\Ctx}[2]{#1 \vdash #2}
+\newcommand{\Ctx}[2]{#1 \Ts #2}
 \newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
 \newcommand{\Ctxx}[3]{#2 \vdash^{#1} #3}
 \newcommand{\CtxxTyRel}[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
@@ -43,16 +44,21 @@
 \newcommand{\EqDef}{\stackrel{\text{def}}{=}}
 \newcommand{\Ex}[1]{\subsection*{Exercise #1}}
 \newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
+\newcommand{\Indices}[1]{{}^{#1}}
 \newcommand{\Iszero}{|iszero|~}
 \newcommand{\LambdaNB}{$\lambda$\textbf{NB}}
+\newcommand{\Lemma}[1]{\textsc{Lemma #1.}}
 \newcommand{\Let}[2]{\texttt{let} ~ #1 = #2 ~ \texttt{in} ~}
 \newcommand{\Lm}{\lambda}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
 \newcommand{\Proof}{\textsc{Proof}}
+\newcommand{\Rec}[1]{\texttt\{ #1 \texttt\}}
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Succ}{|succ|~}
+\newcommand{\To}{\Rightarrow}
+\newcommand{\Ts}{\vdash}
 \newcommand{\TyRel}[2]{#1 ~|:|~ #2}
 
 \title{Excercise Solutions for \\ \emph{Types and Programming Languages}}
@@ -1254,5 +1260,209 @@ See |src/bin/lexexercise.rs| for
   a Rust implementation of simply typed \break lambda-calculus with |unit| and |let|.
 It includes an implementation of small-step evaluation and typing of
   let expressions.
+
+\Ex{11.5.2}
+I do not think this approach is a good idea because it breaks the evaluation order.
+For example, it may cause the size of the desugared code to bloat up.
+Consider the following code.
+\begin{Code}
+  let x = (
+    let y = (
+      let z = false
+        in if true then z else z
+    ) in if true then y else y
+  ) in if true then x else x;
+\end{Code}
+Using the original derived form, this term is desugared into the following code:
+\begin{Code}
+  ($\Lm$x:Bool$\to$Bool. if true then x else x) (
+    ($\Lm$y:Bool$\to$Bool. if true then y else y) (
+      ($\Lm$z:Bool$\to$Bool. if true then z else z) false
+    )
+  )
+\end{Code}
+Evaluation proceeds by interleaved usages of \Rule{E-AbsApp} and \Rule{E-IfTrue},
+  and any intermediate results are smaller than the original code.
+
+If we use the derived form using substitution, it would be as follows:
+\begin{Code}
+  if true then (
+    if true then (
+      if true then false else false
+    ) else (
+      if true then false else false
+    )
+  ) else (
+    if true then (
+      if true then false else false
+    ) else (
+      if true then false else false
+    )
+  )
+\end{Code}
+It is obvious that the size of the code bloat up exponentially with the depth
+  of the nested |let| expressions.
+If we repeat this structure more times (say, of depth $n$),
+  the size of the desugared code would grow exponentially, i.e., $O(2^n)$.
+
+\Ex{11.8.1}
+\[
+  \Rec{
+    |l|_i |=| |v|_i \Indices{i \in 1 .. j - 1} |,| ~
+    |l|_j |=| |v|_j |,| ~
+    |l|_k |=| |v|_k \Indices{k \in j + 1 .. n}
+  } |.l|_j
+  \to |v|_j
+\]
+
+\Ex{11.8.2}
+1. We introduce \emph{pattern typing relations}
+  with the following syntactic rule.
+\begin{Code}
+  pt $::=$ p : T $\To$ $\Gamma$
+\end{Code}
+Pattern typing relations are derived by the following derivation rules.
+\begin{center}
+  \AxiomC{}
+  \RuleLabel{PT-Var}
+  \UnaryInfC{$|x:T| \To |x:T|$}
+  \DisplayProof \proofsep
+  \AxiomC{for each $i$ ~ $|p|_i |:| |T|_i \to \Gamma_i$}
+  \RuleLabel{PT-Rcd}
+  \UnaryInfC{$
+    \Rec{|l|_i |=| |p|_i \Indices{i \in 1..n}}
+    |:|
+    \Rec{|l|_i |:| |T|_i \Indices{i \in 1..n}}
+    \To
+    \Gamma_1 |,| \dots |,| \Gamma_n
+  $}
+  \DisplayProof
+\end{center}
+Using pattern typing, we add the following typing rule.
+\begin{center}
+  \AxiomC{$\CtxTyRel{\Gamma_1}{|t|_1}{|T|_1}$}
+  \AxiomC{$|p:T|_1 \To \Gamma_2$}
+  \AxiomC{$\CtxTyRel{\Gamma_1, \Gamma_2}{|t|_2}{|T|_2}$}
+  \RuleLabel{T-Let}
+  \TrinaryInfC{$\CtxTyRel{\Gamma_1}{|let| ~ |p=t|_1 ~ |in| ~ |t|_2}{|T|_2}$}
+  \DisplayProof
+\end{center}
+
+2. Type preservation for \Rule{E-Let} is straight-forward.
+To show it for \Rule{E-LetV},
+  we need the following lemma, which is a generalization of \textsc{Lemma 9.3.8}.
+
+\Lemma{11.8.2.1}
+If $\CtxTyRel{\Gamma}{|v|}{|S|}$,
+  $|p:S| \To \Gamma'$,
+  and $\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}$,
+  then \break $\CtxTyRel{\Gamma}{\subst{match(|p|, |v|)}|t|}{|T|}$. \qed
+
+The lemma is shown by induciton on derivation of $|p:S| \To \Gamma'$.
+
+Type progress is shown by induction on derivation of the type of the term.
+Suppose we have a typing relation
+  $\CtxTyRel{\Gamma}{|let p=t|_1 ~ |in t|_2}{|T|_2}$.
+Since it should be derived by \Rule{T-Let},
+  we have $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$ for some type $|T|_1$.
+If $|t|_1$ is not a value,
+  then $|t|_1$ is evaluated to another term $|t|'_1$ by the induction hypothesis.
+Otherwise, the |let| expression is evaluated by \Rule{E-LetV}. \qed
+
+\Ex{11.9.1}
+The boolean syntaxes can be defined as derived forms as follows.
+\begin{alignat*}{2}
+  & |Bool| &&\EqDef |Unit| + |Unit| \\
+  & |true| &&\EqDef |inl unit| \\
+  & |false| &&\EqDef |inr unit| \\
+  & |if t|_1 |\ then t|_2 |\ else t|_3
+    &&\EqDef |case t|_1 |\ of inl x|_2 \To |t|_2 |\ \| inr x|_3 \To |t|_3
+\end{alignat*}
+  where, in the last line, $|x|_2$ and $|x|_3$ are fresh.
+
+\Ex{11.11.1}
+\begin{Code}
+  equal = fix ($\Lm$eq:Nat$\to$Nat$\to$Bool. $\Lm$m:Nat. $\Lm$n:Nat.
+                   if iszero m then iszero n
+                   else if iszero n then false
+                   else eq (pred m) (pred n));
+  plus = fix ($\Lm$p:Nat$\to$Nat$\to$Nat. $\Lm$m:Nat. $\Lm$n:Nat.
+                  if iszero n then m
+                  else succ (p m (pred n));
+  times = fix ($\Lm$t:Nat$\to$Nat$\to$Nat. $\Lm$m:Nat. $\Lm$n:Nat.
+                   if iszero n then 0
+                   else plus m (t m (pred n)));
+  factorial = fix ($\Lm$f:Nat$\to$Nat. $\Lm$n:Nat.
+                       if iszero n then 1
+                       else times n (f (pred n)));
+\end{Code}
+
+\Ex{11.11.2}
+\begin{Code}
+  plus = letrec p : Nat$\to$Nat$\to$Nat =
+           $\Lm$m:Nat. $\Lm$n:Nat.
+             if iszero n then m else succ(p m (pred n))
+         in p;
+  times = letrec t : Nat$\to$Nat$\to$Nat =
+            $\Lm$m:Nat. $\Lm$n:Nat.
+              if iszero n then 0 else plus m (t m (pred n))
+          in t;
+  factorial = letrec f : Nat$\to$Nat =
+                $\Lm$n:Nat.
+                  if iszero n then 1 else times n (f (pred n))
+              in f;
+\end{Code}
+
+\Ex{11.12.1}
+\textsc{Preservation}:
+We show it by induction on derivation of $|t| \to |t|'$.
+We perform case analysis on the last rule used for the derivation.
+We omit the cases not involving lists as they are proved in the same way as before.
+
+\Case\Rule{E-Cons1}, \Rule{E-Isnil}, \Rule{E-Head}, \Rule{E-Tail}:
+These rules only evaluate a subterm of |t|,
+  whose type is preserved by the induction hypothesis.
+
+\Case\Rule{E-IsnilNil}:
+In this case,
+  we can write $|t| = |isnil[S] (nil[T])|$.
+Using \Rule{T-Nil} and \Rule{T-Isnil},
+  we derive |t:Bool|,
+  while $|t|' = |true|$, whose type is |Bool|.
+
+\Case\Rule{E-IsnilCons}:
+Let $|t| = |isnil[S|_1 |] (cons[S|_2 |] v|_1 |\ v|_2 |)|$
+  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
+By the inversion lemma for \Rule{T-Isnil}
+  (we omit the precise statement and proof here;
+   same for that for other typing rules),
+  we obtain $|T| = |Bool|$, while we have $|t|' = |false|$, which has type |Bool|.
+
+\Case\Rule{E-HeadCons}:
+Let $|t| = |head[S|_1 |] (cons[S|_2 |] v|_1 |\ v|_2 |)|$
+  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
+Using the inversion lemma for \Rule{T-Head},
+  we obtain $\CtxTyRel{\Gamma}{|cons[S|_2 |] v|_1 |\ v|_2}{|List S|_1}$
+  and $|T| = |S|_1$.
+By applying the inversion lemma for \Rule{T-Cons},
+  we further obtain $\CtxTyRel{\Gamma}{|v|_1}{|S|_1}$.
+Since $|t| \to |v|_1$, the type is preserved.
+
+\Case\Rule{E-TailCons}:
+Proof is almost identical to the case of \Rule{E-HeadCons},
+  except that the use of \Rule{T-Head} is replaced with \Rule{T-Tail}. \qed
+
+\textsc{Progress}:
+The progress property does not hold.
+For example,
+  for any type |T|,
+  non-value, well-typed terms |head[T] nil[T]| and |tail[T] nil[T]| are normal forms,
+  i.e., stuck states.
+
+\Ex{11.12.2}
+The annotation in |nil[T]| is required to make the type unique
+  in the same sense as the |as T| ascription for sum and variant types.
+All the other annotations can be safely removed,
+  as the types are obtained by premises of the type derivaiton rules.
 
 \end{document}
