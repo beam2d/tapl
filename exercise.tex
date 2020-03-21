@@ -1465,4 +1465,62 @@ The annotation in |nil[T]| is required to make the type unique
 All the other annotations can be safely removed,
   as the types are obtained by premises of the type derivaiton rules.
 
+\section{Normalization}
+
+\Ex{12.1.1}
+For example, given a value |a| of type |A|,
+  applying a function $\Lm|f:A|\to|A. f (f a)|$ to a very long abstraction term
+  of type $|A|\to|A|$ duplicates the abstraction term,
+  which leads to a term of size larger than the original.
+
+\Ex{12.1.7}
+We extend \textsc{Definition 12.1.2} by adding the following items.
+\begin{itemize}
+  \item $R_{|Bool|}(|t|)$ iff |t| halts.
+  \item $R_{|T|_1 \times |T|_2}(|t|)$
+          iff |t| halts, $R_{|T|_1}(|t.1|)$, and $R_{|T|_2}(|t.2|)$.
+\end{itemize}
+We then extend \textsc{Lemma 12.1.5} with booleans and products.
+Abbreviate $\Gamma = |x|_1 |,| \dots |,| |x|_n$ and
+  $\sigma = \subst{|x|_1 \mapsto |v|_1} \dots \subst{|x|_n \mapsto |v|_n}$
+  throughout the proof.
+
+\Case\Rule{T-True}, \Rule{T-False}: Immediate.
+
+\Case\Rule{T-If}:
+In this case, we have
+  $|t| = |if t|_1 |\ then t|_2 |\ else t|_3$,
+  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
+  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
+By the induction hypothesis, $R_{|Bool|}(\sigma |t|_1)$.
+By \textsc{Lemma 12.1.3}, we have $\sigma |t|_1 \to^* |v|'_1$ for some $|v|'_1$.
+If $|v|'_1 = |true|$, $\sigma |t| \to^* \sigma |t|_2$.
+By the induction hypothesis, $R_{|T|}(\sigma |t|_2)$, and thus $R_{|T|}(\sigma |t|)$.
+The case of $|v|'_1 = |false|$ is similar.
+
+\Case\Rule{T-Pair}:
+In this case, we have
+  $|t| = \Rec{|t|_1 |,t|_2}$,
+  $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$, and
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$.
+By the induction hypothesis,
+  $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$.
+Therefore,
+  we have $\sigma |t|_1 \to^* |v|'_1$ and $\sigma |t|_2 \to^* |v|'_2$
+  for some $|v|'_1$ and $|v|'_2$.
+With \Rule{E-Pair1} and \Rule{E-Pair2},
+  it follows that $\sigma |t| \to^* \Rec{|v|'_1 |,v|'_2}$.
+By combining it with $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$,
+  we obtain $R_{|T|_1 \times |T|_2}(\sigma |t|)$.
+
+\Case\Rule{T-Proj1}:
+In this case, we have
+  $|t| = |t|_1 |.1|$ and $\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \times |T|_{12}}$.
+By the induction hypothesis,
+  $R_{|T|_{11} \times |T|_{12}}(\sigma |t|_1)$ holds,
+  which implies $R_{|T|_{11}}(\sigma |t|_1 |.1|)$.
+
+\Case\Rule{T-Proj2}: Similar to \Case\Rule{T-Proj1}. \qed
+
 \end{document}
