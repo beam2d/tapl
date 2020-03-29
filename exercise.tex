@@ -21,7 +21,6 @@
 \def|#1|{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
 
 \newcommand{\card}[1]{\vert#1\vert}
-\newcommand{\Case}{\textit{Case} }
 \newcommand{\code}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily]{#1}}}
 \newcommand{\lmd}[1]{\lambda \texttt{#1.}}
 \newcommand{\Lmd}[2]{\lambda \texttt{#1}#2\texttt{.}}
@@ -35,6 +34,7 @@
 \newcommand{\Ab}[1]{\lambda #1 \texttt{.}}
 \newcommand{\AbTy}[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
 \newcommand{\Bigstep}{\Downarrow}
+\newcommand{\Case}{\textit{Case} }
 \newcommand{\CParen}[1]{\texttt( #1 \texttt)}
 \newcommand{\Ctx}[2]{#1 \Ts #2}
 \newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
@@ -58,11 +58,13 @@
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Store}[2]{#1 \mid #2}
-\newcommand{\Succ}{|succ|~}
+\newcommand{\Sb}{\mathop{\texttt<\hspace{-0.3ex}\raise0.15ex\hbox{\texttt:}}}
+\newcommand{\Sub}[2]{#1 \Sb #2}
+\newcommand{\Succ}{\texttt{succ}~}
 \newcommand{\Theorem}{\textsc{Theorem}}
 \newcommand{\To}{\Rightarrow}
 \newcommand{\Ts}{\vdash}
-\newcommand{\TyRel}[2]{#1 ~|:|~ #2}
+\newcommand{\TyRel}[2]{#1 ~\texttt:~ #2}
 
 \title{Excercise Solutions for \break Types and Programming Languages}
 \author{Seiya Tokui}
@@ -70,10 +72,16 @@
 \begin{document}
 \maketitle
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 1.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
 nothing.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 2.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Mathematical Preliminaries}
 
 \Ex{2.2.4}
@@ -119,6 +127,9 @@ By induction hypothesis,
 Therefore, $P$ is preserved by $R_{i + 1}$, concluding the induction.
 It then holds that $P$ is preserved by $R^* = \bigcup_i R_i$. \qed
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 3.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Untyped Arithmetic Expressions}
 
 \Ex{3.2.4}
@@ -382,6 +393,9 @@ The evaluation rules involving $\code{if}$ expression is modified as follows.
               \IfThenElse{|t|_1}{|v|}{|t|'_2}$} \DisplayProof
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 4.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{An ML Implementation of Arithmetic Expressions}
 
 Rust implementation is put at \code{src/bin/arith.rs}.
@@ -393,6 +407,9 @@ Omitted since I cannot talk about a good programming style in ML.
 Omitted.
 It can be implemented by fully evaluating arguments of each expression recursively.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 5.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Untyped Lambda-Calculus}
 
 \Ex{5.2.1}
@@ -660,6 +677,9 @@ Augment the evaluation relation with the following rules.
   \DisplayProof
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 6.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Nameless Representation of Terms}
 
 \Ex{6.1.1}
@@ -916,9 +936,15 @@ Therefore, the negative shift does not cause any ill-formed terms.
 \Ex{6.3.2}
 \textsc{Todo}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 7.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{An ML Implementation of the Lambda Calculus}
 Rust implementation of |untyped| is put at |src/bin/untyped.rs|.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 8.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Typed Arithmetic Expressions}
 
 \Ex{8.2.3}
@@ -980,6 +1006,9 @@ The preservation property also holds because |wrong| has no type
   which indicates that such a term is not evaluated to |wrong| with the augmented
   ones.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 9.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simply Typed Lambda-Calculus}
 
 \Ex{9.2.1}
@@ -1140,9 +1169,15 @@ However, it is obvious that |t| is not typed under $\Gamma$,
 |Nat|: \Rule{T-Zero} and \Rule{T-Succ} are the introduction rules,
   and \Rule{T-Pred} and \Rule{T-IsZero} are the elimination rules.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 10.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{An ML Implementation of Simple Types}
 Rust implementation is put at |src/bin/simplebool.rs|.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 11.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simple Extensions}
 
 \Ex{11.2.1}
@@ -1468,6 +1503,9 @@ The annotation in |nil[T]| is required to make the type unique
 All the other annotations can be safely removed,
   as the types are obtained by premises of the type derivaiton rules.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 12.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Normalization}
 
 \Ex{12.1.1}
@@ -1526,6 +1564,9 @@ By the induction hypothesis,
 
 \Case\Rule{T-Proj2}: Similar to \Case\Rule{T-Proj1}. \qed
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 13.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{References}
 
 We use the dereference operator |!| without parentheses for readability.
@@ -1639,5 +1680,175 @@ The following is a well-typed factorial function.
         !r
       );
 \end{Code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 14.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exceptions}
+
+\Ex{14.1.1}
+This approach does not work since the type of |error| does not preserve
+  through evaluation steps.
+For example, in a term |error unit|,
+  |error| is assigned a type $|Unit| \to |T|$ for some type |T|,
+  while the term after one-step evaluation, |error|, is of type |T|.
+Simply letting the programmer to annotate the type for |error| terms and use them
+  thgouhout the evaluation steps breaks type preservation.
+We may just erase the type annotation on evaluation
+  as we have done for type ascription,
+  in which case we anyway need \Rule{T-Error}
+  to correctly type terms after any evaluation involving |error|,
+  and the difficulty remains unsolved.
+
+\Ex{14.3.1, 14.3.2, 14.3.3} \textsc{Todo}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 14.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Subtyping}
+
+\Ex{15.2.1}
+\begin{center}
+  \AxiomC{}
+  \RuleLabel{S-RcdPerm}
+  \UnaryInfC{$\phantomrel\Sb |\{x:Nat,y:Nat,z:Nat\}|$}
+  \noLine\UnaryInfC{$\Sb |\{y:Nat,x:Nat,z:Nat\}|$}
+  \AxiomC{}
+  \RuleLabel{S-RcdWidth}
+  \UnaryInfC{|\{y:Nat,x:Nat,z:Nat\}|}
+  \noLine\UnaryInfC{$\Sb |\{y:Nat\}|$}
+  \RuleLabel{S-Trans}
+  \BinaryInfC{$\Sub{|\{x:Nat,y:Nat,z:Nat\}|}{|\{y:Nat\}|}$}
+  \DisplayProof
+\end{center}
+
+\Ex{15.2.2}
+There is another derivation that uses subtyping of |f| instead of |xy| as follows.
+\begin{center}
+  \AxiomC{$\vdots$}
+  \UnaryInfC{$\CtxTyRel{}{|f|}{|Rx| \to |Nat|}$}
+  \AxiomC{}
+  \RuleLabel{S-RcdWidth}
+  \UnaryInfC{$\Sub{|Rxy|}{|Rx|}$}
+  \AxiomC{}
+  \RuleLabel{S-Refl}
+  \UnaryInfC{$\Sub{|Nat|}{|Nat|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$\Sub{|Rx| \to |Nat|}{|Rxy| \to |Nat|}$}
+  \RuleLabel{T-Sub}
+  \BinaryInfC{$\CtxTyRel{}{|f|}{|Rxy| \to |Nat|}$}
+  \AxiomC{$\vdots$}
+  \UnaryInfC{$\CtxTyRel{}{|xy|}{|Rxy|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTyRel{}{|f xy|}{|Nat|}$}
+  \DisplayProof
+\end{center}
+
+\Ex{15.2.3}
+\begin{itemize}
+  \item[(1)] There are six supertypes:
+      |\{a:Top,b:Top\}|,
+      |\{b:Top,a:Top\}|,
+      |\{a:Top\}|,
+      |\{b:Top\}|,
+      |\{\}|, and
+      |Top|.
+  \item[(2)]
+    Let $|S|_0 = |\{\}|$ and $|S|_{i + 1} = |\{x:S|_i|\}|$ for $i\in\N$.
+    We have $\Sub{|S|_1 = |\{x:\{\}\}|}{|\{\}| = |S|_0}$.
+    For each $i > 0$, if $\Sub{|S|_i}{|S|_{i - 1}}$,
+      then $\Sub{|S|_{i + 1} = |\{x:S|_i|\}|}{|\{x:S|_{i - 1}|\}| = |S|_i}$.
+    Therefore, $(|S|_i)_i$ is an infinite sequence of descending types.
+  \item[(3)]
+    Using $|S|_i$ defined above, let $|T|_i = |S|_i \to |Top|$.
+    Then, $(|T|_i)_i$ is an infinite sequence of ascending types.
+\end{itemize}
+
+\Ex{15.2.4}
+There is no such type.
+\Proof:
+Any type is either a function type, a record type, or |Top|.
+Any function type is not a subtype of record types, and vice versa.
+And |Top| is not a subtype of any other types.
+
+It implies that no arrow type is a supertype of every other arrow type.
+If there were such a type,
+  its domain type would have a type that is a subtype of
+  the domain type of any other arrow types,
+  which does not exist as shown above.
+
+\Ex{15.2.5}
+It is not a good idea since, e.g., it breaks the progress property as follows.
+Let $|t| = |\{| \Lm|x:\{\}.x, \{\}\}|$.
+We have $\CtxTyRel{}{|t|}{|(\{\}| \to |\{\})| \times |\{\}|}$.
+With the rule \Rule{S-ProdWidth},
+  we can derive $\CtxTyRel{}{|t|}{|\{\}| \to |\{\}|}$.
+Therefore, a term |t \{\}| is well-typed, which is obviously a stuck state.
+
+\Ex{15.3.1}
+The progress property may break with an additional subtyping rule,
+  as we saw in Excercise 15.2.5.
+The preservation property may break as well;
+  consider adding the following subtyping rule.
+\[ \Sub{|T|_1 \to |T|_2}{|T|_1} \]
+Let $|f| = \AbTy{|x|}{|Top| \to |Unit|} |0|$.
+With the above rule, we can derive $\CtxTyRel{}{|f|}{|Top| \to |Unit|}$.
+Therefore, we have
+  $\CtxTyRel{}{|f (| \AbTy{|x|}{|Top|} |unit)|}{|Unit|}$.
+However,
+  this term is evaluated as $|f (| \AbTy{|x|}{|Top|} |unit)| \to |0|$,
+  which cannot have type |Unit|.
+
+Removing any subtyping rule does not break the progress nor preservation property.
+
+\Ex{15.3.2}
+\Proof: By induction on derivation of subtyping.
+\begin{enumerate}
+  \item We perform case analysis of the last rule used
+    for deriving $\Sub{|S|}{|T|_1 \to |T|_2}$
+
+    \Case\Rule{S-Refl}:
+      We have $|S| = |T|_1 \to |T|_2$.
+      By \Rule{S-Refl}, $\Sub{|T|_1}{|T|_1}$ and $\Sub{|T|_2}{|T|_2}$.
+    
+    \Case\Rule{S-Trans}:
+      We have $\Sub{|S|}{|U|}$ and $\Sub{|U|}{|T|_1 \to |T|_2}$ for some type |U|.
+      By the induction hypothesis,
+        |U| has the form $|U|_1 \to |U|_2$ with
+        $\Sub{|T|_1}{|U|_1}$ and $\Sub{|U|_2}{|T|_2}$.
+      By the induction hypothesis again,
+        |S| has the form $|S|_1 \to |S|_2$ with
+        $\Sub{|U|_1}{|S|_1}$ and $\Sub{|S|_2}{|U|_2}$.
+      Using \Rule{S-Trans},
+        we derive $\Sub{|T|_1}{|S|_1}$ and $\Sub{|S|_2}{|T|_2}$.
+
+    \Case\Rule{S-Arrow}: Immediate.
+
+    \Case\Rule{S-Top},
+         \Rule{S-RcdWidth},
+         \Rule{S-RcdDepth},
+         \Rule{S-RcdPerm}: Impossible.
+
+  \item We can show similarly as 1. by case analysis of the last rule used
+    for deriving the subtyping relation.
+
+    \Case\Rule{S-RcdWidth}: Immediate by combining with \Rule{S-Refl}.
+
+    \Case\Rule{S-RcdDepth}: Immediate.
+
+    \Case\Rule{S-RcdPerm}:
+      Let $\sigma$ be the permutation that satisfies $|l|_i = |k|_{\sigma(i)}$
+        and $|T|_i = |S|_{\sigma(i)}$.
+      It is obvious that
+      $
+        \{|l|_i \Indices{i\in1..n} \}
+        = \{|k|_{\sigma(i)} \Indices{i\in1..n}\}
+        = \{|k|_j \Indices{j\in1..n}\}
+      $, and $\Sub{|S|_{\sigma(i)} = |T|_i}{|T|_i}$ for each $i$.
+
+    \Case\Rule{S-Arrow}, \Rule{S-Top}: Impossible.
+
+    \Case\Rule{S-Refl}, \Rule{S-Trans}: Similar to 1. \qed
+\end{enumerate}
 
 \end{document}
