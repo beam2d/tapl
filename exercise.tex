@@ -38,6 +38,7 @@
 \newcommand{\CParen}[1]{\texttt( #1 \texttt)}
 \newcommand{\Ctx}[2]{#1 \Ts #2}
 \newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
+\newcommand{\CtxSto}[3]{\Ctx{\Store{#1}{#2}}{#3}}
 \newcommand{\Ctxx}[3]{#2 \vdash^{#1} #3}
 \newcommand{\CtxxTyRel}[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
 \newcommand{\EqComment}[1]{[\text{\small #1}]}
@@ -56,12 +57,14 @@
 \newcommand{\Rec}[1]{\texttt\{ #1 \texttt\}}
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
+\newcommand{\Store}[2]{#1 \mid #2}
 \newcommand{\Succ}{|succ|~}
+\newcommand{\Theorem}{\textsc{Theorem}}
 \newcommand{\To}{\Rightarrow}
 \newcommand{\Ts}{\vdash}
 \newcommand{\TyRel}[2]{#1 ~|:|~ #2}
 
-\title{Excercise Solutions for \\ \emph{Types and Programming Languages}}
+\title{Excercise Solutions for \break Types and Programming Languages}
 \author{Seiya Tokui}
 
 \begin{document}
@@ -826,7 +829,7 @@ By induction hypothesis,
 Omitted.
 
 \Ex{6.2.8}
-\textsc{Theorem}:
+\Theorem:
 Let $\Gamma$ be any naming context.
 We overload the notation $removenames_\Gamma(|x|)$ for a variable |x| to
   denote the index of |x| in $\Gamma$ counting from the right.
@@ -1522,5 +1525,119 @@ By the induction hypothesis,
   which implies $R_{|T|_{11}}(\sigma |t|_1 |.1|)$.
 
 \Case\Rule{T-Proj2}: Similar to \Case\Rule{T-Proj1}. \qed
+
+\section{References}
+
+We use the dereference operator |!| without parentheses for readability.
+The precedence of |!| is higher than function applications,
+  i.e., |!x y| is equivalent to |(!x) y|.
+
+\Ex{13.1.1}
+Omitted to avoid drawing...
+|a| is a pair of references pointing to distinct |0|s,
+  while |b| is a pair of references pointing to the same |0|.
+
+\Ex{13.1.2}
+No.
+With this definition,
+  looking up the updated |a| with a key not matching to |m| used in the udpate
+  will examine the function referenced by the same |a| instead of the old one,
+  resulting in divergence.
+
+\Ex{13.1.3}
+Define an operator |free r| that takes a reference and frees its storage,
+  which will be reused in the use of |ref| operator in the next time.
+Then, the following well-typed program
+\begin{Code}
+  let r = ref 0 in
+  let s = r in
+  free r;
+  let t = ref false in
+  succ !s
+\end{Code}
+  will be evaluated to a stuck state |succ false|.
+
+\Ex{13.3.1}
+Garbage collection requires to track the set of locations
+  reachable from the outermost term.
+To model it,
+  we introduce a function $reachable(|t|, \mu)$ that
+  maps a term and a store to the set of locations reachable from them,
+  and a \emph{gc step} $\to_{\text{gc}}$ that models the action of garbage collection.
+
+First, define $locations(|t|)$ recursively as follows.
+\begin{alignat*}{2}
+  & locations(|x|) &&= \emptyset, \\
+  & locations(\AbTy{|x|}{|T|} |t|) &&= locations(|t|), \\
+  & locations(|t|_1 ~ |t|_2) &&= locations(|t|_1) \cup locations(|t|_2), \\
+  & locations(|unit|) &&= \emptyset, \\
+  & locations(|ref t|) &&= \emptyset, \\
+  & locations(|!t|) &&= locations(|t|), \\
+  & locations(|t|_1 |:=| |t|_2) &&= locations(|t|_1) \cup locations(|t|_2), \\
+  & locations(l) &&= \{ l \}.
+\end{alignat*}
+This function simply collects all the occurences of locations in a term.
+Using this function,
+  we define $reachable(|t|, \mu)$ as the smallest subset $L$ of
+  the domain of $\mu$ that satisfies the following conditions.
+
+\begin{itemize}
+  \item $locations(|t|) \subseteq L$.
+  \item If $l \in L$, then $locations(\mu(l)) \subseteq L$.
+\end{itemize}
+
+Using this function, we define a gc step as follows.
+\[
+  \Store{|t|}{\mu} \longrightarrow_{\text{gc}} \Store{|t|}{(l \mapsto \mu(l) \mid l \in reachable(|t|, \mu))}
+\]
+Then, we form an evaluation of a term by interleaving evaluation and gc steps.
+
+To show the correctness of this refinement,
+  we need to confirm that the gc steps do not affect the result of evaluations.
+
+\Theorem:
+If $\Store{|t|}{\mu} \to^* \Store{|t|'}{\mu'}$,
+  the evaluation is reproduced with an additional gc step,
+  i.e.,
+  $\Store{|t|}{\mu} \to_{\text{gc}} \Store{|t|}{\tilde\mu} \to^* \Store{|t|'}{\tilde\mu'}$.
+  \qed
+
+Given this theorem,
+  we can insert a gc step to an arbitrary position of a sequence of evaluation steps
+  without affecting the evaluation result.
+
+\Ex{13.4.1}
+\begin{Code}
+  let r1 = ref $\Lm$n:Nat. n in
+  let r2 = ref $\Lm$n:Nat. !r1 n in
+  r1 := $\Lm$n:Nat. !r2 n;
+  !r1 0
+\end{Code}
+
+\Ex{13.5.2}
+Let
+  $\Gamma = \emptyset$,
+  $\mu = l \mapsto \AbTy{|x|}{|Unit|} |(| |!|l |)| ~ |x|$,
+  $\Sigma_1 = (l \mapsto |Unit| \to |Unit|)$, and
+  $\Sigma_2 = (l \mapsto |Unit| \to |Unit| \to |Unit|)$.
+Then,
+  both $\CtxSto{\Gamma}{\Sigma_1}{\mu}$ and $\CtxSto{\Gamma}{\Sigma_2}{\mu}$
+  hold.
+
+\Ex{13.5.8}
+Not normalizing on well-typed terms in general.
+The code in Exercise 13.4.1 is an example of well-typed terms that do not normalize.
+
+The following is a well-typed factorial function.
+\begin{Code}
+  factorial =
+      let r = ref $\Lm$n:Nat. 0 in
+      (
+        r := $\Lm$n:Nat. if iszero n
+                     then 1
+                     else times n (!r (pred n));
+        !r
+      );
+\end{Code}
 
 \end{document}
