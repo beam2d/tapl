@@ -16,9 +16,10 @@
 }{}
 \theoremstyle{definition}
 
+\newcommand{\Cd}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
 % Use |x| as a short verb also available in math mode.
 \catcode`|=\active
-\def|#1|{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
+\def|#1|{\Cd{#1}}
 
 \newcommand{\card}[1]{\vert#1\vert}
 \newcommand{\code}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily]{#1}}}
@@ -35,7 +36,7 @@
 \newcommand{\AbTy}[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
 \newcommand{\Bigstep}{\Downarrow}
 \newcommand{\Case}{\textit{Case} }
-\newcommand{\CParen}[1]{\texttt( #1 \texttt)}
+\newcommand{\CParen}[1]{\texttt(#1\texttt)}
 \newcommand{\Ctx}[2]{#1 \Ts #2}
 \newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
 \newcommand{\CtxSto}[3]{\Ctx{\Store{#1}{#2}}{#3}}
@@ -54,7 +55,7 @@
 \newcommand{\N}{\mathbb N}
 \newcommand{\Pred}{|pred|~}
 \newcommand{\Proof}{\textsc{Proof}}
-\newcommand{\Rec}[1]{\texttt\{ #1 \texttt\}}
+\newcommand{\Rec}[1]{\Cd\{#1\Cd\}}
 \newcommand{\Rule}[1]{\textsc{#1}}
 \newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand{\Store}[2]{#1 \mid #2}
@@ -589,7 +590,7 @@ Evaluation rules are as follows.
   \AxiomC{$|t| \to |t|'$}
   \UnaryInfC{$\lmd x ~|t| \to \lmd x ~|t|'$}
   \DisplayProof \proofbreak
-  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
+  \AxiomC{$\CParen{\lmd x ~|t|_1} ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
   \DisplayProof
 \end{center}
 
@@ -1747,17 +1748,17 @@ There is another derivation that uses subtyping of |f| instead of |xy| as follow
 \Ex{15.2.3}
 \begin{itemize}
   \item[(1)] There are six supertypes:
-      |\{a:Top,b:Top\}|,
-      |\{b:Top,a:Top\}|,
-      |\{a:Top\}|,
-      |\{b:Top\}|,
-      |\{\}|, and
+      \Rec{|a:Top,b:Top|},
+      \Rec{|b:Top,a:Top|},
+      \Rec{|a:Top|},
+      \Rec{|b:Top|},
+      \Rec{}, and
       |Top|.
   \item[(2)]
-    Let $|S|_0 = |\{\}|$ and $|S|_{i + 1} = |\{x:S|_i|\}|$ for $i\in\N$.
-    We have $\Sub{|S|_1 = |\{x:\{\}\}|}{|\{\}| = |S|_0}$.
+    Let $|S|_0 = \Rec{}$ and $|S|_{i + 1} = \Rec{|x:S|_i}$ for $i\in\N$.
+    We have $\Sub{|S|_1 = \Rec{|x:|\Rec{}}}{\Rec{} = |S|_0}$.
     For each $i > 0$, if $\Sub{|S|_i}{|S|_{i - 1}}$,
-      then $\Sub{|S|_{i + 1} = |\{x:S|_i|\}|}{|\{x:S|_{i - 1}|\}| = |S|_i}$.
+      then $\Sub{|S|_{i + 1} = \Rec{|x:S|_i}}{\Rec{|x:S|_{i - 1}} = |S|_i}$.
     Therefore, $(|S|_i)_i$ is an infinite sequence of descending types.
   \item[(3)]
     Using $|S|_i$ defined above, let $|T|_i = |S|_i \to |Top|$.
@@ -1779,8 +1780,9 @@ If there were such a type,
 
 \Ex{15.2.5}
 It is not a good idea since, e.g., it breaks the progress property as follows.
-Let $|t| = |\{| \Lm|x:\{\}.x, \{\}\}|$.
-We have $\CtxTyRel{}{|t|}{|(\{\}| \to |\{\})| \times |\{\}|}$.
+Let $|t| = \Rec{\AbTy{|x|}{\Rec{}} |x,\ |\Rec{}}$
+We have $\CtxTyRel{}{|t|}{}$.
+% We have $\CtxTyRel{}{|t|}{|(\{\}| \to |\{\})| \times |\{\}|}$.
 With the rule \Rule{S-ProdWidth},
   we can derive $\CtxTyRel{}{|t|}{|\{\}| \to |\{\}|}$.
 Therefore, a term |t \{\}| is well-typed, which is obviously a stuck state.
@@ -1849,6 +1851,18 @@ Removing any subtyping rule does not break the progress nor preservation propert
     \Case\Rule{S-Arrow}, \Rule{S-Top}: Impossible.
 
     \Case\Rule{S-Refl}, \Rule{S-Trans}: Similar to 1. \qed
+\end{enumerate}
+
+\Ex{15.3.6}
+\begin{enumerate}
+  \item
+    A closed value |v| has the form of either
+      $\AbTy{|x|}{|S|} |t|$ or $\Rec{|l|_i |=v|_i \Indices{i\in1..n}}$
+      (we can exclude the possibilities of $|v| = |x|$ and $|v| = |x.l|$
+       because |v| is a closed value).
+    If $\CtxTyRel{}{|v|}{|T|_1 \to |T|_2}$,
+      |v| can only take the former form by the inversion lemma.
+  \item Similarly shown by the inversion lemma. \qed
 \end{enumerate}
 
 \end{document}
