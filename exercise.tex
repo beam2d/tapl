@@ -3,6 +3,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{bussproofs}
 \usepackage{listings}
+\usepackage{newtxmath,newtxtext}
 \usepackage{parskip}
 
 \lstnewenvironment{Code}{
@@ -16,58 +17,103 @@
 }{}
 \theoremstyle{definition}
 
-\newcommand{\Cd}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
+\newcommand\Cd[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
 % Use |x| as a short verb also available in math mode.
 \catcode`|=\active
 \def|#1|{\Cd{#1}}
 
-\newcommand{\card}[1]{\vert#1\vert}
-\newcommand{\code}[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily]{#1}}}
-\newcommand{\lmd}[1]{\lambda \texttt{#1.}}
-\newcommand{\Lmd}[2]{\lambda \texttt{#1}#2\texttt{.}}
-\newcommand{\phantomrel}[1]{\phantom{{}#1{}}}
-\newcommand{\proofbreak}{\\ \vspace{1em}}
-\newcommand{\proofsep}{\quad}
-\newcommand{\dshift}{\uparrow}
-\newcommand{\subst}[1]{[#1]\,}
-\newcommand{\where}{~ \text{where} ~}
+\newcommand\lmd[1]{\lambda \texttt{#1.}}
+\newcommand\Lmd[2]{\lambda \texttt{#1}#2\texttt{.}}
+\newcommand\proofbreak{\\ \vspace{1em}}
+\newcommand\proofsep{\quad}
+\newcommand\subst[1]{[#1]\,}
+\newcommand\where{~ \text{where} ~}
 
-\newcommand{\Ab}[1]{\lambda #1 \texttt{.}}
-\newcommand{\AbTy}[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
-\newcommand{\Bigstep}{\Downarrow}
-\newcommand{\Case}{\textit{Case} }
-\newcommand{\CParen}[1]{\texttt(#1\texttt)}
-\newcommand{\Ctx}[2]{#1 \Ts #2}
-\newcommand{\CtxTyRel}[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
-\newcommand{\CtxSto}[3]{\Ctx{\Store{#1}{#2}}{#3}}
-\newcommand{\Ctxx}[3]{#2 \vdash^{#1} #3}
-\newcommand{\CtxxTyRel}[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
-\newcommand{\EqComment}[1]{[\text{\small #1}]}
-\newcommand{\EqDef}{\stackrel{\text{def}}{=}}
-\newcommand{\Ex}[1]{\subsection*{Exercise #1}}
-\newcommand{\IfThenElse}[3]{|if|~#1~|then|~#2~|else|~#3}
-\newcommand{\Indices}[1]{{}^{#1}}
-\newcommand{\Iszero}{|iszero|~}
-\newcommand{\LambdaNB}{$\lambda$\textbf{NB}}
-\newcommand{\Lemma}[1]{\textsc{Lemma #1.}}
-\newcommand{\Let}[2]{\texttt{let} ~ #1 = #2 ~ \texttt{in} ~}
-\newcommand{\Lm}{\lambda}
-\newcommand{\N}{\mathbb N}
-\newcommand{\Pred}{|pred|~}
-\newcommand{\Proof}{\textsc{Proof}}
-\newcommand{\Rec}[1]{\Cd\{#1\Cd\}}
-\newcommand{\Rule}[1]{\textsc{#1}}
-\newcommand{\RuleLabel}[1]{\RightLabel{\Rule{\scriptsize #1}}}
-\newcommand{\Store}[2]{#1 \mid #2}
-\newcommand{\Sb}{\mathop{\texttt<\hspace{-0.3ex}\raise0.15ex\hbox{\texttt:}}}
-\newcommand{\Sub}[2]{#1 \Sb #2}
-\newcommand{\Succ}{\texttt{succ}~}
-\newcommand{\Theorem}{\textsc{Theorem}}
-\newcommand{\To}{\Rightarrow}
-\newcommand{\Ts}{\vdash}
-\newcommand{\TyRel}[2]{#1 ~\texttt:~ #2}
+\makeatletter
 
-\title{Excercise Solutions for \break Types and Programming Languages}
+\newcommand\Ab[1]{\Ab@Impl#1\relax}
+\newcommand\Ab@Impl[1]{\Ab@One#1\texttt.\@ifnextchar\relax{}{\Ab@Impl}}
+\newcommand\Ab@One[1]{\lambda\texttt{#1}}
+\newcommand\Abn[1]{\Repeat{#1}{\lambda\texttt.}}
+\newcommand\AbTy[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
+\newcommand\App{\CdSpc}
+\newcommand\Bigstep{\Downarrow}
+\newcommand\Cardi[1]{\vert#1\vert}
+\newcommand\Case{\textit{Case} }
+\newcommand\CaseArm[2]{#1 \To #2 \@ifnextchar\CaseArm{\Cd{\ \|\ }}{}}
+\newcommand\CaseOf[1]{\Cd{case\ }#1\Cd{\ of\ }}
+\newcommand\CBracket[1]{\texttt[#1\texttt]}
+\newcommand\CdSpc{\phantom{\Cd.}}
+\newcommand\CParen[1]{\texttt(#1\texttt)}
+\newcommand\Ctx[2]{#1 \Ts #2}
+\newcommand\CtxTyRel[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
+\newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
+\newcommand\Ctxx[3]{#2 \vdash^{#1} #3}
+\newcommand\CtxxTyRel[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
+\newcommand\DShift{\mathop\uparrow}
+\newcommand\Dom{\It{dom}}
+\newcommand\EqComment[1]{[\text{\small #1}]}
+\newcommand\EqDef{\stackrel{\text{def}}{=}}
+\newcommand\Ex[1]{\subsection*{Exercise #1}}
+\newcommand\FV{\It{FV}}
+\newcommand\If[3]{|if\ |#1|\ then\ |#2|\ else\ |#3}
+\newcommand\Indices[1]{{}^{#1}}
+\newcommand\It[1]{\textit{#1}}
+\newcommand\LambdaNB{$\lambda$\textbf{NB}}
+\newcommand\Lemma[1]{\textsc{Lemma #1.}}
+\newcommand\Let[2]{\Cd{let\ } #1 = #2 \Cd{\ in\ }}
+\newcommand\Lm{\lambda}
+\newcommand\M[1]{%
+  \unskip\CdSpc$#1$%
+  \@ifnextchar,{\M@SpaceAfter}{%
+  \@ifnextchar.{\M@SpaceAfter}{%
+  \@ifnextchar){\M@SpaceAfter}{%
+  \@ifnextchar]{\M@SpaceAfter}{%
+  \@ifnextchar\}{\M@SpaceAfter}{%
+  \CdSpc\ignorespaces%
+  }}}}}
+}
+\newcommand\M@SpaceAfter[1]{#1\phantom{\Cd.}\ignorespaces}
+\newcommand\N{\mathbb N}
+\newcommand\PhantomRel[1]{\phantom{{}#1{}}}
+\newcommand\Proof{\textsc{Proof}}
+%% TODO(beam2d): Fix spacing of the last line.
+\newenvironment{Proofs}{%
+  \def\BottomSpc{\vspace{0.8em}}%
+  \newif\ifnextcalled \nextcalledfalse%
+  \def\next{\nextcalledtrue\DisplayProof\quad\BottomSpc}%
+  \begin{center}%
+}{%
+  \DisplayProof%
+  \ifnextcalled\BottomSpc\vspace{-1.3em}\fi%
+  \end{center}%
+}
+\newcommand\Rec[1]{\Cd\{#1\Cd\}}
+\newcommand\RemoveNames{\It{removenames}}
+\newcommand\Repeat[2]{%
+  \newcount\Repeat@i \Repeat@i=#1%
+  \advance \Repeat@i -1%
+  \loop#2%
+    \advance \Repeat@i -1%
+  \ifnum \Repeat@i>0 \repeat%
+}
+\newcommand\RestoreNames{\It{restorenames}}
+\newcommand\Rule[1]{\textsc{#1}}
+\newcommand\RuleLabel[1]{\RightLabel{\Rule{\scriptsize #1}}}
+\newcommand\Set[1]{\{#1\}}
+\newcommand\Store[2]{#1 \mid #2}
+\newcommand\Sb{\mathop{\texttt<\hspace{-0.3ex}\texttt:}}
+\newcommand\Swap[2]{#2#1}
+\newcommand\Sub[2]{#1 \Sb #2}
+\newcommand\Subst[1]{[#1]\,}
+\newcommand\Theorem{\textsc{Theorem}}
+\newcommand\To{\Rightarrow}
+\newcommand\Ts{\vdash}
+\newcommand\TyRel[2]{#1 ~\texttt:~ #2}
+
+\makeatother
+
+\title{Excercise Solutions for \break \emph{Types and Programming Languages}}
 \author{Seiya Tokui}
 
 \begin{document}
@@ -135,36 +181,36 @@ It then holds that $P$ is preserved by $R^* = \bigcup_i R_i$. \qed
 
 \Ex{3.2.4}
 
-We have $\card{S_0} = 0$ and $\card{S_{i + 1}} = 3 + 3\card{S_i} + \card{S_i}^3$,
-  we thus get $\card{S_3} = 59439$.
+We have $\Cardi{S_0} = 0$ and $\Cardi{S_{i + 1}} = 3 + 3\Cardi{S_i} + \Cardi{S_i}^3$,
+  we thus get $\Cardi{S_3} = 59439$.
 
 \Ex{3.2.5}
 
 We show it by induction on $i$.
 We have $S_0 = \emptyset \subseteq S_1$.
-Suppose $S_{i - 1} \subseteq S_i$ for given $i \in \{1, 2, \dots\}$.
+Suppose $S_{i - 1} \subseteq S_i$ for given $i \in \Set{1, 2, \dots}$.
 Then, by definition of $S_{i + 1}$, we have
 \begin{alignat*}{2}
   S_{i + 1} &=~
-  && \{ |true|, |false|, |0| \} \\
-  & && \cup \{
-    \Succ |t|_1, ~\Pred |t|_1, ~\Iszero |t|_1
+  && \Set{|true|, |false|, |0|} \\
+  & && \cup \Set{
+    |succ t|_1, ~|pred t|_1, ~|iszero t|_1
     \mid |t|_1 \in S_i
-  \} \\
-  & && \cup \{
-    \IfThenElse{|t|_1}{|t|_2}{|t|_3}
+  } \\
+  & && \cup \Set{
+    \If{|t|_1}{|t|_2}{|t|_3}
     \mid |t|_1, |t|_2, |t|_3 \in S_i
-  \} \\
+  } \\
   &\supseteq~
-  && \{ |true|, |false|, |0| \} \\
-  & && \cup \{
-    \Succ |t|_1, ~\Pred |t|_1, ~\Iszero |t|_1
+  && \Set{|true|, |false|, |0|} \\
+  & && \cup \Set{
+    |succ t|_1, ~|pred t|_1, ~|iszero t|_1
     \mid |t|_1 \in S_{i - 1}
-  \} \\
-  & && \cup \{
-    \IfThenElse{|t|_1}{|t|_2}{|t|_3}
+  } \\
+  & && \cup \Set{
+    \If{|t|_1}{|t|_2}{|t|_3}
     \mid |t|_1, |t|_2, |t|_3 \in S_{i - 1}
-  \} \\
+  } \\
   &=&& S_i.
 \end{alignat*}
 \qed
@@ -172,27 +218,21 @@ Then, by definition of $S_{i + 1}$, we have
 \Ex{3.3.4}
 
 \paragraph{Induction on depth or size}
-Let $Q(n) = \{ |s| \in S \mid depth(|s|) \le n \}$.
+Let $Q(n) = \Set{|s| \in S \mid \It{depth}(|s|) \le n}$.
 We have $S = \bigcup_{n\in\N} Q(n)$.
 Induction on depth implies that,
   given $P(|s|)$ holds for all $|s| \in Q(n)$,
   $P(|s|)$ holds for all $|s| \in Q(n + 1)$.
 By induction on $n$, $P(|s|)$ holds for all $|s| \in S$.
-Induction on size can be derived by replacing $depth$ with $size$.
+Induction on size can be derived by replacing \It{depth} with \It{size}.
 
 \paragraph{Structural induction}
 Given $P(|s|)$ holds for all $|s| \in S_i$,
   we have $P(|t|)$ for
 \begin{alignat*}{2}
   |t| &
-  \in && ~\{
-    \Succ |s|, ~\Pred |s|, ~\Iszero |s|
-    \mid |s| \in S_i
-  \} \\
-  & &&\cup \{
-    \IfThenElse{|s|_1}{|s|_2}{|s|_3}
-    \mid |s|_1, |s|_2, |s|_3 \in S_i
-  \}
+  \in && ~\Set{|succ s|, ~|pred s|, ~|iszero s| \mid |s| \in S_i} \\
+  & &&\cup \Set{\If{|s|_1}{|s|_2}{|s|_3} \mid |s|_1, |s|_2, |s|_3 \in S_i}
 \end{alignat*}
 by induction hypothesis.
 Together with constant terms, which all satisfy $P$ as they contain no subterms,
@@ -209,19 +249,16 @@ then $P(D)$ holds for all $D$.
 
 \Ex{3.5.10}
 
-\begin{center}
+\begin{Proofs}
   \AxiomC{$|t| \to^* |t|$}
-  \DisplayProof
-  \proofsep
+  \next
   \AxiomC{$|t| \to |t|'$}
   \UnaryInfC{$|t| \to^* |t|'$}
-  \DisplayProof
-  \proofsep
+  \next
   \AxiomC{$|t| \to^* |t|'$}
   \AxiomC{$|t|' \to^* |t|''$}
   \BinaryInfC{$|t| \to^* |t|''$}
-  \DisplayProof
-\end{center}
+\end{Proofs}
 
 \Ex{3.5.13}
 
@@ -241,20 +278,20 @@ If |t| is a conditional expression,
   to get $|t|' = |t|''$ using the induction hypothesis.
 Otherwise, |t| is either a successor, predecessor, or zero test.
 
-If $|t| = \Succ |s|$ for some term |s|,
+If \M{|t| = |succ s|} for some term |s|,
   the last rule used to derive both $|t| \to |t|'$
   and $|t| \to |t|''$ is \Rule{E-Succ}.
-We then have $|t|' = \Succ |s|'$ for some term $|s|'$,
-  and the statement $\Succ |s| \to \Succ |s|'$ is derived from
+We then have \M{|t|' = |succ s|'} for some term $|s|'$,
+  and the statement \M{|succ s| \to |succ s|'} is derived from
   $|s| \to |s|'$.
-Similarly, we have $|t|'' = \Succ |s|''$ for some term $|s|''$,
-  and the statement $\Succ |s| \to \Succ |s|''$ is derived from
+Similarly, we have \M{|t|'' = |succ s|''} for some term $|s|''$,
+  and the statement \M{|succ s| \to |succ s|''} is derived from
   $|s| \to |s|''$.
 We now have $|s| \to |s|'$ and $|s| \to |s|''$,
   and then we get $|s|' = |s|''$ by induction hypothesis.
-It implies $|t|' = \Succ |s|' = \Succ |s|'' = |t|''$.
+It implies \M{|t|' = |succ s|' = |succ s|'' = |t|''}.
 
-If $|t| = \Pred |s|$ for some term |s|,
+If \M{|t| = |pred s|} for some term |s|,
   the last rules used to derive
   $|t| \to |t|'$ and $|t| \to |t|''$ are
   either \Rule{E-PredZero}, \Rule{E-PredSucc}, or \Rule{E-Pred}.
@@ -262,14 +299,14 @@ These rules do not \emph{overlap},
   i.e., if $|t| \to |t|'$ is derived from one of the rules,
   then $|t| \to |t|''$ is also derived from the same rule.
 To see this,
-  we need to check if the left hand side $\Pred |t|_1$ of the statement
+  we need to check if the left hand side \M{|pred t|_1} of the statement
   derived by \Rule{E-Pred} does not conflict with the left hand side
-  $\Pred \Succ |nv|_1$ of \Rule{E-PredSucc}.
+  \M{|pred succ nv|_1} of \Rule{E-PredSucc}.
 Assume they conflict.
 We then, for some $|t|'_1$,
-  have $\Pred \Succ |nv|_1 \to \Pred |t|'_1$
+  have \M{|pred succ nv|_1 \to |pred t|'_1}
   derived by \Rule{E-Pred}.
-The premise of this one-step derivation is $\Succ |nv|_1 \to |t|'_1$.
+The premise of this one-step derivation is \M{|succ nv|_1 \to |t|'_1}.
 The rule \Rule{E-Succ} is the only rule that may derive this statement,
   with which we have $|nv|_1 \to |t|'_2$ for some $|t|'_2$.
 It contradicts with the fact that $|nv|_1$ is a normal form.
@@ -282,8 +319,8 @@ For \Rule{E-Pred},
   we repeat the same discussion as \Rule{E-Succ} to get
   $|t|' = |t|''$ by induction hypothesis.
 
-If $|t| = \Iszero |s|$ for some term |s|,
-  a similar discussion is applied as the previous case of $|t| = \Pred |s|$,
+If \M{|t| = |iszero s|} for some term |s|,
+  a similar discussion is applied as the previous case of \M{|t| = |pred s|},
   where the three rules are replaced with
   \Rule{E-IsZeroZero}, \Rule{E-IsZeroSucc}, and \Rule{E-IsZero},
   and we handle boolean values instead of numeric ones in some places. \qed
@@ -333,15 +370,15 @@ By induction hypothesis,
 Then $|t| \Bigstep |v|$ is shown by examining all the cases for
   the direct derivation of $|t| \to |t|'$.
 For example, if it is derived by \Rule{E-IfTrue},
-  |t| is written as $|t| = \IfThenElse{|true|}{|t|'}{|t|''}$.
+  |t| is written as \M{|t| = \If{|true|}{|t|'}{|t|''}}.
 We have $|true| \Bigstep |true|$ by \Rule{B-Value}
   and $|t|' \Bigstep |v|$ by the hypothesis.
 By applying \Rule{B-IfTrue} to them,
-  we obtain $\IfThenElse{|true|}{|t|'}{|t|''} \Bigstep |v|$.
+  we obtain \M{\If{|true|}{|t|'}{|t|''} \Bigstep |v|}.
 Another example: if it is derived by \Rule{E-If},
   |t| and $|t|'$ are written as
-  $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$ and
-  $|t|' = \IfThenElse{|t|'_1}{|t|'_2}{|t|'_3}$, respectively.
+  \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}} and
+  \M{|t|' = \If{|t|'_1}{|t|'_2}{|t|'_3}}, respectively.
 We also have $|t|_1 \to |t|'_1$.
 Since $|t|' \to^* |v|$,
   it holds that $|t|'_1 \to^* |v|_1$ with $|v|_1 \in \{|true|, |false|\}$.
@@ -351,7 +388,7 @@ Then, in the same way, we obtain $|t|_2 \to^* |v|$.
 By induction hypothesis,
   we have $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By applying \Rule{B-IfTrue},
-  we get $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \Bigstep |v|$.
+  we get \M{\If{|t|_1}{|t|_2}{|t|_3} \Bigstep |v|}.
 Almost same discussions apply for the case of $|v|_1 = |false|$.
 The other cases also follow in a similar manner.
 
@@ -360,46 +397,46 @@ Next, we show $|t| \to^* |v|$ given $|t| \Bigstep |v|$
 When $|t| = |v|$, it obviously holds that $|v| \to^* |v|$.
 Induction step is made by examining all the evaluation rules except for \Rule{B-Value}.
 For example, if the last step is \Rule{B-IfTrue},
-  we have $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$
+  we have \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
   with $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By induction hypothesis,
   we have $|t|_1 \to^* |true|$ and $|t|_2 \to^* |v|$.
 By applying \Rule{E-If} multiple times with premises given by
   individual small steps consisting $|t|_1 \to^* |true|$,
   we obtain
-  $
-    \IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^*
-    \IfThenElse{|true|}{|t|_2}{|t|_3}
-  $.
+  \M{
+    \If{|t|_1}{|t|_2}{|t|_3} \to^*
+    \If{|true|}{|t|_2}{|t|_3}
+  }.
 Next, we apply \Rule{E-IfTrue} to the right hand side to obtain
-  $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^* |t|_2$.
+  \M{\If{|t|_1}{|t|_2}{|t|_3} \to^* |t|_2}.
 Combining it with $|t|_2 \to^* |v|$,
-  we get $\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to^* |v|$.
+  we get \M{\If{|t|_1}{|t|_2}{|t|_3} \to^* |v|}.
 Similar discussions are applied to the other cases. \qed
 
 \Ex{3.5.18}
 
-The evaluation rules involving $\code{if}$ expression is modified as follows.
-\begin{center}
-  \AxiomC{$\IfThenElse{|true|}{|v|_1}{|v|_2} \to |v|_1$} \DisplayProof
-  \proofsep
-  \AxiomC{$\IfThenElse{|false|}{|v|_1}{|v|_2} \to |v|_2$} \DisplayProof
-  \proofbreak
+The evaluation rules involving |if| expression is modified as follows.
+\begin{Proofs}
+  \AxiomC{$\If{|true|}{|v|_1}{|v|_2} \to |v|_1$}
+  \next
+  \AxiomC{$\If{|false|}{|v|_1}{|v|_2} \to |v|_2$}
+  \next
   \AxiomC{$|t|_2 \to |t|'_2$}
-  \UnaryInfC{$\IfThenElse{|t|_1}{|t|_2}{|t|_3} \to
-              \IfThenElse{|t|_1}{|t|'_2}{|t|_3}$} \DisplayProof
-  \proofbreak
+  \UnaryInfC{$\If{|t|_1}{|t|_2}{|t|_3} \to
+              \If{|t|_1}{|t|'_2}{|t|_3}$}
+  \next
   \AxiomC{$|t|_2 \to |t|'_2$}
-  \UnaryInfC{$\IfThenElse{|t|_1}{|v|}{|t|_2} \to
-              \IfThenElse{|t|_1}{|v|}{|t|'_2}$} \DisplayProof
-\end{center}
+  \UnaryInfC{$\If{|t|_1}{|v|}{|t|_2} \to
+              \If{|t|_1}{|v|}{|t|'_2}$}
+\end{Proofs}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section 4.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{An ML Implementation of Arithmetic Expressions}
 
-Rust implementation is put at \code{src/bin/arith.rs}.
+Rust implementation is put at |src/bin/arith.rs|.
 
 \Ex{4.2.1}
 Omitted since I cannot talk about a good programming style in ML.
@@ -415,51 +452,51 @@ It can be implemented by fully evaluating arguments of each expression recursive
 
 \Ex{5.2.1}
 \begin{Code}
-  or  = $\lmd b \lmd c$ b tru c;
-  not = $\lmd b$ b fls tru;
+  or  = $\Ab{bc}$ b tru c;
+  not = $\Ab b$ b fls tru;
 \end{Code}
 
 \Ex{5.2.2}
 \begin{Code}
-  scc = $\lmd n \lmd s \lmd z$ n s (s z);
+  scc = $\Ab{nsz}$ n s (s z);
 \end{Code}
 
 \Ex{5.2.3}
 \begin{Code}
-  times$'$ = $\lmd m \lmd n \lmd s$ m (n s);
+  times$'$ = $\Ab{mns}$ m (n s);
 \end{Code}
 For example, $3 \times 2$ is evaluated as follows.
 \begin{Code}
      times$'$ c$_3$ c$_2$ s z
-  $=$   ($\lmd m \lmd n \Lmd s' \Lmd z'$ m (n s$'$) z$'$) c$_3$ c$_2$ s z
-  $\to$ ($\lmd n \Lmd s' \Lmd z'$ c$_3$ (n s$'$) z$'$) c$_2$ s z
-  $\to$ ($\Lmd s' \Lmd z'$ c$_3$ (c$_2$ s$'$) z$'$) s z
-  $\to$ ($\Lmd z'$ c$_3$ (c$_2$ s) z$'$) z
+  $=$   ($\Ab{mn{s'}{z'}}$ m (n s$'$) z$'$) c$_3$ c$_2$ s z
+  $\to$ ($\Ab{n{s'}{z'}}$ c$_3$ (n s$'$) z$'$) c$_2$ s z
+  $\to$ ($\Ab{{s'}{z'}}$ c$_3$ (c$_2$ s$'$) z$'$) s z
+  $\to$ ($\Ab{{z'}}$ c$_3$ (c$_2$ s) z$'$) z
   $\to$ c$_3$ (c$_2$ s) z
-  $=$   c$_3$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) s) z
-  $\to$ c$_3$ ($\Lmd z'$ s (s z$'$)) z
-  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ (s$'$ z$'$))) ($\Lmd z'$ s (s z$'$)) z
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))) z
-  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) z))
-  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (s (s z)))
-  $\to$ ($\Lmd z'$ s (s z$'$)) (s (s (s (s z))))
-  $\to$ s (s (s (s (s (s z)))))$.$
+  $=$   c$_3$ (($\Ab{{s'}{z'}}$ s$'$ (s$'$ z$'$)) s) z
+  $\to$ c$_3$ ($\Ab{{z'}}$ s (s z$'$)) z
+  $=$   ($\Ab{{s'}{z'}}$ s$'$ (s$'$ (s$'$ z$'$))) ($\Ab{{z'}}$ s (s z$'$)) z
+  $\to$ ($\Ab{{z'}}$ ($\Ab{{z''}}$ s (s z$''$)) (($\Ab{{z''}}$ s (s z$''$)) (($\Ab{{z''}}$ s (s z$''$)) z$'$))) z
+  $\to$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z))
+  $\to$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) (s (s z)))
+  $\to$ ($\Ab{{z'}}$ s (s z$'$)) (s (s (s (s z))))
+  $\to$ s (s (s (s (s (s z)))))
 \end{Code}
 
 \Ex{5.2.4}
 
 There are at least two ways to define a power function.
 \begin{Code}
-  pow = $\lmd m \lmd n$ m (times n) c$_1$;
-  pow$'$ = $\lmd m \lmd n$ m n;
+  pow = $\Ab{mn}$ m (times n) c$_1$;
+  pow$'$ = $\Ab{mn}$ m n;
 \end{Code}
-The first one is analogous to the definition of \code{times}.
+The first one is analogous to the definition of |times|.
 The second one is simpler but trickier.
-Here, an application of $\code{pow}'$ is evaluated as
+Here, an application of $|pow|'$ is evaluated as
 \begin{align*}
-  |pow|'~|c|_m~|c|_n~|s|~|z|
-  \to |c|_m~|c|_n~|s|~|z|
-  \to \underbrace{|c|_n~(|c|_n~(\cdots~(|c|_n}_{m}~|s|)\cdots))~|z|.
+  |pow|' \App |c|_m \App |c|_n \App |s z|
+  \to |c|_m \App |c|_n \App |s z|
+  \to \underbrace{|c|_n \App |(c|_n \App |(|\cdots|(c|_n}_m \CdSpc |s)| \cdots |))| \App |z|.
 \end{align*}
 Then, applying $|c|_n$ once multiplies the number of occurences of |s| by $n$.
 Since it happens $m$ times, it results in $n^m$ occurences of |s| in total.
@@ -467,54 +504,56 @@ Since it happens $m$ times, it results in $n^m$ occurences of |s| in total.
 For example, $2^3$ is evaluated as follows.
 \begin{Code}
      pow$'$ c$_3$ c$_2$ s z
-  $=$   ($\lmd m \lmd n$ m n) c$_3$ c$_2$ s z
-  $\to$ ($\lmd n$ c$_3$ n) c$_2$ s z
+  $=$   ($\Ab{mn}$ m n) c$_3$ c$_2$ s z
+  $\to$ ($\Ab n$ c$_3$ n) c$_2$ s z
   $\to$ c$_3$ c$_2$ s z
-  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ (s$'$ z$'$))) c$_2$ s z
-  $\to$ ($\Lmd z'$ c$_2$ (c$_2$ (c$_2$ z$'$))) s z
+  $=$   ($\Ab{{s'}{z'}}$ s$'$ (s$'$ (s$'$ z$'$))) c$_2$ s z
+  $\to$ ($\Ab{{z'}}$ c$_2$ (c$_2$ (c$_2$ z$'$))) s z
   $\to$ c$_2$ (c$_2$ (c$_2$ s)) z
-  $=$   c$_2$ (c$_2$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) s)) z
-  $\to$ c$_2$ (c$_2$ ($\Lmd z'$ s (s z$'$))) z
-  $=$   c$_2$ (($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) ($\Lmd z'$ s (s z$'$))) z
-  $\to$ c$_2$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z
-  $=$   ($\Lmd s' \Lmd z'$ s$'$ (s$'$ z$'$)) ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ ($\Lmd z{'''}$ s (s z$'''$)) (($\Lmd z{'''}$ s (s z$'''$)) z$''$))
-           (($\Lmd z{''}$ ($\Lmd z{'''}$ s (s z$'''$)) (($\Lmd z{'''}$ s (s z$'''$)) z$''$)) z$'$)
+  $=$   c$_2$ (c$_2$ (($\Ab{{s'}{z'}}$ s$'$ (s$'$ z$'$)) s)) z
+  $\to$ c$_2$ (c$_2$ ($\Ab{{z'}}$ s (s z$'$))) z
+  $=$   c$_2$ (($\Ab{{s''}{z''}}$ s$''$ (s$''$ z$''$)) ($\Ab{{z'}}$ s (s z$'$))) z
+  $\to$ c$_2$ ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$)) z
+  $=$   ($\Ab{{s''}{z'''}}$ s$''$ (s$''$ z$'''$))
+        ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$)) z
+  $\to$ ($\Ab{{z'''}}$
+        ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$))
+        (($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$)) z$'''$)
      ) z
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
-        (($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) z)
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
-        (($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) z))
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$))
-        (($\Lmd z'$ s (s z$'$)) (s (s z)))
-  $\to$ ($\Lmd z'$ ($\Lmd z{''}$ s (s z$''$)) (($\Lmd z{''}$ s (s z$''$)) z$'$)) (s (s (s (s z))))
-  $\to$ ($\Lmd z'$ s (s z$'$)) (($\Lmd z'$ s (s z$'$)) (s (s (s (s z)))))
-  $\to$ ($\Lmd z'$ s (s z$'$)) (s (s (s (s (s (s z))))))
+  $\to$ ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$))
+        (($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$)) z)
+  $\to$ ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$))
+        (($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z))
+  $\to$ ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$))
+        (($\Ab{{z'}}$ s (s z$'$)) (s (s z)))
+  $\to$ ($\Ab{{z''}}$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) z$''$)) (s (s (s (s z))))
+  $\to$ ($\Ab{{z'}}$ s (s z$'$)) (($\Ab{{z'}}$ s (s z$'$)) (s (s (s (s z)))))
+  $\to$ ($\Ab{{z'}}$ s (s z$'$)) (s (s (s (s (s (s z))))))
   $\to$ (s (s (s (s (s (s (s (s z))))))))
 \end{Code}
 
 \Ex{5.2.5}
 \begin{Code}
-  subtract = $\lmd m \lmd n$ n prd m;
+  subtract = $\Ab{mn}$ n prd m;
 \end{Code}
 It reads "apply |prd| for |n| times to |m|".
 
 \Ex{5.2.6}
 Full evaluation of |prd| |c|$_n$ involves applications of |ss|
-  $n$ times starting from |pair c|$_0$~| c|$_0$ and selecting |fst|.
+  $n$ times starting from \M{|pair c|_0|\ c|_0} and selecting |fst|.
 The evaluation thus completes in $O(n)$ steps.
 
 \Ex{5.2.7}
 \begin{Code}
-  equal = $\lmd m \lmd n$ and (iszro (m prd n)) (iszro (n prd m));
+  equal = $\Ab{mn}$ and (iszro (m prd n)) (iszro (n prd m));
 \end{Code}
 
 \Ex{5.2.8}
 \begin{Code}
-  nil   = $\lmd c \lmd n$ n;
-  cons  = $\lmd h \lmd t \lmd c \lmd n$ c h (t c n);
-  isnil = $\lmd t$ t ($\lmd x \lmd y$ fls) tru;
-  head  = $\lmd t$ t ($\lmd x \lmd y$ x) nil;
+  nil   = $\Ab{cn}$ n;
+  cons  = $\Ab{htcn}$ c h (t c n);
+  isnil = $\Ab t$ t ($\Ab{xy}$ fls) tru;
+  head  = $\Ab t$ t ($\Ab{xy}$ x) nil;
 \end{Code}
 Here, we use |nil| for the default value of |head| when the argument is
   |nil|.
@@ -522,8 +561,8 @@ Here, we use |nil| for the default value of |head| when the argument is
 A |tail| function can be defined by copying a list into another list,
   simultaneously bookkeeping the list in the previous step using a pair.
 \begin{Code}
-  dcons = $\lmd h \lmd p$ pair (snd p) (cons h (snd p));
-  tail  = $\lmd t$ fst (t dcons (pair nil nil));
+  dcons = $\Ab{hp}$ pair (snd p) (cons h (snd p));
+  tail  = $\Ab t$ fst (t dcons (pair nil nil));
 \end{Code}
 
 \Ex{5.2.9}
@@ -533,45 +572,45 @@ In the main text,
 To use |test|,
   we need to prevent the unused branches from being evaluated
   by hiding the branches behind lambda abstractions and evaluating it later.
-A dummy value |c|$_0$ is used to evaluate the lazy function.
+A dummy value $|c|_0$ is used to evaluate the lazy function.
 \begin{Code}
-  g$'$ = $\lmd{fct} \lmd n$
-      test (iszro n) ($\lmd x$ c$_1$) ($\lmd x$ times n (fct (prd n) c$_0$)) c$_0$;
+  g$'$ = $\Ab{{{fct}}n}$
+      test (iszro n) ($\Ab x$ c$_1$) ($\Ab x$ times n (fct (prd n) c$_0$)) c$_0$;
   factorial$'$ = fix g$'$;
 \end{Code}
 
 \Ex{5.2.10}
 \begin{Code}
-  churchnat = fix ($\lmd f \lmd n$
+  churchnat = fix ($\Ab{fn}$
       if iszero n then c$_0$ else scc (f (pred n)))
 \end{Code}
 
 \Ex{5.2.11}
 \begin{Code}
-  sum = fix ($\lmd f \lmd l$ test (isnil l)
-                          ($\lmd x$ c$_0$)
-                          ($\lmd x$ plus (head l) (f (tail l) c$_0$)))
+  sum = fix ($\Ab{fl}$ test (isnil l)
+                          ($\Ab x$ c$_0$)
+                          ($\Ab x$ plus (head l) (f (tail l) c$_0$)))
 \end{Code}
 
 \Ex{5.3.3}
 We prove it by induction on term size.
-Iff |t| is a varaible, it holds that $size(|t|) = 1 = \card{FV(|t|)}$.
+Iff |t| is a varaible, it holds that $\It{size}(|t|) = 1 = \Cardi{FV(|t|)}$.
 Suppose |t| is a non-variable term.
 There are two cases.
 \begin{enumerate}
-  \item If $|t| = \lmd x |t|_1$, it holds that
-        $\card{FV(|t|)} \le \card{FV(|t|_1)}$ and
-        $size(|t|) = size(|t|_1) + 2$.
-        By induction hypothesis, we have $\card{FV(|t|_1)} \le size(|t|_1)$.
-        Combining them gives
-        $\card{FV(|t|)} \le \card{FV(|t|_1)} \le size(|t|_1) \le size(|t|)$.
-  \item Otherwise, |t| is written as $|t| = |t|_1 ~ |t|_2$.
-        It holds that $\card{FV(|t|)} \le \card{FV(|t|_1)} + \card{FV(|t|_2)}$
-        and $size(|t|) = size(|t|_1) + size(|t|_2) + 1$.
-        By induction hypothesis, we have
-        $\card{FV(|t|_1)} \le size(|t|_1)$ and $\card{FV(|t|_2)} \le size(|t|_2)$.
-        Combining them gives
-        $\card{FV(|t|)} \le size(|t|_1) + size(|t|_2) < size(|t|)$.
+  \item If $|t| = \Ab x |t|_1$, it holds that
+      $\Cardi{FV(|t|)} \le \Cardi{FV(|t|_1)}$ and
+      $\It{size}(|t|) = \It{size}(|t|_1) + 2$.
+    By induction hypothesis, we have $\Cardi{FV(|t|_1)} \le \It{size}(|t|_1)$.
+    Combining them gives
+      $\Cardi{FV(|t|)} \le \Cardi{FV(|t|_1)} \le \It{size}(|t|_1) \le \It{size}(|t|)$.
+  \item Otherwise, |t| is written as \M{|t| = |t|_1 |\ t|_2}.
+    It holds that $\Cardi{FV(|t|)} \le \Cardi{FV(|t|_1)} + \Cardi{FV(|t|_2)}$
+      and $\It{size}(|t|) = \It{size}(|t|_1) + \It{size}(|t|_2) + 1$.
+    By induction hypothesis, we have
+      $\Cardi{FV(|t|_1)} \le \It{size}(|t|_1)$ and $\Cardi{FV(|t|_2)} \le \It{size}(|t|_2)$.
+    Combining them gives
+      $\Cardi{FV(|t|)} \le \It{size}(|t|_1) + \It{size}(|t|_2) < \It{size}(|t|)$.
 \end{enumerate}
 \qed
 
@@ -580,26 +619,25 @@ There are two cases.
 \paragraph{Full beta-reduction}
 Syntax is not changed (indeed, the category of values is not used).
 Evaluation rules are as follows.
-\begin{center}
+\begin{Proofs}
   \AxiomC{$|t|_1 \to |t|'_1$}
-  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|'_1 ~ |t|_2$}
-  \DisplayProof \proofsep
+  \UnaryInfC{$|t|_1 \App |t|_2 \to |t|'_1 \App |t|_2$}
+  \next
   \AxiomC{$|t|_2 \to |t|'_2$}
-  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|_1 ~ |t|'_2$}
-  \DisplayProof \proofsep
+  \UnaryInfC{$|t|_1 \App |t|_2 \to |t|_1 \App |t|'_2$}
+  \next
   \AxiomC{$|t| \to |t|'$}
-  \UnaryInfC{$\lmd x ~|t| \to \lmd x ~|t|'$}
-  \DisplayProof \proofbreak
-  \AxiomC{$\CParen{\lmd x ~|t|_1} ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
-  \DisplayProof
-\end{center}
+  \UnaryInfC{$\Ab x |t| \to \Ab x |t|'$}
+  \next
+  \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
+\end{Proofs}
 
 \paragraph{Normal order}
 Syntax is changed as follows.
 \begin{Code}
   $\dots$
   nf $::=$
-        $\lmd x$ nf
+        $\Ab x$ nf
         nanf
   nanf $::=$
         x
@@ -609,29 +647,27 @@ Syntax is changed as follows.
         t t
 \end{Code}
 Evaluation rules are as follows.
-\begin{center}
+\begin{Proofs}
   \AxiomC{$|na|_1 \to |na|'_1$}
-  \UnaryInfC{$|na|_1 ~|t|_2 \to |na|'_1 ~|t|_2$}
-  \DisplayProof \proofsep
+  \UnaryInfC{$|na|_1 \App |t|_2 \to |na|'_1 \App |t|_2$}
+  \next
   \AxiomC{$|t|_2 \to |t|'_2$}
-  \UnaryInfC{$|nanf|_1 ~|t|_2 \to |nanf|_1 ~|t|'_2$}
-  \DisplayProof \proofsep
+  \UnaryInfC{$|nanf|_1 \App |t|_2 \to |nanf|_1 \App |t|'_2$}
+  \next
   \AxiomC{$|t| \to |t|'$}
-  \UnaryInfC{$\lmd x ~|t| \to \lmd x ~|t|'$}
-  \DisplayProof \proofbreak
-  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
-  \DisplayProof
-\end{center}
+  \UnaryInfC{$\Ab x |t| \to \Ab x |t|'$}
+  \next
+  \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
+\end{Proofs}
 
 \paragraph{Lazy evaluation}
 Syntax is not changed. Evaluation rules are as follows.
-\begin{center}
+\begin{Proofs}
   \AxiomC{$|t|_1 \to |t|'_1$}
-  \UnaryInfC{$|t|_1 ~ |t|_2 \to |t|'_1 ~ |t|_2$}
-  \DisplayProof \proofbreak
-  \AxiomC{$|(| \lmd x ~|t|_1 |)| ~|t|_2 \to \subst{|x| \mapsto |t|_2} |t|_1$}
-  \DisplayProof
-\end{center}
+  \UnaryInfC{$|t|_1 \App |t|_2 \to |t|'_1 \App |t|_2$}
+  \next
+  \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
+\end{Proofs}
 
 \Ex{5.3.7}
 Add the following syntactic categories to \LambdaNB.
@@ -640,12 +676,12 @@ Add the following syntactic categories to \LambdaNB.
         wrong
         true
         false
-        $\lmd x$ t
+        $\Ab x$ t
 
   badbool $::=$
         wrong
         nv
-        $\lmd x$ t
+        $\Ab x$ t
 
   badabs $::=$
         wrong
@@ -654,29 +690,27 @@ Add the following syntactic categories to \LambdaNB.
         nv
 \end{Code}
 Augment the evaluation relation with the following rules.
-\begin{center}
-  \AxiomC{$|if badbool then| ~|t|_1 ~|else| ~|t|_2 \to |wrong|$}
-  \DisplayProof \proofbreak
+\begin{Proofs}
+  \AxiomC{$\If{|badbool|}{|t|_1}{|t|_2} \to |wrong|$}
+  \next
   \AxiomC{$|succ badnat| \to |wrong|$}
-  \DisplayProof \proofbreak
+  \next
   \AxiomC{$|pred badnat| \to |wrong|$}
-  \DisplayProof \proofbreak
+  \next
   \AxiomC{$|iszero badnat| \to |wrong|$}
-  \DisplayProof \proofbreak
+  \next
   \AxiomC{$|badabs| ~|t| \to |wrong|$}
-  \DisplayProof
-\end{center}
+\end{Proofs}
 
 \Ex{5.3.8}
-\begin{center}
-  \AxiomC{$\lmd x ~|t| \to \lmd x ~|t|$}
-  \DisplayProof \proofbreak
-  \AxiomC{$|t|_1 \Bigstep \lmd x ~|t|'_1$}
+\begin{Proofs}
+  \AxiomC{$\Ab x |t| \Bigstep \Ab x |t|$}
+  \next
+  \AxiomC{$|t|_1 \Bigstep \Ab x |t|'_1$}
   \AxiomC{$|t|_2 \Bigstep |v|_2$}
-  \AxiomC{$\subst{|x| \mapsto |v|_2} |t|'_1 \Bigstep |v|_3$}
-  \TrinaryInfC{$|t|_1 ~|t|_2 \Bigstep |v|_3$}
-  \DisplayProof
-\end{center}
+  \AxiomC{$[|x| \mapsto |v|_2] |t|'_1 \Bigstep |v|_3$}
+  \TrinaryInfC{$|t|_1 \App |t|_2 \Bigstep |v|_3$}
+\end{Proofs}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section 6.
@@ -685,24 +719,25 @@ Augment the evaluation relation with the following rules.
 
 \Ex{6.1.1}
 \begin{Code}
-  c$_0$    = $\lmd{} \lmd{}$ 0;
-  c$_2$    = $\lmd{} \lmd{}$ 1 (1 0);
-  plus = $\lmd{} \lmd{} \lmd{} \lmd{}$ 3 1 (2 0 1);
-  fix  = $\lmd{}$ ($\lmd{}$ 1 ($\lmd{}$ (1 1) 0)) ($\lmd{}$ 1 ($\lmd{}$ (1 1) 0));
-  foo  = ($\lmd{}$ ($\lmd{}$ 0)) ($\lmd{}$ 0);
+  c$_0$    = $\Abn2$ 0;
+  c$_2$    = $\Abn2$ 1 (1 0);
+  plus = $\Abn4$ 3 1 (2 0 1);
+  fix  = $\Abn1$ ($\Abn1$ 1 ($\Abn1$ (1 1) 0)) ($\Abn1$ 1 ($\Abn1$ (1 1) 0));
+  foo  = ($\Abn1$ ($\Abn1$ 0)) ($\Abn1$ 0);
 \end{Code}
+
 
 \Ex{6.1.4}
 Define a family of sets $S_{ni}, ~n, i \in \N$ inductively as follows.
 \begin{align*}
-  S_{n,0} &= \{ 0, \dots, n - 1 \}, ~n \in \N, \\
+  S_{n,0} &= \Set{0, \dots, n - 1}, ~n \in \N, \\
   S_{ni} &= S_{n, i - 1}
-         \cup \{ \lmd{} |t| \mid |t| \in S_{n + 1, i - 1} \}
-         \cup \{ |(| |t|_1 ~|t|_2 |)| \mid |t|_1, |t|_2 \in S_{n, i - 1} \}, \\
-         & \hspace{20em} n \in \N, i \in \N \setminus \{ 0 \}
+         \cup \Set{\Abn1 |t| \mid |t| \in S_{n + 1, i - 1}}
+         \cup \Set{\CParen{|t|_1 \App |t|_2} \mid |t|_1, |t|_2 \in S_{n, i - 1}}, \\
+         & \hspace{20em} n \in \N, ~i \in \N \setminus \Set{0}
 \end{align*}
 Then, define a family of sets
-  $\mathcal S = \{\mathcal S_0, \mathcal S_1, \mathcal S_2, \dots \}$ by
+  $\mathcal S = \Set{\mathcal S_0, \mathcal S_1, \mathcal S_2, \dots}$ by
   $\mathcal S_n = \bigcup_i S_{ni}, ~n \in \N$.
 Each set $\mathcal S_n$ in this family coincides with $\mathcal T_n$.
 
@@ -714,11 +749,11 @@ There are three cases to consider.
 \begin{itemize}
   \item If $|t| \in S_{n, i - 1}$, by induction hypothesis,
       we have $|t| \in \mathcal T_n$.
-  \item If $|t| = \lmd{} |s|$ for some $|s| \in S_{n + 1, i - 1}$,
+  \item If $|t| = \Abn1 |s|$ for some $|s| \in S_{n + 1, i - 1}$,
       by induction hypothesis, we have $|s| \in \mathcal T_{n + 1}$.
     Following \textsc{Definition 6.1.2.2},
       we obtain $|t| = \in \mathcal T_{n}$.
-  \item Otherwise, we can write $|t| = |(| |s|_1 ~ |s|_2 |)|$
+  \item Otherwise, we can write \M{|t| = \CParen{|s|_1 \App |s|_2}}
       for some $|s|_1, |s|_2 \in S_{n, i - 1}$.
     By induction hypothesis, we have $|s|_1, |s|_2 \in \mathcal T_n$.
     Following \textsc{Definition 6.1.2.3},
@@ -736,12 +771,12 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
   \item By definition, it holds that $|k| \in S_{n,0} \subseteq \mathcal S_n$
       whenever $0 \le |k| < n$.
   \item If $|t| \in \mathcal S_n$, there exists $i$ such that $|t| \in S_{ni}$.
-    By definition, it holds $\lmd{} |t| \in S_{n - 1, i + 1} \subseteq \mathcal S_{n - 1}$.
+    By definition, it holds $\Abn1 |t| \in S_{n - 1, i + 1} \subseteq \mathcal S_{n - 1}$.
   \item If $|t|_1, |t|_2 \in \mathcal S_n$,
       there exist $i_1, i_2$ such that $|t|_1 \in S_{ni_1}$ and $|t|_2 \in S_{ni_2}$.
-    Let $i = \max\{ i_1, i_2 \}$,
+    Let $i = \max\Set{i_1, i_2}$,
       then we have $|t|_1, |t|_2 \in S_{ni}$.
-    By definition, we have $|(| |t|_1 ~ |t|_2 |)| \in S_{n, i + 1} \subseteq \mathcal S_n$.
+    By definition, we have \M{\CParen{|t|_1 \App |t|_2} \in S_{n, i + 1} \subseteq \mathcal S_n}.
 \end{enumerate}
 \qed
 
@@ -749,75 +784,75 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
 \begin{enumerate}
   \item
     \begin{alignat*}{2}
-      &removenames_\Gamma(|x|) &&= (\text{index of the rightmost |x| in } \Gamma), \\
-      &removenames_\Gamma(\lmd x |s|) &&= \lmd{} removenames_{\Gamma, |x|}(|s|), \\
-      &removenames_\Gamma(|t|_1 ~ |t|_2)
-        &&= removenames_\Gamma(|t|_1) ~ removenames_\Gamma(|t|_2).
+      &\RemoveNames_\Gamma(|x|) &&= (\text{index of the rightmost |x| in } \Gamma), \\
+      &\RemoveNames_\Gamma(\lmd x |s|) &&= \lmd{} \RemoveNames_{\Gamma, |x|}(|s|), \\
+      &\RemoveNames_\Gamma(|t|_1 \App |t|_2)
+        &&= \RemoveNames_\Gamma(|t|_1) \CdSpc \RemoveNames_\Gamma(|t|_2).
     \end{alignat*}
-  \item Let $newname(\Gamma)$ be
-      the first variable name in $\mathcal V \setminus dom(\Gamma)$.
+  \item Let $\It{newname}(\Gamma)$ be
+      the first variable name in $\mathcal V \setminus \Dom(\Gamma)$.
     \begin{alignat*}{3}
-      &restorenames_\Gamma(|k|)
+      &\RestoreNames_\Gamma(|k|)
         &&= |x|_{|k|}
         && \where \Gamma = |x|_n, \dots, |x|_0, \\
-      &restorenames_\Gamma(\lmd{} |s|)
-        &&= \lmd x restorenames_{\Gamma, |x|}(|s|)
-        && \where |x| = newname(\Gamma), \\
-      &restorenames_\Gamma(|t|_1 ~ |t|_2)
-        &&= restorenames_\Gamma(|t|_1) ~ restorenames_\Gamma(|t|_2). &&
+      &\RestoreNames_\Gamma(\lmd{} |s|)
+        &&= \lmd x \RestoreNames_{\Gamma, |x|}(|s|)
+        && \where |x| = \It{newname}(\Gamma), \\
+      &\RestoreNames_\Gamma(|t|_1 \App |t|_2)
+        &&= \RestoreNames_\Gamma(|t|_1) \CdSpc \RestoreNames_\Gamma(|t|_2). &&
     \end{alignat*}
 \end{enumerate}
 
 \Ex{6.2.2}
 \begin{enumerate}
-  \item $\dshift^2(\lmd{} \lmd{} ~|1 (0 2)|) = \lmd{} \lmd{} ~|1 (0 4)|$.
+  \item $\DShift^2(\Abn2 |\ 1 (0 2)|) = \Abn2 |\ 1 (0 4)|$.
   \item
-    $\dshift^2(\lmd{} ~|0 1 (| \lmd{} ~|0 1 2)|)
-     = \lmd{} ~|0 3 (| \lmd{} ~|0 1 4)|$.
+    $\DShift^2(\Abn1 |\ 0 1\ | \CParen{\Abn1 |\ 0 1 2|})
+     = \Abn1 |\ 0 3\ |\CParen{\Abn1 |\ 0 1 4|}$.
 \end{enumerate}
 
 \Ex{6.2.3}
 We show it by structural induction.
 
-If |t| is a variable, then $\dshift_c^d(|t|)$ is a $(n + d)$-term by definition.
+If |t| is a variable, then $\DShift_c^d(|t|)$ is a $(n + d)$-term by definition.
 
-If |t| is written as $|t| = \lmd{} |t|_1$, 
+If |t| is written as $|t| = \Abn1 |t|_1$, 
   $|t|_1$ is an $(n + 1)$-term.
-By induction hypothesis, $\dshift_{c+1}^d(|t|_1)$ is an $(n + d + 1)$-term.
+By induction hypothesis, $\DShift_{c+1}^d(|t|_1)$ is an $(n + d + 1)$-term.
 Therefore,
-  $\dshift_c^d(\lmd{} |t|_1) = \lmd{} \dshift_{c+1}^d(|t|_1)$ is an $(n + d)$-term.
+  $\DShift_c^d(\Abn1 |t|_1) = \Abn1 \DShift_{c+1}^d(|t|_1)$ is an $(n + d)$-term.
 
-If |t| is written as $|t| = |t|_1 ~ |t|_2$,
+If |t| is written as \M{|t| = |t|_1 \App |t|_2},
   $|t|_1$ and $|t|_2$ are both $n$-terms.
 By induction hypothesis,
-  $\dshift_c^d(|t|_1)$ and $\dshift_c^d(|t|_2)$ re $(n + d)$-terms.
+  $\DShift_c^d(|t|_1)$ and $\DShift_c^d(|t|_2)$ are $(n + d)$-terms.
 Therefore,
-  $\dshift_c^d(|t|_1 ~ |t|_2) = \dshift_c^d(|t|_1) ~ \dshift_c^d(|t|_2)$ is an
-  $(n + d)$-term. \qed
+  \M{\DShift_c^d(|t|_1 \App |t|_2) = \DShift_c^d(|t|_1) \CdSpc \DShift_c^d(|t|_2)}
+  is an $(n + d)$-term. \qed
 
 \Ex{6.2.5}
 \begin{enumerate}
   \item \begin{align*}
-      \subst{|0| \mapsto |1|} |(0 (| \lmd{} \lmd{} |2))|
-      &= |1 (| \subst{|0| \mapsto |1|} \lmd{} \lmd{} |2)| \\
-      &= |1 (| \lmd{} \lmd{} \subst{|2| \mapsto |3|} |2)| \\
-      &= |1 (| \lmd{} \lmd{} |3)|.
+      [|0| \mapsto |1|] \CParen{|0| \App \CParen{\Abn2 |2|}}
+      &= |1| \App \CParen{[|0| \mapsto |1|] \Abn2 |2|} \\
+      &= |1| \App \CParen{\Abn2 [|2| \mapsto |3|] |2|} \\
+      &= |1| \App \CParen{\Abn2 |3|}
   \end{align*}
   \item \begin{align*}
-      \subst{|0| \mapsto |1 (| \lmd{} |2)|} |(0 (| \lmd{} |1))|
-      &= |1 (| \lmd{} |2) (| \subst{|0| \mapsto |1 (| \lmd{} |2)|} \lmd{} |1)| \\
-      &= |1 (| \lmd{} |2) (| \lmd{} \subst{|1| \mapsto |2 (| \lmd{} |3)|} |1)| \\
-      &= |1 (| \lmd{} |2) (| \lmd{} |2 (| \lmd{} |3))|.
+      [|0| \mapsto |1| \App \CParen{\Abn1 |2|}] \CParen{|0| \App \CParen{\Abn1 |1|}}
+      &= |1| \App \CParen{\Abn1 |2|} \App \CParen{[|0| \mapsto |1| \App \CParen{\Abn1 |2|}] \Abn1 |1|} \\
+      &= |1| \App \CParen{\Abn1 |2|} \App \CParen{\Abn1 [|1| \mapsto |2| \App \CParen{\Abn1 |3|}] |1|} \\
+      &= |1| \App \CParen{\Abn1 |2|} \App \CParen{\Abn1 |\ 2| \App \CParen{\Abn1 |3|}}.
   \end{align*}
   \item \begin{align*}
-      \subst{|0| \mapsto |1|} |(| \lmd{} |0 2)|
-      &= \lmd{} \subst{|1| \mapsto |2|} |0 2| \\
-      &= \lmd{} |0 2|.
+      [|0| \mapsto |1|] \CParen{\Abn1 |\ 0 2|}
+      &= \Abn1 \CdSpc [|1| \mapsto |2|] |0 2| \\
+      &= \Abn1 |\ 0 2|.
   \end{align*}
   \item \begin{align*}
-      \subst{|0| \mapsto |1|} |(| \lmd{} |1 0)|
-      &= \lmd{} \subst{|1| \mapsto |2|} |1 0| \\
-      &= \lmd{} |2 0|.
+      [|0| \mapsto |1|] \CParen{\Abn1 |\ 1 0|}
+      &= \Abn1 [|1| \mapsto |2|] |1 0| \\
+      &= \Abn1 |\ 2 0|.
   \end{align*}
 \end{enumerate}
 
@@ -825,22 +860,22 @@ Therefore,
 We show it by structural induction on |t|.
 
 If |t| is a variable,
-  $\subst{|j| \mapsto |s|} |t|$ is |s| if $|j| = |t|$
+  $[|j| \mapsto |s|] |t|$ is |s| if $|j| = |t|$
   or |t| otherwise.
 In either case, it is an $n$-term.
 
-If $|t| = \lmd{} |t|_1$,
-  we have $\subst{|j| \mapsto |s|} |t|
-           = \lmd{} \subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$.
-Since both $|t|_1$ and $\dshift^1(|s|)$ are $(n + 1)$-terms and $|j| + 1 \le n + 1$,
+If $|t| = \Abn1 |t|_1$,
+  we have $[|j| \mapsto |s|] |t|
+           = \Abn1 [|j| + 1 \mapsto \DShift^1(|s|)] |t|_1$.
+Since both $|t|_1$ and $\DShift^1(|s|)$ are $(n + 1)$-terms and $|j| + 1 \le n + 1$,
   by induction hypothesis,
-  $\subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$ is an $(n + 1)$-term.
-Therefore, $\lmd{} \subst{|j| + 1 \mapsto \dshift^1(|s|)} |t|_1$ is an $n$-term.
+  $[|j| + 1 \mapsto \DShift^1(|s|)] |t|_1$ is an $(n + 1)$-term.
+Therefore, $\Abn1 [|j| + 1 \mapsto \DShift^1(|s|)] |t|_1$ is an $n$-term.
 
-Otherwise, we can write $|t| = |t|_1 ~ |t|_2$.
+Otherwise, we can write \M{|t| = |t|_1 |\ t|_2}.
 In this case, both $|t|_1$ and $|t|_2$ are $n$-terms,
-  and $\subst{|j| \mapsto |s|} |t|
-       = |(| \subst{|j| \mapsto |s|} |t|_1 |) (| \subst{|j| \mapsto |s|} |t|_2 |)|$.
+  and $[|j| \mapsto |s|] |t|
+        = \CParen{[|j| \mapsto |s|] |t|_1} \App \CParen{[|j| \mapsto |s|] |t|_2}$.
 By induction hypothesis,
   both terms in the right hand side are $n$-terms,
   and thus the right hand side as a whole is also an $n$-term.
@@ -852,85 +887,86 @@ Omitted.
 \Ex{6.2.8}
 \Theorem:
 Let $\Gamma$ be any naming context.
-We overload the notation $removenames_\Gamma(|x|)$ for a variable |x| to
+We overload the notation $\RemoveNames_\Gamma(|x|)$ for a variable |x| to
   denote the index of |x| in $\Gamma$ counting from the right.
-Then, $removenames_\Gamma$ commutes with substitution;
+Then, $\RemoveNames_\Gamma$ commutes with substitution;
   i.e., for any ordinary terms |t|, |s|, and variable |x|,
   \begin{align}
-    &\phantomrel=
-      removenames_\Gamma(\subst{|x| \mapsto |s|} |t|) \notag \\
-    &= \subst{removenames_\Gamma(|x|) \mapsto removenames_\Gamma(|s|)}
-      (removenames_\Gamma(|t|)).
+    &\PhantomRel=
+      \RemoveNames_\Gamma([|x| \mapsto |s|] |t|) \notag \\
+    &= [\RemoveNames_\Gamma(|x|) \mapsto \RemoveNames_\Gamma(|s|)]
+      \RemoveNames_\Gamma(|t|).
       \label{eq:6.2.8}
   \end{align}
 
+{
+\newcommand\Rem{\It{rem}}
 \Proof:
-Abbreviate $removenames_\Gamma$ by $rem_\Gamma$.
+Abbreviate $\RemoveNames_\Gamma$ by $\Rem_\Gamma$.
 We prove it by structural induction on |t|.
 
-If $|t| = |x|$, the both sides of Eq. \ref{eq:6.2.8} are $rem_\Gamma(|s|)$.
+If $|t| = |x|$, the both sides of Eq. \ref{eq:6.2.8} are $\Rem_\Gamma(|s|)$.
 
 If $|t| = |y| \neq |x|$,
-  we also have $rem_\Gamma(|x|) \neq rem_\Gamma(|y|)$,
-  so the both sides of Eq. \ref{eq:6.2.8} are $rem_\Gamma(|y|)$.
+  we also have $\Rem_\Gamma(|x|) \neq \Rem_\Gamma(|y|)$,
+  so the both sides of Eq. \ref{eq:6.2.8} are $\Rem_\Gamma(|y|)$.
 
-If $|t| = \lmd y |t|_1$ where $|y| \neq |x|$ and $|y| \notin FV(|s|)$,
+If $|t| = \Ab y |t|_1$ where $|y| \neq |x|$ and $|y| \notin \FV(|s|)$,
   we have
 \[
-  rem_\Gamma(\subst{|x| \mapsto |s|} |(| \lmd y |t|_1 |)|)
-   = rem_\Gamma(\lmd y \subst{|x| \mapsto |s|} |t|_1) \\
-   = \lmd{} rem_{\Gamma, |y|}(\subst{|x| \mapsto |s|} |t|_1).
+  \Rem_\Gamma([|x| \mapsto |s|] \CParen{\Ab y |t|_1})
+   = \Rem_\Gamma(\Ab y [|x| \mapsto |s|] |t|_1) \\
+   = \Abn1 \Rem_{\Gamma, |y|}([|x| \mapsto |s|] |t|_1).
 \]
 By induction hypothesis,
   the rightmost side is
 \[
-  \lmd{} \subst{rem_{\Gamma, |y|}(|x|)
-                \mapsto rem_{\Gamma, |y|}(|s|)}
-         rem_{\Gamma, |y|}(|t|_1).
+  \Abn1 [\Rem_{\Gamma, |y|}(|x|) \mapsto \Rem_{\Gamma, |y|}(|s|)]
+         \Rem_{\Gamma, |y|}(|t|_1).
 \]
-Since $|y| \notin FV(|s|) \cup \{|x|\}$,
-  $rem_{\Gamma, |y|}(|x|) = rem_\Gamma(|x|) + 1$ and
-  $rem_{\Gamma, |y|}(|s|) = \dshift^1 rem_\Gamma(|s|)$.
+Since $|y| \notin \FV(|s|) \cup \Set{|x|}$,
+  $\Rem_{\Gamma, |y|}(|x|) = \Rem_\Gamma(|x|) + 1$ and
+  $\Rem_{\Gamma, |y|}(|s|) = \DShift^1 \Rem_\Gamma(|s|)$.
 Therefore, the above term is
 \[
-  \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-    \lmd{} rem_{\Gamma, |y|}(|t|_1)
-  = \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-     rem_\Gamma(\lmd y |t|_1).
+  [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+    \Abn1 \Rem_{\Gamma, |y|}(|t|_1)
+  = [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+     \Rem_\Gamma(\Ab y |t|_1).
 \]
 This is equal to the right hand side of Eq. \ref{eq:6.2.8}.
 
-Otherwise, $|t| = |t|_1 ~ |t|_2$. We have
+Otherwise, \M{|t| = |t|_1 |\ t|_2}. We have
 \begin{align*}
-  rem_\Gamma(\subst{|x| \mapsto |s|} |(| |t|_1 ~ |t|_2 |)|)
-  &= rem_\Gamma(|(| \subst{|x| \mapsto |s|} |t|_1 |)| ~
-                        |(| \subst{|x| \mapsto |s|} |t|_2 |)|) \\
-  &= rem_\Gamma(\subst{|x| \mapsto |s|} |t|_1) ~
-     rem_\Gamma(\subst{|x| \mapsto |s|} |t|_2).
+  \Rem_\Gamma([|x| \mapsto |s|] \CParen{|t|_1 \App |t|_2})
+  &= \Rem_\Gamma(\CParen{[|x| \mapsto |s|] |t|_1} \App
+                        \CParen{[|x| \mapsto |s|] |t|_2}) \\
+  &= \Rem_\Gamma([|x| \mapsto |s|] |t|_1) \App
+     \Rem_\Gamma([|x| \mapsto |s|] |t|_2).
 \end{align*}
 By induction hypothesis, we have
 \begin{align*}
-  &\phantomrel=
-    rem_\Gamma(\subst{|x| \mapsto |s|} |t|_1) ~
-    rem_\Gamma(\subst{|x| \mapsto |s|} |t|_2) \\
-  &= |(|
-       \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-       rem_\Gamma(|t|_1)
-     |)| ~
-     |(|
-       \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-       rem_\Gamma(|t|_2)
-     |)| \\
-  &= \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-     |(| rem_\Gamma(|t|_1) ~ rem_\Gamma(|t|_2) |)| \\
-  &= \subst{rem_\Gamma(|x|) \mapsto rem_\Gamma(|s|)}
-      rem_\Gamma(|t|_1 ~ |t|_2).
+  &\PhantomRel=
+    \Rem_\Gamma([|x| \mapsto |s|] |t|_1) \App
+    \Rem_\Gamma([|x| \mapsto |s|] |t|_2) \\
+  &= \CParen{
+       [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+       \Rem_\Gamma(|t|_1)
+     } \App \CParen{
+       [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+       \Rem_\Gamma(|t|_2)
+     } \\
+  &= [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+     \CParen{\Rem_\Gamma(|t|_1) \App \Rem_\Gamma(|t|_2)} \\
+  &= [\Rem_\Gamma(|x|) \mapsto \Rem_\Gamma(|s|)]
+      \Rem_\Gamma(|t|_1 \App |t|_2).
 \end{align*}
 \qed
+}
 
 \Ex{6.3.1}
-In the argument of $\dshift^{-1}$ in \Rule{E-AppAbs},
-  the variable |0| is substituted away with $\dshift^1(|v|_2)$,
+In the argument of $\DShift^{-1}$ in \Rule{E-AppAbs},
+  the variable |0| is substituted away with $\DShift^1(|v|_2)$,
   which does not refer |0| due to the shift operator.
 Therefore, the negative shift does not cause any ill-formed terms.
 
@@ -955,48 +991,51 @@ It immediately follows from 3, 5, 6, and 7 of \textsc{Lemma 8.2.2}.
 We proceed by case analysis on the final rule in the evaluation derivation.
 
 \Case\textsc{E-IfTrue}:
-We have $|t| = |if true then t|_1~|else t|_2 \to |t|_1$.
-By the inversion lemma, we have $|t|_1~|: T|$.
+We have \M{|t| = \If{|true|}{|t|_1}{|t|_2} \to |t|_1}.
+By the inversion lemma, we have \M{\TyRel{|t|_1}{|T|}}.
 \textsc{E-IfFalse} case is similar.
 
 \Case\textsc{E-If}:
-We have $|t| = |if t|_1~|then t|_2~|else t|_3$
-  and $|t|' = |if t|'_1~|then t|_2~|else t|_3$
+We have \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
+  and \M{|t|' = \If{|t|'_1}{|t|_2}{\break|t|_3}}
   where $|t|_1 \to |t|'_1$.
-Since |t : T|,
-  we have $|t|_1~|: Bool|$, $|t|_2~|: T|$, and $|t|_3~|: T|$ by the inversion lemma.
-By induction hypothesis, it holds that $|t|'_1~|: Bool|$.
-We thus conclude $|t|'~|: T|$.
+Since \M{\TyRel{|t|}{|T|}},
+  we have \M{\TyRel{|t|_1}{|Bool|}}, \M{\TyRel{|t|_2}{|T|}},
+  and \M{\TyRel{|t|_3}{|T|}} by the inversion lemma.
+By induction hypothesis, it holds that \M{\TyRel{|t|'_1}{|Bool|}}.
+We thus conclude \M{\TyRel{|t|'}{|T|}}.
 
 \Case\textsc{E-Succ}:
-We have $|t| = |succ t|_1$ and $|t|' = |succ t|'_1$
+We have \M{|t| = |succ t|_1} and \M{|t|' = |succ t|'_1}
   where $|t|_1 \to |t|'_1$.
-It holds that $|T| = |Nat|$ and, by the inversion lemma, $|t|_1~|: Nat|$.
-We can derive $|t|'_1~|: Nat|$ by induction hypothesis.
-Therefore, we conclude $|t|'~|: Nat|$.
+It holds that $|T| = |Nat|$ and, by the inversion lemma,
+  \M{\TyRel{|t|_1}{|Nat|}}.
+We can derive \M{\TyRel{|t|'_1}{|Nat|}} by induction hypothesis.
+Therefore, we conclude \M{\TyRel{|t|'}{|Nat|}}.
 We can apply similar discussions to \Rule{E-Pred} and \Rule{E-IsZero}.
 
 \Case\textsc{E-PredZero}:
-It is obvious that |pred 0 : Nat| and |0 : Nat|.
+It is obvious that \M{\TyRel{|pred 0|}{|Nat|}} and \M{\TyRel{|0|}{|Nat|}}.
 The other remaining cases immediately follow from the definition in the same way.
 \qed
 
 \Ex{8.3.5}
 Simply removing \Rule{E-PredZero} breaks the progress property
-  because, by |0 : Nat| and \Rule{T-Pred}, we have |pred 0 : Nat|,
+  because, by \M{\TyRel{|0|}{|Nat|}} and \Rule{T-Pred},
+  we have \M{\TyRel{|pred 0|}{|Nat|}},
   which could not be evaluated anymore.
 
 \Ex{8.3.6}
 This property does not hold.
-For example, let $|t| = |if true then 0 else true|$,
-  then $|t| \to |0|$ and |0 : Nat|,
+For example, let \M{|t| = |if true then 0 else true|},
+  \break then \M{|t| \to |0|} and \M{\TyRel{|0|}{|Nat|}},
   while |t| is ill-typed.
 
 \Ex{8.3.7}
 \begin{itemize}
   \item If |t| is a well typed term, then |t| is evaluated to a value |v|, i.e.,
         $|t| \Bigstep |v|$.
-  \item If |t : T| and $|t| \Bigstep |v|$, then |v : T|.
+  \item If \M{\TyRel{|t|}{|T|}} and \M{|t| \Bigstep |v|}, then \M{\TyRel{|v|}{|T|}}.
 \end{itemize}
 
 \Ex{8.3.8}
@@ -1021,9 +1060,9 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   which means we cannot write any abstraction term with an argument type annotation.
 
 \Ex{9.2.2}
-1. Let $b = |f:Bool| \to |Bool|$ and $\Gamma = b$ be the typing context
-     with only one binding $b$.
-\begin{center} \scriptsize
+1. Let $\Gamma = b$ be a typing context with only one binding
+    \M{b = \TyRel{|f|}{|Bool| \to |Bool|}}.
+\begin{Proofs} \scriptsize
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
@@ -1034,11 +1073,10 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   \TrinaryInfC{$\CtxTyRel{\Gamma}{|if false then true else false|}{|Bool|}$}
   \RuleLabel{T-App}
   \BinaryInfC{$\CtxTyRel{\Gamma}{|f (if false then true else false)|}{|Bool|}$}
-  \DisplayProof
-\end{center}
+\end{Proofs}
 
-2. Let $b = |f:Bool| \to |Bool|$ and $\Gamma = (b, |x:Bool|)$.
-\begin{center} \small
+2. Let \M{b = \TyRel{|f|}{|Bool| \to |Bool|}} and \M{\Gamma = (b, \TyRel{|x|}{|Bool|})}.
+\begin{Proofs} \small
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
@@ -1059,24 +1097,34 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   \UnaryInfC{
     $\CtxTyRel{b}{\lmd{x:Bool} |f (if x then false else x)|}{|Bool| \to |Bool|}$
   }
-  \DisplayProof
-\end{center}
+\end{Proofs}
 
 \Ex{9.2.3}
-An example is $|f:Bool| \to |Bool| \to |Bool|, |x:Bool|, |y:Bool|$.
-Any such context is written as $|f:T|_1 \to |T|_2 \to |Bool|, |x:T|_1, |y:T|_2$
+An example is
+  \M{
+    \TyRel{|f|}{|Bool| \to |Bool| \to |Bool|},
+    ~ \TyRel{|x|}{|Bool|},
+    ~ \TyRel{|y|}{|Bool|}
+  }.
+Any such context is written as
+  \M{
+    \TyRel{|f|}{|T|_1 \to |T|_2 \to |Bool|},
+    ~ \TyRel{|x|}{|T|_1},
+    ~ \TyRel{|y|}{|T|_2}
+  }
   where $|T|_1$ and $|T|_2$ are arbitrary types.
 
 \Ex{9.3.2}
 \textbf{No}.
 \Proof:
 Assume, for contradiction, that there exists a context $\Gamma$ and a type |T|
-  such that $\CtxTyRel{\Gamma}{|x x|}{|T|}$.
+  such that \M{\CtxTyRel{\Gamma}{|x x|}{|T|}}.
 By the inversion lemma,
   there is a type |S| that satisfies
-  $\CtxTyRel{\Gamma}{|x|}{|S| \to |T|}$ and $\CtxTyRel{\Gamma}{|x|}{|S|}$.
+  $\CtxTyRel{\Gamma}{|x|}{|S| \to |T|}$ and \M{\CtxTyRel{\Gamma}{|x|}{|S|}}.
 By the inversion lemma again,
-  it holds that $|x:S| \to |T| \in \Gamma$ and $|x:S| \in \Gamma$.
+  it holds that \M{\TyRel{|x|}{|S| \to |T|} \in \Gamma} and
+  \M{\TyRel{|x|}{|S|} \in \Gamma}.
 Since any environment can hold only one type binding for one variable,
   we can derive $|S| \to |T| = |S|$.
 However, the sizes of the both hand sides do not match.
@@ -1084,7 +1132,7 @@ This contradicts to the equality.
 \qed
 
 \Ex{9.3.9}
-We show it by induction on derivations of $\CtxTyRel{\Gamma}{|t|}{|T|}$.
+We show it by induction on derivations of \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
 We prove each induction step by case analysis of the derivation rule
   used at the last derivation step.
 
@@ -1094,23 +1142,23 @@ In these cases, |t| is a value,
   and the statement vacuously holds.
 
 \Case\Rule{T-If}:
-In this case, we can write $|t| = \IfThenElse{|t|_1}{|t|_2}{|t|_3}$
+In this case, we can write \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
   with subderivations of
-  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
-  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
-  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
+  \M{\CtxTyRel{\Gamma}{|t|_1}{|Bool|}},
+  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|}}, and
+  \M{\CtxTyRel{\Gamma}{|t|_3}{|T|}}.
 We show this case by case analysis of the evaluation rule applied to $|t|$.
 \begin{itemize}
   \item \Case\Rule{E-IfTrue}:
     In this case, we have $|t|_1 = |true|$ and $|t| \to |t|_2$.
     By the uniqueness of evaluation, it holds $|t|' = |t|_2$.
-    We then immediately obtain $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
+    We then immediately obtain \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
   \item \Case\Rule{E-IfFalse}: Similar as \Rule{E-IfTrue} case.
   \item \Case\Rule{E-If}:
     In this case, we have $|t|_1 \to |t|'_1$
-      and $|t| \to \IfThenElse{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
-    By induction hypothesis, it holds $\CtxTyRel{\Gamma}{|t|'_1}{|Bool|}$.
-    Therefore, we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
+      and $|t| \to \If{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
+    By induction hypothesis, it holds \M{\CtxTyRel{\Gamma}{|t|'_1}{|Bool|}}.
+    Therefore, we get \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
 \end{itemize}
 
 \Case\Rule{T-Var}:
@@ -1120,48 +1168,48 @@ In this case,
 
 \Case\Rule{T-App}:
 In this case,
-  we can write $|t| = |t|_1 ~ |t|_2$
+  we can write \M{|t| = |t|_1 \App |t|_2}
   with subderivations of
-  $\CtxTyRel{\Gamma}{|t|_1}{|S| \to |T|}$ and
-  $\CtxTyRel{\Gamma}{|t|_2}{|S|}$ for some type |S|.
+  \M{\CtxTyRel{\Gamma}{|t|_1}{|S| \to |T|}} and
+  \M{\CtxTyRel{\Gamma}{|t|_2}{|S|}} for some type |S|.
 There are three cases of the evaluation rule that derives $|t| \to |t|'$.
 \begin{itemize}
-  \item \Case\Rule{E-App1}
-    In this case, we have $|t|_1 \to |t|'_1$ and $|t| \to |t|'_1 ~ |t|_2$.
+  \item \Case\Rule{E-App1}:
+    In this case, we have $|t|_1 \to |t|'_1$ and \M{|t| \to |t|'_1 \App |t|_2}.
     By induction hypothesis,
-      it holds $\CtxTyRel{\Gamma}{|t|'_1}{|S| \to |T|}$.
+      it holds \M{\CtxTyRel{\Gamma}{|t|'_1}{|S| \to |T|}}.
     By applying the typing rule \Rule{T-App} to
-      this typing relation and $\CtxTyRel{\Gamma}{|t|_2}{|S|}$,
-      we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
-  \item \Case\Rule{E-App2}
+      this typing relation and \M{\CtxTyRel{\Gamma}{|t|_2}{|S|}},
+      we get \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
+  \item \Case\Rule{E-App2}:
     We can prove for this case similarly as \Rule{E-App1} case.
   \item \Case\Rule{E-AppAbs}:
     In this case,
-      we can write $|t| = \CParen{\AbTy{|x|}{|S|} |t|_{12}} |v|_2$ and
-      $|t|' = \subst{|x| \mapsto |v|_2} |t|_{12}$
+      we can write \M{|t| = \CParen{\AbTy{|x|}{|S|} |t|_{12}} |v|_2} and
+      $|t|' = [|x| \mapsto |v|_2] |t|_{12}$.
     By the inversion lemma of typing relations,
       we have
-      $\CtxTyRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}$
+      \M{\CtxTyRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}}
       and
-      $\CtxTyRel{\Gamma}{|v|_2}{|S|}$.
+      \M{\CtxTyRel{\Gamma}{|v|_2}{|S|}}.
     The former relation is derived by \Rule{T-Abs},
-      with which we have $\CtxTyRel{\Gamma, |x:S|}{|t|_{12}}{|T|}$.
+      with which we have \M{\CtxTyRel{\Gamma, |x:S|}{|t|_{12}}{|T|}}.
     By the substitution lemma,
-      we get $\CtxTyRel{\Gamma}{\subst{|x| \mapsto |v|_2} |t|_{12}}{|T|}$,
+      we get \M{\CtxTyRel{\Gamma}{[|x| \mapsto |v|_2] |t|_{12}}{|T|}},
       which is what we wanted to prove.
+      \qed
 \end{itemize}
-\qed
 
 \Ex{9.3.10}
 \textbf{No}.
 For example,
-  let $\Gamma = \TyRel{|y|}{|Bool| \to |Bool|}$
-  and $|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} ~|y|$.
+  let \M{\Gamma = \TyRel{|y|}{|Bool| \to |Bool|}}
+  and \M{|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} \App |y|}.
 Applying \Rule{E-AppAbs} yields
-  $|t| \to |t|' = \subst{|x| \mapsto |y|} |x| = |y|$.
-Using \Rule{T-Var}, we can derive $\CtxTyRel{\Gamma}{|t|'}{|Bool| \to |Bool|}$.
+  $|t| \to |t|' = [|x| \mapsto |y|] |x| = |y|$.
+Using \Rule{T-Var}, we can derive \M{\CtxTyRel{\Gamma}{|t|'}{|Bool| \to |Bool|}}.
 However, it is obvious that |t| is not typed under $\Gamma$,
-  so $\CtxTyRel{\Gamma}{|t|}{|Bool| \to |Bool|}$ does not hold.
+  so \M{\CtxTyRel{\Gamma}{|t|}{|Bool| \to |Bool|}} does not hold.
 
 \Ex{9.4.1}
 |Bool|: \Rule{T-True} and \Rule{T-False} are the introduction rules,
@@ -1186,7 +1234,7 @@ Define $|t|_1 = |unit|$ and
 \[
   |t|_{n + 1} = \CParen{
     \AbTy{|f|}{|Unit| \to |Unit|} ~|f (f unit)|
-  } ~ \CParen{
+  } \App \CParen{
     \AbTy{|x|}{|Unit|} |t|_n
   }
 \]
@@ -1194,15 +1242,14 @@ Define $|t|_1 = |unit|$ and
 It is obvious that the size of $|t|_n$ grows linearly with $n$.
 Evaluation of $|t|_{n + 1}$ proceeds as follows.
 \begin{align*}
-  &&&\phantomrel\to |t|_{n + 1} \\
+  &&&\PhantomRel\to |t|_{n + 1} \\
   &\EqComment{\Rule{E-AppAbs}} &&\to
-    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~
-    \CParen{ \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~|unit|} \\
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App
+    \CParen{ \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App |unit|} \\
   &\EqComment{\Rule{E-AppAbs}} &&\to
-    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~
-    |t|_n \\
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App |t|_n \\
   &\EqComment{evaluate $|t|_n$} &&\to^*
-    \CParen{\AbTy{|x|}{|Unit|} |t|_n} ~ |unit| \\
+    \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App |unit| \\
   &\EqComment{\Rule{E-AppAbs}} &&\to |t|_n \\
   &\EqComment{evaluate $|t|_n$} &&\to^* |unit|.
 \end{align*}
@@ -1216,55 +1263,53 @@ Let $e : \lambda^E \to \lambda^I$ be the elaboration function.
 We show for typing and evaluation both by induction on structure of |t|.
 
 Typing rule:
-\begin{center}
+\begin{Proofs}
   \AxiomC{$\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$}
   \UnaryInfC{$\CtxTyRel{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$}
-  \DisplayProof
-\end{center}
-If $\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$,
-  it is derived from $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$.
+\end{Proofs}
+If \M{\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}},
+  it is derived from \M{\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}}.
 By induction hypothesis,
-  it holds $\CtxxTyRel I{\Gamma}{e(|t|_2)}{|T|_2}$.
+  it holds \M{\CtxxTyRel I{\Gamma}{e(|t|_2)}{|T|_2}}.
 Choose a variable name |x| from the outside of $\Gamma$.
-Then, weakining yields $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$,
+Then, weakining yields \M{\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}},
   from which we can derive
-  $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$.
+  \M{\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}}.
 
-If $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$
-  where $|x| \notin \Gamma$ and $|x| \notin FV(|t|_2)$,
-  it is derived from $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$.
+If \M{\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}}
+  where $|x| \notin \Gamma$ and $|x| \notin \FV(|t|_2)$,
+  it is derived from \M{\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}}.
 By induction hypothesis,
-  it holds $\CtxxTyRel E{\Gamma, |x:T|_1}{|t|_2}{|T|_2}$.
-Since $|x|$ does not appear in $|t|_2$ as a free variable,
-  we can omit it from the context as $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$,
+  it holds \M{\CtxxTyRel E{\Gamma, |x:T|_1}{|t|_2}{|T|_2}}. \break
+Since |x| does not appear in $|t|_2$ as a free variable,
+  we can omit it from the context as \M{\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}},
   from which we can derive
-  $\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$.
+  \M{\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}}.
 
 Evaluation rule:
-\begin{center}
-  \AxiomC{$\CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2 \to |t|_{12}$}
-  \DisplayProof
-\end{center}
+\begin{Proofs}
+  \AxiomC{$\CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App |v|_2 \to |t|_{12}$}
+\end{Proofs}
 If $|t| \to_E |t|'$,
   we should only care about the case when |t| is written as
-  $|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2$,
+  \M{|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App \break |v|_2},
   or otherwise $e(|t|) \to_I e(|t|')$ follows immediately from
   the induction hypothesis.
 However, even this case is obvious as we have $|t|' = |t|_{12}$
-  and, by choosing $|x| \notin FV(|t|_{12})$,
+  and, by choosing $|x| \notin \FV(|t|_{12})$,
   we can derive
-  $
-    e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} ~ |v|_2
+  \M{
+    e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} \App |v|_2
            \to_I e(|t|_{12})
            = e(|t|')
-  $.
+  }.
 
 If $e(|t|) \to_I e(|t|')$,
   we again should only care about the case when $|t|$ is written as
-  $|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} ~ |v|_2$.
+  \M{|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App |v|_2}.
 In this case,
-  we have $e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} ~ |v|_2$
-  where the name |x| is chosen arbitrarily from the outside of $FV(|t|_{12})$.
+  we have \M{e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} \App |v|_2}
+  where the name |x| is chosen arbitrarily from the outside of $\FV(|t|_{12})$.
 It is then derived that $e(|t|') = e(|t|_{12})$, while we have $|t| \to |t|_{12}$.
 Note that this is what we can show; see the errata of the text.
 
@@ -1272,22 +1317,22 @@ Note that this is what we can show; see the errata of the text.
 \begin{itemize}
   \item[(1)]
     We can define a derived form as
-      $|t as T| \EqDef \CParen{\AbTy{|x|}{|T|} |x|} ~ |t|$.
+      \M{|t as T| \EqDef \CParen{\AbTy{|x|}{|T|} |x|} \App |t|}.
     The evaluation and typing rules are derived directly from those of the
       inner language.
   \item[(2)]
     To delay the evalution of |t|, we define a derived form as follows.
     \[
       |t as T| \EqDef
-        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} ~
+        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} \App
         \CParen{\AbTy{|_|}{|Unit|} |t|}.
     \]
     The right hand side is evaluated as follows.
     \begin{align*}
-      &&&\phantomrel\to
-        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} ~
+      &&&\PhantomRel\to
+        \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} \App
           \CParen{\AbTy{|_|}{|Unit|} |t|} \\
-      &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|_|}{|Unit|} |t|} ~ |unit| \\
+      &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|_|}{|Unit|} |t|} \App |unit| \\
       &\EqComment{\Rule{E-AppAbs}} &&\to |t|.
     \end{align*}
     Note that it requires two steps to evaluate the desugared form.
@@ -1355,58 +1400,60 @@ If we repeat this structure more times (say, of depth $n$),
 \]
 
 \Ex{11.8.2}
-1. We introduce \emph{pattern typing relations}
-  with the following syntactic rule.
-\begin{Code}
+\begin{enumerate}
+  \item We introduce \emph{pattern typing relations}
+      with the following syntactic rule.
+    \begin{Code}
   pt $::=$ p : T $\To$ $\Gamma$
-\end{Code}
-Pattern typing relations are derived by the following derivation rules.
-\begin{center}
-  \AxiomC{}
-  \RuleLabel{PT-Var}
-  \UnaryInfC{$|x:T| \To |x:T|$}
-  \DisplayProof \proofsep
-  \AxiomC{for each $i$ ~ $|p|_i |:| |T|_i \to \Gamma_i$}
-  \RuleLabel{PT-Rcd}
-  \UnaryInfC{$
-    \Rec{|l|_i |=| |p|_i \Indices{i \in 1..n}}
-    |:|
-    \Rec{|l|_i |:| |T|_i \Indices{i \in 1..n}}
-    \To
-    \Gamma_1 |,| \dots |,| \Gamma_n
-  $}
-  \DisplayProof
-\end{center}
-Using pattern typing, we add the following typing rule.
-\begin{center}
-  \AxiomC{$\CtxTyRel{\Gamma_1}{|t|_1}{|T|_1}$}
-  \AxiomC{$|p:T|_1 \To \Gamma_2$}
-  \AxiomC{$\CtxTyRel{\Gamma_1, \Gamma_2}{|t|_2}{|T|_2}$}
-  \RuleLabel{T-Let}
-  \TrinaryInfC{$\CtxTyRel{\Gamma_1}{|let| ~ |p=t|_1 ~ |in| ~ |t|_2}{|T|_2}$}
-  \DisplayProof
-\end{center}
+    \end{Code}
+    Pattern typing relations are derived by the following derivation rules.
+    \begin{Proofs}
+      \AxiomC{}
+      \RuleLabel{PT-Var}
+      \UnaryInfC{$\TyRel{|x|}{|T|} \To \TyRel{|x|}{|T|}$}
+      \next
+      \AxiomC{for each $i$ ~ $\TyRel{|p|_i}{|T|_i} \To \Gamma_i$}
+      \RuleLabel{PT-Rcd}
+      \UnaryInfC{$
+        \TyRel{
+          \Rec{|l|_i |=| |p|_i \Indices{i \in 1..n}}
+        }{
+          \Rec{|l|_i |:| |T|_i \Indices{i \in 1..n}}
+        }
+        \To
+        \Gamma_1 |,| \dots |,| \Gamma_n
+      $}
+    \end{Proofs}
+    Using pattern typing, we add the following typing rule.
+    \begin{Proofs}
+      \AxiomC{$\CtxTyRel{\Gamma_1}{|t|_1}{|T|_1}$}
+      \AxiomC{$\TyRel{|p|}{|T|_1} \To \Gamma_2$}
+      \AxiomC{$\CtxTyRel{\Gamma_1, \Gamma_2}{|t|_2}{|T|_2}$}
+      \RuleLabel{T-Let}
+      \TrinaryInfC{$\CtxTyRel{\Gamma_1}{\Let{|p|}{|t|_1} |t|_2}{|T|_2}$}
+    \end{Proofs}
 
-2. Type preservation for \Rule{E-Let} is straight-forward.
-To show it for \Rule{E-LetV},
-  we need the following lemma, which is a generalization of \textsc{Lemma 9.3.8}.
+  \item Type preservation for \Rule{E-Let} is straight-forward.
+    To show it for \Rule{E-LetV},
+      we need the following lemma, which is a generalization of \textsc{Lemma 9.3.8}.
 
-\Lemma{11.8.2.1}
-If $\CtxTyRel{\Gamma}{|v|}{|S|}$,
-  $|p:S| \To \Gamma'$,
-  and $\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}$,
-  then \break $\CtxTyRel{\Gamma}{\subst{match(|p|, |v|)}|t|}{|T|}$. \qed
+    \Lemma{11.8.2.1}
+    If \M{\CtxTyRel{\Gamma}{|v|}{|S|}},
+      \M{\TyRel{|p|}{|S|} \To \Gamma'},
+      and \M{\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}},
+      then \M{\CtxTyRel{\Gamma}{[\It{match}(|p|, |v|)] |t|}{|T|}}. \qed
 
-The lemma is shown by induciton on derivation of $|p:S| \To \Gamma'$.
+    The lemma is shown by induciton on derivation of \M{\TyRel{|p|}{|S|} \To \Gamma'}.
 
-Type progress is shown by induction on derivation of the type of the term.
-Suppose we have a typing relation
-  $\CtxTyRel{\Gamma}{|let p=t|_1 ~ |in t|_2}{|T|_2}$.
-Since it should be derived by \Rule{T-Let},
-  we have $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$ for some type $|T|_1$.
-If $|t|_1$ is not a value,
-  then $|t|_1$ is evaluated to another term $|t|'_1$ by the induction hypothesis.
-Otherwise, the |let| expression is evaluated by \Rule{E-LetV}. \qed
+    Type progress is shown by induction on derivation of the type of the term.
+    Suppose we have a typing relation
+      \M{\CtxTyRel{\Gamma}{\Let{|p|}{|t|_1} |t|_2}{|T|_2}}.
+    Since it should be derived by \Rule{T-Let},
+      we have \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_1}} for some type $|T|_1$.
+    If $|t|_1$ is not a value,
+      then $|t|_1$ is evaluated to another term $|t|'_1$ by the induction hypothesis.
+    Otherwise, the |let| expression is evaluated by \Rule{E-LetV}. \qed
+\end{enumerate}
 
 \Ex{11.9.1}
 The boolean syntaxes can be defined as derived forms as follows.
@@ -1414,8 +1461,8 @@ The boolean syntaxes can be defined as derived forms as follows.
   & |Bool| &&\EqDef |Unit| + |Unit| \\
   & |true| &&\EqDef |inl unit| \\
   & |false| &&\EqDef |inr unit| \\
-  & |if t|_1 |\ then t|_2 |\ else t|_3
-    &&\EqDef |case t|_1 |\ of inl x|_2 \To |t|_2 |\ \| inr x|_3 \To |t|_3
+  & \If{|t|_1}{|t|_2}{|t|_3}
+    &&\EqDef \CaseOf{|t|_1} \CaseArm{|inl x|_2}{|t|_2} \CaseArm{|inr x|_3}{|t|_3}
 \end{alignat*}
   where, in the last line, $|x|_2$ and $|x|_3$ are fresh.
 
@@ -1464,27 +1511,35 @@ These rules only evaluate a subterm of |t|,
 
 \Case\Rule{E-IsnilNil}:
 In this case,
-  we can write $|t| = |isnil[S] (nil[T])|$.
+  we can write \M{|t| = |isnil[S] (nil[T])|}.
 Using \Rule{T-Nil} and \Rule{T-Isnil},
-  we derive |t:Bool|,
+  we derive \M{\TyRel{|t|}{|Bool|}},
   while $|t|' = |true|$, whose type is |Bool|.
 
 \Case\Rule{E-IsnilCons}:
-Let $|t| = |isnil[S|_1 |] (cons[S|_2 |] v|_1 |\ v|_2 |)|$
-  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
+Let \M{
+    |t| = |isnil| \CBracket{|S|_1} \App \CParen{
+      |cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2
+    }
+  }
+  and \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
 By the inversion lemma for \Rule{T-Isnil}
   (we omit the precise statement and proof here;
    same for that for other typing rules),
   we obtain $|T| = |Bool|$, while we have $|t|' = |false|$, which has type |Bool|.
 
 \Case\Rule{E-HeadCons}:
-Let $|t| = |head[S|_1 |] (cons[S|_2 |] v|_1 |\ v|_2 |)|$
-  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
+Let \M{
+    |t| = |head| \CBracket{|S|_1} \App \CParen{
+      |cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2
+    }
+  }
+  and \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
 Using the inversion lemma for \Rule{T-Head},
-  we obtain $\CtxTyRel{\Gamma}{|cons[S|_2 |] v|_1 |\ v|_2}{|List S|_1}$
+  we obtain \M{\CtxTyRel{\Gamma}{|cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2}{|List S|_1}}
   and $|T| = |S|_1$.
 By applying the inversion lemma for \Rule{T-Cons},
-  we further obtain $\CtxTyRel{\Gamma}{|v|_1}{|S|_1}$.
+  we further obtain \M{\CtxTyRel{\Gamma}{|v|_1}{|S|_1}}.
 Since $|t| \to |v|_1$, the type is preserved.
 
 \Case\Rule{E-TailCons}:
@@ -1511,8 +1566,8 @@ All the other annotations can be safely removed,
 
 \Ex{12.1.1}
 For example, given a value |a| of type |A|,
-  applying a function $\Lm|f:A|\to|A. f (f a)|$ to a very long abstraction term
-  of type $|A|\to|A|$ duplicates the abstraction term,
+  applying a function \M{\AbTy{|f|}{|A| \to |A|} |\ f (f a)|} to
+  a very long abstraction term of type $|A|\to|A|$ duplicates the abstraction term,
   which leads to a term of size larger than the original.
 
 \Ex{12.1.7}
@@ -1524,17 +1579,17 @@ We extend \textsc{Definition 12.1.2} by adding the following items.
 \end{itemize}
 We then extend \textsc{Lemma 12.1.5} with booleans and products.
 Abbreviate $\Gamma = |x|_1 |,| \dots |,| |x|_n$ and
-  $\sigma = \subst{|x|_1 \mapsto |v|_1} \dots \subst{|x|_n \mapsto |v|_n}$
+  $\sigma = [|x|_1 \mapsto |v|_1] \cdots [|x|_n \mapsto |v|_n]$
   throughout the proof.
 
 \Case\Rule{T-True}, \Rule{T-False}: Immediate.
 
 \Case\Rule{T-If}:
 In this case, we have
-  $|t| = |if t|_1 |\ then t|_2 |\ else t|_3$,
-  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
-  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
-  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
+  \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}},
+  \M{\CtxTyRel{\Gamma}{|t|_1}{|Bool|}},
+  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|}}, and
+  \M{\CtxTyRel{\Gamma}{|t|_3}{|T|}}.
 By the induction hypothesis, $R_{|Bool|}(\sigma |t|_1)$.
 By \textsc{Lemma 12.1.3}, we have $\sigma |t|_1 \to^* |v|'_1$ for some $|v|'_1$.
 If $|v|'_1 = |true|$, $\sigma |t| \to^* \sigma |t|_2$.
@@ -1544,8 +1599,8 @@ The case of $|v|'_1 = |false|$ is similar.
 \Case\Rule{T-Pair}:
 In this case, we have
   $|t| = \Rec{|t|_1 |,t|_2}$,
-  $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$, and
-  $\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$.
+  \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_1}}, and
+  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|_2}}.
 By the induction hypothesis,
   $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$.
 Therefore,
@@ -1558,7 +1613,7 @@ By combining it with $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$,
 
 \Case\Rule{T-Proj1}:
 In this case, we have
-  $|t| = |t|_1 |.1|$ and $\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \times |T|_{12}}$.
+  \M{|t| = |t|_1 |.1|} and \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \times |T|_{12}}}.
 By the induction hypothesis,
   $R_{|T|_{11} \times |T|_{12}}(\sigma |t|_1)$ holds,
   which implies $R_{|T|_{11}}(\sigma |t|_1 |.1|)$.
@@ -1572,7 +1627,7 @@ By the induction hypothesis,
 
 We use the dereference operator |!| without parentheses for readability.
 The precedence of |!| is higher than function applications,
-  i.e., |!x y| is equivalent to |(!x) y|.
+  i.e., \M{|!x y|} is equivalent to \M{|(!x) y|}.
 
 \Ex{13.1.1}
 Omitted to avoid drawing...
@@ -1587,7 +1642,7 @@ With this definition,
   resulting in divergence.
 
 \Ex{13.1.3}
-Define an operator |free r| that takes a reference and frees its storage,
+Define an operator \M{|free r|} that takes a reference and frees its storage,
   which will be reused in the use of |ref| operator in the next time.
 Then, the following well-typed program
 \begin{Code}
@@ -1600,37 +1655,41 @@ Then, the following well-typed program
   will be evaluated to a stuck state |succ false|.
 
 \Ex{13.3.1}
+{
+\newcommand\Locations{\It{locations}}
+\newcommand\Reachable{\It{reachable}}
 Garbage collection requires to track the set of locations
   reachable from the outermost term.
 To model it,
-  we introduce a function $reachable(|t|, \mu)$ that
+  we introduce a function $\Reachable(|t|, \mu)$ that
   maps a term and a store to the set of locations reachable from them,
   and a \emph{gc step} $\to_{\text{gc}}$ that models the action of garbage collection.
 
-First, define $locations(|t|)$ recursively as follows.
+First, define $\Locations(|t|)$ recursively as follows.
 \begin{alignat*}{2}
-  & locations(|x|) &&= \emptyset, \\
-  & locations(\AbTy{|x|}{|T|} |t|) &&= locations(|t|), \\
-  & locations(|t|_1 ~ |t|_2) &&= locations(|t|_1) \cup locations(|t|_2), \\
-  & locations(|unit|) &&= \emptyset, \\
-  & locations(|ref t|) &&= \emptyset, \\
-  & locations(|!t|) &&= locations(|t|), \\
-  & locations(|t|_1 |:=| |t|_2) &&= locations(|t|_1) \cup locations(|t|_2), \\
-  & locations(l) &&= \{ l \}.
+  & \Locations(|x|) &&= \emptyset, \\
+  & \Locations(\AbTy{|x|}{|T|} |t|) &&= \Locations(|t|), \\
+  & \Locations(|t|_1 \App |t|_2) &&= \Locations(|t|_1) \cup \Locations(|t|_2), \\
+  & \Locations(|unit|) &&= \emptyset, \\
+  & \Locations(|ref t|) &&= \emptyset, \\
+  & \Locations(|!t|) &&= \Locations(|t|), \\
+  & \Locations(|t|_1 |:=| |t|_2) &&= \Locations(|t|_1) \cup \Locations(|t|_2), \\
+  & \Locations(l) &&= \Set{l}.
 \end{alignat*}
 This function simply collects all the occurences of locations in a term.
 Using this function,
-  we define $reachable(|t|, \mu)$ as the smallest subset $L$ of
+  we define $\Reachable(|t|, \mu)$ as the smallest subset $L$ of
   the domain of $\mu$ that satisfies the following conditions.
 
 \begin{itemize}
-  \item $locations(|t|) \subseteq L$.
-  \item If $l \in L$, then $locations(\mu(l)) \subseteq L$.
+  \item $\Locations(|t|) \subseteq L$.
+  \item If $l \in L$, then $\Locations(\mu(l)) \subseteq L$.
 \end{itemize}
 
 Using this function, we define a gc step as follows.
 \[
-  \Store{|t|}{\mu} \longrightarrow_{\text{gc}} \Store{|t|}{(l \mapsto \mu(l) \mid l \in reachable(|t|, \mu))}
+  \Store{|t|}{\mu} \longrightarrow_{\text{gc}}
+  \Store{|t|}{(l \mapsto \mu(l) \mid l \in \Reachable(|t|, \mu))}
 \]
 Then, we form an evaluation of a term by interleaving evaluation and gc steps.
 
@@ -1647,6 +1706,7 @@ If $\Store{|t|}{\mu} \to^* \Store{|t|'}{\mu'}$,
 Given this theorem,
   we can insert a gc step to an arbitrary position of a sequence of evaluation steps
   without affecting the evaluation result.
+}
 
 \Ex{13.4.1}
 \begin{Code}
@@ -1659,7 +1719,7 @@ Given this theorem,
 \Ex{13.5.2}
 Let
   $\Gamma = \emptyset$,
-  $\mu = l \mapsto \AbTy{|x|}{|Unit|} |(| |!|l |)| ~ |x|$,
+  \M{\mu = (l \mapsto \AbTy{|x|}{|Unit|} \CParen{|!|l} \App |x|)},
   $\Sigma_1 = (l \mapsto |Unit| \to |Unit|)$, and
   $\Sigma_2 = (l \mapsto |Unit| \to |Unit| \to |Unit|)$.
 Then,
@@ -1704,28 +1764,27 @@ We may just erase the type annotation on evaluation
 \Ex{14.3.1, 14.3.2, 14.3.3} \textsc{Todo}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% section 14.
+% section 15.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Subtyping}
 
 \Ex{15.2.1}
-\begin{center}
+\begin{Proofs}
   \AxiomC{}
   \RuleLabel{S-RcdPerm}
-  \UnaryInfC{$\phantomrel\Sb |\{x:Nat,y:Nat,z:Nat\}|$}
-  \noLine\UnaryInfC{$\Sb |\{y:Nat,x:Nat,z:Nat\}|$}
+  \UnaryInfC{$\PhantomRel\Sb \Rec{|x:Nat,y:Nat,z:Nat|}$}
+  \noLine\UnaryInfC{$\Sb \Rec{|y:Nat,x:Nat,z:Nat|}$}
   \AxiomC{}
   \RuleLabel{S-RcdWidth}
-  \UnaryInfC{|\{y:Nat,x:Nat,z:Nat\}|}
-  \noLine\UnaryInfC{$\Sb |\{y:Nat\}|$}
+  \UnaryInfC{\Rec{|y:Nat,x:Nat,z:Nat|}}
+  \noLine\UnaryInfC{$\Sb \Rec{|y:Nat|}$}
   \RuleLabel{S-Trans}
-  \BinaryInfC{$\Sub{|\{x:Nat,y:Nat,z:Nat\}|}{|\{y:Nat\}|}$}
-  \DisplayProof
-\end{center}
+  \BinaryInfC{$\Sub{\Rec{|x:Nat,y:Nat,z:Nat|}}{\Rec{|y:Nat|}}$}
+\end{Proofs}
 
 \Ex{15.2.2}
 There is another derivation that uses subtyping of |f| instead of |xy| as follows.
-\begin{center}
+\begin{Proofs} \small
   \AxiomC{$\vdots$}
   \UnaryInfC{$\CtxTyRel{}{|f|}{|Rx| \to |Nat|}$}
   \AxiomC{}
@@ -1742,8 +1801,7 @@ There is another derivation that uses subtyping of |f| instead of |xy| as follow
   \UnaryInfC{$\CtxTyRel{}{|xy|}{|Rxy|}$}
   \RuleLabel{T-App}
   \BinaryInfC{$\CtxTyRel{}{|f xy|}{|Nat|}$}
-  \DisplayProof
-\end{center}
+\end{Proofs}
 
 \Ex{15.2.3}
 \begin{itemize}
@@ -1780,12 +1838,11 @@ If there were such a type,
 
 \Ex{15.2.5}
 It is not a good idea since, e.g., it breaks the progress property as follows.
-Let $|t| = \Rec{\AbTy{|x|}{\Rec{}} |x,\ |\Rec{}}$
-We have $\CtxTyRel{}{|t|}{}$.
-% We have $\CtxTyRel{}{|t|}{|(\{\}| \to |\{\})| \times |\{\}|}$.
+Let \M{|t| = \Rec{\AbTy{|x|}{\Rec{}} |x,\ | \Rec{}}}.
+We have \M{\CtxTyRel{}{|t|}{\CParen{\Rec{} \to \Rec{}} \times \Rec{}}}.
 With the rule \Rule{S-ProdWidth},
   we can derive $\CtxTyRel{}{|t|}{|\{\}| \to |\{\}|}$.
-Therefore, a term |t \{\}| is well-typed, which is obviously a stuck state.
+Therefore, a term \M{|t \{\}|} is well-typed, which is obviously a stuck state.
 
 \Ex{15.3.1}
 The progress property may break with an additional subtyping rule,
@@ -1794,11 +1851,11 @@ The preservation property may break as well;
   consider adding the following subtyping rule.
 \[ \Sub{|T|_1 \to |T|_2}{|T|_1} \]
 Let $|f| = \AbTy{|x|}{|Top| \to |Unit|} |0|$.
-With the above rule, we can derive $\CtxTyRel{}{|f|}{|Top| \to |Unit|}$.
+With the above rule, we can derive \M{\CtxTyRel{}{|f|}{|Top| \to |Unit|}}.
 Therefore, we have
-  $\CtxTyRel{}{|f (| \AbTy{|x|}{|Top|} |unit)|}{|Unit|}$.
+  \M{\CtxTyRel{}{|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|}}{|Unit|}}.
 However,
-  this term is evaluated as $|f (| \AbTy{|x|}{|Top|} |unit)| \to |0|$,
+  this term is evaluated as \M{|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|} \to |0|},
   which cannot have type |Unit|.
 
 Removing any subtyping rule does not break the progress nor preservation property.
@@ -1843,9 +1900,9 @@ Removing any subtyping rule does not break the progress nor preservation propert
         and $|T|_i = |S|_{\sigma(i)}$.
       It is obvious that
       $
-        \{|l|_i \Indices{i\in1..n} \}
-        = \{|k|_{\sigma(i)} \Indices{i\in1..n}\}
-        = \{|k|_j \Indices{j\in1..n}\}
+        \Set{|l|_i \Indices{i\in1..n}}
+        = \Set{|k|_{\sigma(i)} \Indices{i\in1..n}}
+        = \Set{|k|_j \Indices{j\in1..n}}
       $, and $\Sub{|S|_{\sigma(i)} = |T|_i}{|T|_i}$ for each $i$.
 
     \Case\Rule{S-Arrow}, \Rule{S-Top}: Impossible.
@@ -1860,7 +1917,7 @@ Removing any subtyping rule does not break the progress nor preservation propert
       $\AbTy{|x|}{|S|} |t|$ or $\Rec{|l|_i |=v|_i \Indices{i\in1..n}}$
       (we can exclude the possibilities of $|v| = |x|$ and $|v| = |x.l|$
        because |v| is a closed value).
-    If $\CtxTyRel{}{|v|}{|T|_1 \to |T|_2}$,
+    If \M{\CtxTyRel{}{|v|}{|T|_1 \to |T|_2}},
       |v| can only take the former form by the inversion lemma.
   \item Similarly shown by the inversion lemma. \qed
 \end{enumerate}
