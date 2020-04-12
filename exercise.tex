@@ -2160,4 +2160,31 @@ By \Rule{TA-Proj},
   $\AlTyRel{\Gamma}{|t|_1 |.l|_{i_1}}{|S|_{j_1}}$ is derived.
 The type satisfies $\Sub{|S|_{j_1}}{|T|_{i_1}}$. \qed
 
+\Ex{16.2.6}
+\emph{No.}
+Let $|t| = \AbTy{|x|}{\Rcd{}} |x|$.
+In this system, it may have a declarative type $|T| = \Rcd{} \to |Top|$ as follows.
+\begin{Proofs}
+  \AxiomC{$|x:|\Rcd{} \in |x:|\Rcd{}$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel{|x:|\Rcd{}}{|x|}{\Rcd{}}$}
+  \AxiomC{}
+  \RuleLabel{S-Top}
+  \UnaryInfC{$\Sub{\Rcd{}}{|Top|}$}
+  \RuleLabel{T-Sub}
+  \BinaryInfC{$\CtxTyRel{|x:|\Rcd{}}{|x|}{|Top|}$}
+  \RuleLabel{T-Abs}
+  \UnaryInfC{$\CtxTyRel{}{\AbTy{|x|}{\Rcd{}} |x|}{\Rcd{} \to |Top|}$}
+\end{Proofs}
+On the other hand, its algorithmic type is $|S| = \Rcd{} \to \Rcd{}$,
+  which is derived as follows.
+\begin{Proofs}
+  \AxiomC{$|x:|\Rcd{} \in |x:|\Rcd{}$}
+  \RuleLabel{TA-Var}
+  \UnaryInfC{$\AlTyRel{|x:|\Rcd{}}{|x|}{\Rcd{}}$}
+  \RuleLabel{TA-Abs}
+  \UnaryInfC{$\AlTyRel{}{\AbTy{|x|}{\Rcd{}} |x|}{\Rcd{} \to \Rcd{}}$}
+\end{Proofs}
+In the system without \Rule{S-Arrow}, |S| is not a subtype of |T|.
+
 \end{document}
