@@ -4,9 +4,42 @@
 \usepackage{bussproofs}
 \usepackage{listings}
 \usepackage{mathtools}
-\usepackage{newtxmath,newtxtext}
+\usepackage{newpxmath,newpxtext}
 \usepackage{parskip}
+\usepackage{xstring}
 
+\makeatletter
+
+\theoremstyle{definition}
+
+% Use |x| as a short verb also available in math mode.
+\newcommand\Cd@Vert|
+\catcode`|=\active
+\def|#1|{\Cd{#1}}
+
+\newcommand\Ab[1]{\Ab@Impl#1\relax}
+\newcommand\Ab@Impl[1]{\Ab@One#1|.|\@ifnextchar\relax{}{\Ab@Impl}}
+\newcommand\Ab@One[1]{\lambda|#1|}
+\newcommand\Abn[1]{\Repeat{#1}{\lambda|.|}}
+\newcommand\AbTy[2]{\lambda #1 |:| #2 |.|}
+\newcommand\AlCtx[2]{#1 \Tsto #2}
+\newcommand\AlTyRel[3]{\AlCtx{#1}{\TyRel{#2}{#3}}}
+\newcommand\App{\CdSpc}
+\newcommand\Bigstep{\Downarrow}
+\newcommand\Cardi[1]{\vert#1\vert}
+\newcommand\Case{\textit{Case} }
+\newcommand\CaseArm[2]{#1 \To #2 \@ifnextchar\CaseArm{\Cd{ | }}{}}
+\newcommand\CaseOf[1]{|case |#1| of |}
+\newcommand\CBracket[1]{\Cd[#1\Cd]}
+\newcommand\Cd[1]{{%
+  \newcommand|\Cd@Vert%
+  \texttt{%
+    \fontdimen2\font=\CdSpcLen%
+    \StrSubstitute[0]{#1}{ }{\ }%
+  }%
+}}
+\newcommand\CdSpc{\ }
+\newdimen\CdSpcLen \CdSpcLen=\fontdimen2\font
 \lstnewenvironment{Code}{
   \lstset{
     basewidth=0.5em,
@@ -16,39 +49,7 @@
     xleftmargin=1em,
   }
 }{}
-\theoremstyle{definition}
-
-\newcommand\Cd[1]{\mbox{\lstinline[basewidth=0.5em,basicstyle=\ttfamily,mathescape]{#1}}}
-% Use |x| as a short verb also available in math mode.
-\catcode`|=\active
-\def|#1|{\Cd{#1}}
-
-\newcommand\lmd[1]{\lambda \texttt{#1.}}
-\newcommand\Lmd[2]{\lambda \texttt{#1}#2\texttt{.}}
-\newcommand\proofbreak{\\ \vspace{1em}}
-\newcommand\proofsep{\quad}
-\newcommand\subst[1]{[#1]\,}
-\newcommand\where{~ \text{where} ~}
-
-\makeatletter
-
-\newcommand\Ab[1]{\Ab@Impl#1\relax}
-\newcommand\Ab@Impl[1]{\Ab@One#1\texttt.\@ifnextchar\relax{}{\Ab@Impl}}
-\newcommand\Ab@One[1]{\lambda\texttt{#1}}
-\newcommand\Abn[1]{\Repeat{#1}{\lambda\texttt.}}
-\newcommand\AbTy[2]{\lambda #1 \texttt{:} #2 \texttt{.}}
-\newcommand\AlCtx[2]{#1 \Tsto #2}
-\newcommand\AlTyRel[3]{\AlCtx{#1}{\TyRel{#2}{#3}}}
-\newcommand\App{\CdSpc}
-\newcommand\As[2]{#1\CdSpc\texttt{as}\CdSpc#2}
-\newcommand\Bigstep{\Downarrow}
-\newcommand\Cardi[1]{\vert#1\vert}
-\newcommand\Case{\textit{Case} }
-\newcommand\CaseArm[2]{#1 \To #2 \@ifnextchar\CaseArm{\Cd{\ \|\ }}{}}
-\newcommand\CaseOf[1]{\Cd{case\ }#1\Cd{\ of\ }}
-\newcommand\CBracket[1]{\texttt[#1\texttt]}
-\newcommand\CdSpc{\phantom{\Cd.}}
-\newcommand\CParen[1]{\texttt(#1\texttt)}
+\newcommand\CParen[1]{\Cd(#1\Cd)}
 \newcommand\Ctx[2]{#1 \Ts #2}
 \newcommand\CtxTyRel[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
 \newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
@@ -60,27 +61,14 @@
 \newcommand\EqDef{\stackrel{\text{def}}{=}}
 \newcommand\Ex[1]{\subsection*{Exercise #1}}
 \newcommand\FV{\It{FV}}
-\newcommand\If[3]{|if\ |#1|\ then\ |#2|\ else\ |#3}
-\newcommand\Implies{\CdSpc\text{implies}\CdSpc}
+\newcommand\If[3]{|if |#1| then |#2| else |#3}
+\newcommand\Implies{\ \text{implies}\ }
 \newcommand\Indices[1]{{}^{#1}}
 \newcommand\It[1]{\textit{#1}}
 \newcommand\LambdaNB{$\lambda$\textbf{NB}}
 \newcommand\Lemma[1]{\textsc{Lemma #1.}}
-\newcommand\Let[2]{\Cd{let\ } #1 = #2 \Cd{\ in\ }}
+\newcommand\Let[2]{|let | #1 = #2 | in |}
 \newcommand\Lm{\lambda}
-\newcommand\M[1]{\unskip\CdSpc\M@body{#1}}
-\newcommand\M@body[1]{%
-  $#1$%
-  \@ifnextchar,{\M@SpaceAfter}{%
-  \@ifnextchar.{\M@SpaceAfter}{%
-  \@ifnextchar){\M@SpaceAfter}{%
-  \@ifnextchar]{\M@SpaceAfter}{%
-  \@ifnextchar\}{\M@SpaceAfter}{%
-  \CdSpc\ignorespaces%
-  }}}}}
-}
-\newcommand\Mh[1]{\M@body{#1}}
-\newcommand\M@SpaceAfter[1]{#1\phantom{\Cd.}\ignorespaces}
 \newcommand\N{\mathbb N}
 \newcommand\PhantomRel[1]{\phantom{{}#1{}}}
 \newcommand\Proof{\textsc{Proof}}
@@ -117,7 +105,8 @@
 \newcommand\To{\Rightarrow}
 \newcommand\Ts{\vdash}
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
-\newcommand\TyRel[2]{#1 ~\texttt:~ #2}
+\newcommand\TyRel[2]{#1 | : | #2}
+\newcommand\Where{~ \text{where} ~}
 
 \makeatother
 
@@ -286,20 +275,20 @@ If |t| is a conditional expression,
   to get $|t|' = |t|''$ using the induction hypothesis.
 Otherwise, |t| is either a successor, predecessor, or zero test.
 
-If \M{|t| = |succ s|} for some term |s|,
+If $|t| = |succ s|$ for some term |s|,
   the last rule used to derive both $|t| \to |t|'$
   and $|t| \to |t|''$ is \Rule{E-Succ}.
-We then have \M{|t|' = |succ s|'} for some term $|s|'$,
-  and the statement \M{|succ s| \to |succ s|'} is derived from
+We then have $|t|' = |succ s|'$ for some term $|s|'$,
+  and the statement $|succ s| \to |succ s|'$ is derived from
   $|s| \to |s|'$.
-Similarly, we have \M{|t|'' = |succ s|''} for some term $|s|''$,
-  and the statement \M{|succ s| \to |succ s|''} is derived from
+Similarly, we have $|t|'' = |succ s|''$ for some term $|s|''$,
+  and the statement $|succ s| \to |succ s|''$ is derived from
   $|s| \to |s|''$.
 We now have $|s| \to |s|'$ and $|s| \to |s|''$,
   and then we get $|s|' = |s|''$ by the induction hypothesis.
-It implies \M{|t|' = |succ s|' = |succ s|'' = |t|''}.
+It implies $|t|' = |succ s|' = |succ s|'' = |t|''$.
 
-If \M{|t| = |pred s|} for some term |s|,
+If $|t| = |pred s|$ for some term |s|,
   the last rules used to derive
   $|t| \to |t|'$ and $|t| \to |t|''$ are
   either \Rule{E-PredZero}, \Rule{E-PredSucc}, or \Rule{E-Pred}.
@@ -307,14 +296,14 @@ These rules do not \emph{overlap},
   i.e., if $|t| \to |t|'$ is derived from one of the rules,
   then $|t| \to |t|''$ is also derived from the same rule.
 To see this,
-  we need to check if the left hand side \M{|pred t|_1} of the statement
+  we need to check if the left hand side $|pred t|_1$ of the statement
   derived by \Rule{E-Pred} does not conflict with the left hand side
-  \M{|pred succ nv|_1} of \Rule{E-PredSucc}.
+  $|pred succ nv|_1$ of \Rule{E-PredSucc}.
 Assume they conflict.
 We then, for some $|t|'_1$,
-  have \M{|pred succ nv|_1 \to |pred t|'_1}
+  have $|pred succ nv|_1 \to |pred t|'_1$
   derived by \Rule{E-Pred}.
-The premise of this one-step derivation is \M{|succ nv|_1 \to |t|'_1}.
+The premise of this one-step derivation is $|succ nv|_1 \to |t|'_1$.
 The rule \Rule{E-Succ} is the only rule that may derive this statement,
   with which we have $|nv|_1 \to |t|'_2$ for some $|t|'_2$.
 It contradicts with the fact that $|nv|_1$ is a normal form.
@@ -327,8 +316,8 @@ For \Rule{E-Pred},
   we repeat the same discussion as \Rule{E-Succ} to get
   $|t|' = |t|''$ by the induction hypothesis.
 
-If \M{|t| = |iszero s|} for some term |s|,
-  a similar discussion is applied as the previous case of \M{|t| = |pred s|},
+If $|t| = |iszero s|$ for some term |s|,
+  a similar discussion is applied as the previous case of $|t| = |pred s|$,
   where the three rules are replaced with
   \Rule{E-IsZeroZero}, \Rule{E-IsZeroSucc}, and \Rule{E-IsZero},
   and we handle boolean values instead of numeric ones in some places. \qed
@@ -378,15 +367,15 @@ By the induction hypothesis,
 Then $|t| \Bigstep |v|$ is shown by examining all the cases for
   the direct derivation of $|t| \to |t|'$.
 For example, if it is derived by \Rule{E-IfTrue},
-  |t| is written as \M{|t| = \If{|true|}{|t|'}{|t|''}}.
+  |t| is written as $|t| = \If{|true|}{|t|'}{|t|''}$.
 We have $|true| \Bigstep |true|$ by \Rule{B-Value}
   and $|t|' \Bigstep |v|$ by the hypothesis.
 By applying \Rule{B-IfTrue} to them,
-  we obtain \M{\If{|true|}{|t|'}{|t|''} \Bigstep |v|}.
+  we obtain $\If{|true|}{|t|'}{|t|''} \Bigstep |v|$.
 Another example: if it is derived by \Rule{E-If},
   |t| and $|t|'$ are written as
-  \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}} and
-  \M{|t|' = \If{|t|'_1}{|t|'_2}{|t|'_3}}, respectively.
+  $|t| = \If{|t|_1}{|t|_2}{|t|_3}$ and
+  $|t|' = \If{|t|'_1}{|t|'_2}{|t|'_3}$, respectively.
 We also have $|t|_1 \to |t|'_1$.
 Since $|t|' \to^* |v|$,
   it holds that $|t|'_1 \to^* |v|_1$ with $|v|_1 \in \{|true|, |false|\}$.
@@ -396,7 +385,7 @@ Then, in the same way, we obtain $|t|_2 \to^* |v|$.
 By the induction hypothesis,
   we have $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By applying \Rule{B-IfTrue},
-  we get \M{\If{|t|_1}{|t|_2}{|t|_3} \Bigstep |v|}.
+  we get $\If{|t|_1}{|t|_2}{|t|_3} \Bigstep |v|$.
 Almost same discussions apply for the case of $|v|_1 = |false|$.
 The other cases also follow in a similar manner.
 
@@ -405,21 +394,18 @@ Next, we show $|t| \to^* |v|$ given $|t| \Bigstep |v|$
 When $|t| = |v|$, it obviously holds that $|v| \to^* |v|$.
 Induction step is made by examining all the evaluation rules except for \Rule{B-Value}.
 For example, if the last step is \Rule{B-IfTrue},
-  we have \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
+  we have $|t| = \If{|t|_1}{|t|_2}{|t|_3}$
   with $|t|_1 \Bigstep |true|$ and $|t|_2 \Bigstep |v|$.
 By the induction hypothesis,
   we have $|t|_1 \to^* |true|$ and $|t|_2 \to^* |v|$.
 By applying \Rule{E-If} multiple times with premises given by
   individual small steps consisting $|t|_1 \to^* |true|$,
   we obtain
-  \M{
-    \If{|t|_1}{|t|_2}{|t|_3} \to^*
-    \If{|true|}{|t|_2}{|t|_3}
-  }.
+  $\If{|t|_1}{|t|_2}{|t|_3} \to^* \If{|true|}{|t|_2}{|t|_3}$.
 Next, we apply \Rule{E-IfTrue} to the right hand side to obtain
-  \M{\If{|t|_1}{|t|_2}{|t|_3} \to^* |t|_2}.
+  $\If{|t|_1}{|t|_2}{|t|_3} \to^* |t|_2$.
 Combining it with $|t|_2 \to^* |v|$,
-  we get \M{\If{|t|_1}{|t|_2}{|t|_3} \to^* |v|}.
+  we get $\If{|t|_1}{|t|_2}{|t|_3} \to^* |v|$.
 Similar discussions are applied to the other cases. \qed
 
 \Ex{3.5.18}
@@ -548,7 +534,7 @@ It reads "apply |prd| for |n| times to |m|".
 
 \Ex{5.2.6}
 Full evaluation of |prd| |c|$_n$ involves applications of |ss|
-  $n$ times starting from \M{|pair c|_0|\ c|_0} and selecting |fst|.
+  $n$ times starting from $|pair c|_0|\ c|_0$ and selecting |fst|.
 The evaluation thus completes in $O(n)$ steps.
 
 \Ex{5.2.7}
@@ -612,7 +598,7 @@ There are two cases.
     By the induction hypothesis, we have $\Cardi{FV(|t|_1)} \le \It{size}(|t|_1)$.
     Combining them gives
       $\Cardi{FV(|t|)} \le \Cardi{FV(|t|_1)} \le \It{size}(|t|_1) \le \It{size}(|t|)$.
-  \item Otherwise, |t| is written as \M{|t| = |t|_1 |\ t|_2}.
+  \item Otherwise, |t| is written as $|t| = |t|_1 |\ t|_2$.
     It holds that $\Cardi{FV(|t|)} \le \Cardi{FV(|t|_1)} + \Cardi{FV(|t|_2)}$
       and $\It{size}(|t|) = \It{size}(|t|_1) + \It{size}(|t|_2) + 1$.
     By the induction hypothesis, we have
@@ -761,7 +747,7 @@ There are three cases to consider.
       by the induction hypothesis, we have $|s| \in \mathcal T_{n + 1}$.
     Following \textsc{Definition 6.1.2.2},
       we obtain $|t| = \in \mathcal T_{n}$.
-  \item Otherwise, we can write \M{|t| = \CParen{|s|_1 \App |s|_2}}
+  \item Otherwise, we can write $|t| = \CParen{|s|_1 \App |s|_2}$
       for some $|s|_1, |s|_2 \in S_{n, i - 1}$.
     By the induction hypothesis, we have $|s|_1, |s|_2 \in \mathcal T_n$.
     Following \textsc{Definition 6.1.2.3},
@@ -784,7 +770,7 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
       there exist $i_1, i_2$ such that $|t|_1 \in S_{ni_1}$ and $|t|_2 \in S_{ni_2}$.
     Let $i = \max\Set{i_1, i_2}$,
       then we have $|t|_1, |t|_2 \in S_{ni}$.
-    By definition, we have \M{\CParen{|t|_1 \App |t|_2} \in S_{n, i + 1} \subseteq \mathcal S_n}.
+    By definition, we have $\CParen{|t|_1 \App |t|_2} \in S_{n, i + 1} \subseteq \mathcal S_n$.
 \end{enumerate}
 \qed
 
@@ -793,7 +779,7 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
   \item
     \begin{alignat*}{2}
       &\RemoveNames_\Gamma(|x|) &&= (\text{index of the rightmost |x| in } \Gamma), \\
-      &\RemoveNames_\Gamma(\lmd x |s|) &&= \lmd{} \RemoveNames_{\Gamma, |x|}(|s|), \\
+      &\RemoveNames_\Gamma(\Ab x |s|) &&= \Abn1 \RemoveNames_{\Gamma, |x|}(|s|), \\
       &\RemoveNames_\Gamma(|t|_1 \App |t|_2)
         &&= \RemoveNames_\Gamma(|t|_1) \CdSpc \RemoveNames_\Gamma(|t|_2).
     \end{alignat*}
@@ -802,10 +788,10 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
     \begin{alignat*}{3}
       &\RestoreNames_\Gamma(|k|)
         &&= |x|_{|k|}
-        && \where \Gamma = |x|_n, \dots, |x|_0, \\
-      &\RestoreNames_\Gamma(\lmd{} |s|)
-        &&= \lmd x \RestoreNames_{\Gamma, |x|}(|s|)
-        && \where |x| = \It{newname}(\Gamma), \\
+        && \Where \Gamma = |x|_n, \dots, |x|_0, \\
+      &\RestoreNames_\Gamma(\Abn1 |s|)
+        &&= \Ab x \RestoreNames_{\Gamma, |x|}(|s|)
+        && \Where |x| = \It{newname}(\Gamma), \\
       &\RestoreNames_\Gamma(|t|_1 \App |t|_2)
         &&= \RestoreNames_\Gamma(|t|_1) \CdSpc \RestoreNames_\Gamma(|t|_2). &&
     \end{alignat*}
@@ -830,12 +816,12 @@ By the induction hypothesis, $\DShift_{c+1}^d(|t|_1)$ is an $(n + d + 1)$-term.
 Therefore,
   $\DShift_c^d(\Abn1 |t|_1) = \Abn1 \DShift_{c+1}^d(|t|_1)$ is an $(n + d)$-term.
 
-If |t| is written as \M{|t| = |t|_1 \App |t|_2},
+If |t| is written as $|t| = |t|_1 \App |t|_2$,
   $|t|_1$ and $|t|_2$ are both $n$-terms.
 By the induction hypothesis,
   $\DShift_c^d(|t|_1)$ and $\DShift_c^d(|t|_2)$ are $(n + d)$-terms.
 Therefore,
-  \M{\DShift_c^d(|t|_1 \App |t|_2) = \DShift_c^d(|t|_1) \CdSpc \DShift_c^d(|t|_2)}
+  $\DShift_c^d(|t|_1 \App |t|_2) = \DShift_c^d(|t|_1) \CdSpc \DShift_c^d(|t|_2)$
   is an $(n + d)$-term. \qed
 
 \Ex{6.2.5}
@@ -880,7 +866,7 @@ Since both $|t|_1$ and $\DShift^1(|s|)$ are $(n + 1)$-terms and $|j| + 1 \le n +
   $[|j| + 1 \mapsto \DShift^1(|s|)] |t|_1$ is an $(n + 1)$-term.
 Therefore, $\Abn1 [|j| + 1 \mapsto \DShift^1(|s|)] |t|_1$ is an $n$-term.
 
-Otherwise, we can write \M{|t| = |t|_1 |\ t|_2}.
+Otherwise, we can write $|t| = |t|_1 |\ t|_2$.
 In this case, both $|t|_1$ and $|t|_2$ are $n$-terms,
   and $[|j| \mapsto |s|] |t|
         = \CParen{[|j| \mapsto |s|] |t|_1} \App \CParen{[|j| \mapsto |s|] |t|_2}$.
@@ -944,7 +930,7 @@ Therefore, the above term is
 \]
 This is equal to the right hand side of Eq. \ref{eq:6.2.8}.
 
-Otherwise, \M{|t| = |t|_1 |\ t|_2}. We have
+Otherwise, $|t| = |t|_1 |\ t|_2$. We have
 \begin{align*}
   \Rem_\Gamma([|x| \mapsto |s|] \CParen{|t|_1 \App |t|_2})
   &= \Rem_\Gamma(\CParen{[|x| \mapsto |s|] |t|_1} \App
@@ -999,51 +985,51 @@ It immediately follows from 3, 5, 6, and 7 of \textsc{Lemma 8.2.2}.
 We proceed by case analysis on the final rule in the evaluation derivation.
 
 \Case\textsc{E-IfTrue}:
-We have \M{|t| = \If{|true|}{|t|_1}{|t|_2} \to |t|_1}.
-By the inversion lemma, we have \M{\TyRel{|t|_1}{|T|}}.
+We have $|t| = \If{|true|}{|t|_1}{|t|_2} \to |t|_1$.
+By the inversion lemma, we have $\TyRel{|t|_1}{|T|}$.
 \textsc{E-IfFalse} case is similar.
 
 \Case\textsc{E-If}:
-We have \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
-  and \M{|t|' = \If{|t|'_1}{|t|_2}{\break|t|_3}}
+We have $|t| = \If{|t|_1}{|t|_2}{|t|_3}$
+  and $|t|' = \If{|t|'_1}{|t|_2}{|t|_3}$
   where $|t|_1 \to |t|'_1$.
-Since \M{\TyRel{|t|}{|T|}},
-  we have \M{\TyRel{|t|_1}{|Bool|}}, \M{\TyRel{|t|_2}{|T|}},
-  and \M{\TyRel{|t|_3}{|T|}} by the inversion lemma.
-By the induction hypothesis, it holds that \M{\TyRel{|t|'_1}{|Bool|}}.
-We thus conclude \M{\TyRel{|t|'}{|T|}}.
+Since $\TyRel{|t|}{|T|}$,
+  we have $\TyRel{|t|_1}{|Bool|}$, $\TyRel{|t|_2}{|T|}$,
+  and $\TyRel{|t|_3}{|T|}$ by the inversion lemma.
+By the induction hypothesis, it holds that $\TyRel{|t|'_1}{|Bool|}$.
+We thus conclude $\TyRel{|t|'}{|T|}$.
 
 \Case\textsc{E-Succ}:
-We have \M{|t| = |succ t|_1} and \M{|t|' = |succ t|'_1}
+We have $|t| = |succ t|_1$ and $|t|' = |succ t|'_1$
   where $|t|_1 \to |t|'_1$.
 It holds that $|T| = |Nat|$ and, by the inversion lemma,
-  \M{\TyRel{|t|_1}{|Nat|}}.
-We can derive \M{\TyRel{|t|'_1}{|Nat|}} by the induction hypothesis.
-Therefore, we conclude \M{\TyRel{|t|'}{|Nat|}}.
+  $\TyRel{|t|_1}{|Nat|}$.
+We can derive $\TyRel{|t|'_1}{|Nat|}$ by the induction hypothesis.
+Therefore, we conclude $\TyRel{|t|'}{|Nat|}$.
 We can apply similar discussions to \Rule{E-Pred} and \Rule{E-IsZero}.
 
 \Case\textsc{E-PredZero}:
-It is obvious that \M{\TyRel{|pred 0|}{|Nat|}} and \M{\TyRel{|0|}{|Nat|}}.
+It is obvious that $\TyRel{|pred 0|}{|Nat|}$ and $\TyRel{|0|}{|Nat|}$.
 The other remaining cases immediately follow from the definition in the same way.
 \qed
 
 \Ex{8.3.5}
 Simply removing \Rule{E-PredZero} breaks the progress property
-  because, by \M{\TyRel{|0|}{|Nat|}} and \Rule{T-Pred},
-  we have \M{\TyRel{|pred 0|}{|Nat|}},
+  because, by $\TyRel{|0|}{|Nat|}$ and \Rule{T-Pred},
+  we have $\TyRel{|pred 0|}{|Nat|}$,
   which could not be evaluated anymore.
 
 \Ex{8.3.6}
 This property does not hold.
-For example, let \M{|t| = |if true then 0 else true|},
-  \break then \M{|t| \to |0|} and \M{\TyRel{|0|}{|Nat|}},
+For example, let $|t| = |if true then 0 else true|$,
+  then $|t| \to |0|$ and $\TyRel{|0|}{|Nat|}$,
   while |t| is ill-typed.
 
 \Ex{8.3.7}
 \begin{itemize}
   \item If |t| is a well typed term, then |t| is evaluated to a value |v|, i.e.,
         $|t| \Bigstep |v|$.
-  \item If \M{\TyRel{|t|}{|T|}} and \M{|t| \Bigstep |v|}, then \M{\TyRel{|v|}{|T|}}.
+  \item If $\TyRel{|t|}{|T|}$ and $|t| \Bigstep |v|$, then $\TyRel{|v|}{|T|}$.
 \end{itemize}
 
 \Ex{8.3.8}
@@ -1069,7 +1055,7 @@ Therefore, there is no finite sequence of symbols that conform to the language o
 
 \Ex{9.2.2}
 1. Let $\Gamma = b$ be a typing context with only one binding
-    \M{b = \TyRel{|f|}{|Bool| \to |Bool|}}.
+    $b = \TyRel{|f|}{|Bool| \to |Bool|}$.
 \begin{Proofs} \scriptsize
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
@@ -1083,7 +1069,7 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   \BinaryInfC{$\CtxTyRel{\Gamma}{|f (if false then true else false)|}{|Bool|}$}
 \end{Proofs}
 
-2. Let \M{b = \TyRel{|f|}{|Bool| \to |Bool|}} and \M{\Gamma = (b, \TyRel{|x|}{|Bool|})}.
+2. Let $b = \TyRel{|f|}{|Bool| \to |Bool|}$ and $\Gamma = (b, \TyRel{|x|}{|Bool|})$.
 \begin{Proofs} \small
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
@@ -1103,36 +1089,36 @@ Therefore, there is no finite sequence of symbols that conform to the language o
   }
   \RuleLabel{T-Abs}
   \UnaryInfC{
-    $\CtxTyRel{b}{\lmd{x:Bool} |f (if x then false else x)|}{|Bool| \to |Bool|}$
+    $\CtxTyRel{b}{\AbTy{|x|}{|Bool|} \CdSpc |f (if x then false else x)|}{|Bool| \to |Bool|}$
   }
 \end{Proofs}
 
 \Ex{9.2.3}
 An example is
-  \M{
+  $
     \TyRel{|f|}{|Bool| \to |Bool| \to |Bool|},
     ~ \TyRel{|x|}{|Bool|},
     ~ \TyRel{|y|}{|Bool|}
-  }.
+  $.
 Any such context is written as
-  \M{
+  $
     \TyRel{|f|}{|T|_1 \to |T|_2 \to |Bool|},
     ~ \TyRel{|x|}{|T|_1},
     ~ \TyRel{|y|}{|T|_2}
-  }
+  $
   where $|T|_1$ and $|T|_2$ are arbitrary types.
 
 \Ex{9.3.2}
 \textbf{No}.
 \Proof:
 Assume, for contradiction, that there exists a context $\Gamma$ and a type |T|
-  such that \M{\CtxTyRel{\Gamma}{|x x|}{|T|}}.
+  such that $\CtxTyRel{\Gamma}{|x x|}{|T|}$.
 By the inversion lemma,
   there is a type |S| that satisfies
-  $\CtxTyRel{\Gamma}{|x|}{|S| \to |T|}$ and \M{\CtxTyRel{\Gamma}{|x|}{|S|}}.
+  $\CtxTyRel{\Gamma}{|x|}{|S| \to |T|}$ and $\CtxTyRel{\Gamma}{|x|}{|S|}$.
 By the inversion lemma again,
-  it holds that \M{\TyRel{|x|}{|S| \to |T|} \in \Gamma} and
-  \M{\TyRel{|x|}{|S|} \in \Gamma}.
+  it holds that $\TyRel{|x|}{|S| \to |T|} \in \Gamma$ and
+  $\TyRel{|x|}{|S|} \in \Gamma$.
 Since any environment can hold only one type binding for one variable,
   we can derive $|S| \to |T| = |S|$.
 However, the sizes of the both hand sides do not match.
@@ -1140,7 +1126,7 @@ This contradicts to the equality.
 \qed
 
 \Ex{9.3.9}
-We show it by induction on derivations of \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
+We show it by induction on derivations of $\CtxTyRel{\Gamma}{|t|}{|T|}$.
 We prove each induction step by case analysis of the derivation rule
   used at the last derivation step.
 
@@ -1150,23 +1136,23 @@ In these cases, |t| is a value,
   and the statement vacuously holds.
 
 \Case\Rule{T-If}:
-In this case, we can write \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}}
+In this case, we can write $|t| = \If{|t|_1}{|t|_2}{|t|_3}$
   with subderivations of
-  \M{\CtxTyRel{\Gamma}{|t|_1}{|Bool|}},
-  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|}}, and
-  \M{\CtxTyRel{\Gamma}{|t|_3}{|T|}}.
+  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
+  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
 We show this case by case analysis of the evaluation rule applied to $|t|$.
 \begin{itemize}
   \item \Case\Rule{E-IfTrue}:
     In this case, we have $|t|_1 = |true|$ and $|t| \to |t|_2$.
     By the uniqueness of evaluation, it holds $|t|' = |t|_2$.
-    We then immediately obtain \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
+    We then immediately obtain $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
   \item \Case\Rule{E-IfFalse}: Similar as \Rule{E-IfTrue} case.
   \item \Case\Rule{E-If}:
     In this case, we have $|t|_1 \to |t|'_1$
       and $|t| \to \If{|t|'_1}{|t|_2}{|t|_3} = |t|'$.
-    By the induction hypothesis, it holds \M{\CtxTyRel{\Gamma}{|t|'_1}{|Bool|}}.
-    Therefore, we get \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
+    By the induction hypothesis, it holds $\CtxTyRel{\Gamma}{|t|'_1}{|Bool|}$.
+    Therefore, we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
 \end{itemize}
 
 \Case\Rule{T-Var}:
@@ -1176,34 +1162,34 @@ In this case,
 
 \Case\Rule{T-App}:
 In this case,
-  we can write \M{|t| = |t|_1 \App |t|_2}
+  we can write $|t| = |t|_1 \App |t|_2$
   with subderivations of
-  \M{\CtxTyRel{\Gamma}{|t|_1}{|S| \to |T|}} and
-  \M{\CtxTyRel{\Gamma}{|t|_2}{|S|}} for some type |S|.
+  $\CtxTyRel{\Gamma}{|t|_1}{|S| \to |T|}$ and
+  $\CtxTyRel{\Gamma}{|t|_2}{|S|}$ for some type |S|.
 There are three cases of the evaluation rule that derives $|t| \to |t|'$.
 \begin{itemize}
   \item \Case\Rule{E-App1}:
-    In this case, we have $|t|_1 \to |t|'_1$ and \M{|t| \to |t|'_1 \App |t|_2}.
+    In this case, we have $|t|_1 \to |t|'_1$ and $|t| \to |t|'_1 \App |t|_2$.
     By the induction hypothesis,
-      it holds \M{\CtxTyRel{\Gamma}{|t|'_1}{|S| \to |T|}}.
+      it holds $\CtxTyRel{\Gamma}{|t|'_1}{|S| \to |T|}$.
     By applying the typing rule \Rule{T-App} to
-      this typing relation and \M{\CtxTyRel{\Gamma}{|t|_2}{|S|}},
-      we get \M{\CtxTyRel{\Gamma}{|t|'}{|T|}}.
+      this typing relation and $\CtxTyRel{\Gamma}{|t|_2}{|S|}$,
+      we get $\CtxTyRel{\Gamma}{|t|'}{|T|}$.
   \item \Case\Rule{E-App2}:
     We can prove for this case similarly as \Rule{E-App1} case.
   \item \Case\Rule{E-AppAbs}:
     In this case,
-      we can write \M{|t| = \CParen{\AbTy{|x|}{|S|} |t|_{12}} |v|_2} and
+      we can write $|t| = \CParen{\AbTy{|x|}{|S|} |t|_{12}} |v|_2$ and
       $|t|' = [|x| \mapsto |v|_2] |t|_{12}$.
     By the inversion lemma of typing relations,
       we have
-      \M{\CtxTyRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}}
+      $\CtxTyRel{\Gamma}{\CParen{\AbTy{|x|}{|S|} |t|_{12}}}{|S| \to |T|}$
       and
-      \M{\CtxTyRel{\Gamma}{|v|_2}{|S|}}.
+      $\CtxTyRel{\Gamma}{|v|_2}{|S|}$.
     The former relation is derived by \Rule{T-Abs},
-      with which we have \M{\CtxTyRel{\Gamma, |x:S|}{|t|_{12}}{|T|}}.
+      with which we have $\CtxTyRel{\Gamma, |x:S|}{|t|_{12}}{|T|}$.
     By the substitution lemma,
-      we get \M{\CtxTyRel{\Gamma}{[|x| \mapsto |v|_2] |t|_{12}}{|T|}},
+      we get $\CtxTyRel{\Gamma}{[|x| \mapsto |v|_2] |t|_{12}}{|T|}$,
       which is what we wanted to prove.
       \qed
 \end{itemize}
@@ -1211,13 +1197,13 @@ There are three cases of the evaluation rule that derives $|t| \to |t|'$.
 \Ex{9.3.10}
 \textbf{No}.
 For example,
-  let \M{\Gamma = \TyRel{|y|}{|Bool| \to |Bool|}}
-  and \M{|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} \App |y|}.
+  let $\Gamma = \TyRel{|y|}{|Bool| \to |Bool|}$
+  and $|t| = \CParen{\AbTy{|x|}{|Bool|} |x|} \App |y|$.
 Applying \Rule{E-AppAbs} yields
   $|t| \to |t|' = [|x| \mapsto |y|] |x| = |y|$.
-Using \Rule{T-Var}, we can derive \M{\CtxTyRel{\Gamma}{|t|'}{|Bool| \to |Bool|}}.
+Using \Rule{T-Var}, we can derive $\CtxTyRel{\Gamma}{|t|'}{|Bool| \to |Bool|}$.
 However, it is obvious that |t| is not typed under $\Gamma$,
-  so \M{\CtxTyRel{\Gamma}{|t|}{|Bool| \to |Bool|}} does not hold.
+  so $\CtxTyRel{\Gamma}{|t|}{|Bool| \to |Bool|}$ does not hold.
 
 \Ex{9.4.1}
 |Bool|: \Rule{T-True} and \Rule{T-False} are the introduction rules,
@@ -1273,50 +1259,50 @@ We show for typing and evaluation both by induction on structure of |t|.
 Typing rule:
 \begin{Proofs}
   \AxiomC{$\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$}
-  \UnaryInfC{$\CtxTyRel{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$}
+  \UnaryInfC{$\CtxTyRel{\Gamma}{\AbTy{|\_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$}
 \end{Proofs}
-If \M{\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}},
-  it is derived from \M{\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}}.
+If $\CtxxTyRel E{\Gamma}{\AbTy{|\_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$,
+  it is derived from $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$.
 By the induction hypothesis,
-  it holds \M{\CtxxTyRel I{\Gamma}{e(|t|_2)}{|T|_2}}.
+  it holds $\CtxxTyRel I{\Gamma}{e(|t|_2)}{|T|_2}$.
 Choose a variable name |x| from the outside of $\Gamma$.
-Then, weakining yields \M{\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}},
+Then, weakining yields $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$,
   from which we can derive
-  \M{\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}}.
+  $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$.
 
-If \M{\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}}
+If $\CtxxTyRel I{\Gamma}{\AbTy{|x|}{|T|_1} e(|t|_2)}{|T|_1 \to |T|_2}$
   where $|x| \notin \Gamma$ and $|x| \notin \FV(|t|_2)$,
-  it is derived from \M{\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}}.
+  it is derived from $\CtxxTyRel I{\Gamma, |x:T|_1}{e(|t|_2)}{|T|_2}$.
 By the induction hypothesis,
-  it holds \M{\CtxxTyRel E{\Gamma, |x:T|_1}{|t|_2}{|T|_2}}. \break
+  it holds $\CtxxTyRel E{\Gamma, |x:T|_1}{|t|_2}{|T|_2}$.
 Since |x| does not appear in $|t|_2$ as a free variable,
-  we can omit it from the context as \M{\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}},
+  we can omit it from the context as $\CtxxTyRel E{\Gamma}{|t|_2}{|T|_2}$,
   from which we can derive
-  \M{\CtxxTyRel E{\Gamma}{\AbTy{|_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}}.
+  $\CtxxTyRel E{\Gamma}{\AbTy{|\_|}{|T|_1} |t|_2}{|T|_1 \to |T|_2}$.
 
 Evaluation rule:
 \begin{Proofs}
-  \AxiomC{$\CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App |v|_2 \to |t|_{12}$}
+  \AxiomC{$\CParen{\AbTy{|\_|}{|T|_{11}} |t|_{12}} \App |v|_2 \to |t|_{12}$}
 \end{Proofs}
 If $|t| \to_E |t|'$,
   we should only care about the case when |t| is written as
-  \M{|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App \break |v|_2},
+  $|t| = \CParen{\AbTy{|\_|}{|T|_{11}} |t|_{12}} \App |v|_2$,
   or otherwise $e(|t|) \to_I e(|t|')$ follows immediately from
   the induction hypothesis.
 However, even this case is obvious as we have $|t|' = |t|_{12}$
   and, by choosing $|x| \notin \FV(|t|_{12})$,
   we can derive
-  \M{
+  $
     e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} \App |v|_2
            \to_I e(|t|_{12})
            = e(|t|')
-  }.
+  $.
 
 If $e(|t|) \to_I e(|t|')$,
   we again should only care about the case when $|t|$ is written as
-  \M{|t| = \CParen{\AbTy{|_|}{|T|_{11}} |t|_{12}} \App |v|_2}.
+  $|t| = \CParen{\AbTy{|\_|}{|T|_{11}} |t|_{12}} \App |v|_2$.
 In this case,
-  we have \M{e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} \App |v|_2}
+  we have $e(|t|) = \CParen{\AbTy{|x|}{|T|_{11}} e(|t|_{12})} \App |v|_2$
   where the name |x| is chosen arbitrarily from the outside of $\FV(|t|_{12})$.
 It is then derived that $e(|t|') = e(|t|_{12})$, while we have $|t| \to |t|_{12}$.
 Note that this is what we can show; see the errata of the text.
@@ -1325,7 +1311,7 @@ Note that this is what we can show; see the errata of the text.
 \begin{itemize}
   \item[(1)]
     We can define a derived form as
-      \M{|t as T| \EqDef \CParen{\AbTy{|x|}{|T|} |x|} \App |t|}.
+      $|t as T| \EqDef \CParen{\AbTy{|x|}{|T|} |x|} \App |t|$.
     The evaluation and typing rules are derived directly from those of the
       inner language.
   \item[(2)]
@@ -1333,14 +1319,14 @@ Note that this is what we can show; see the errata of the text.
     \[
       |t as T| \EqDef
         \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} \App
-        \CParen{\AbTy{|_|}{|Unit|} |t|}.
+        \CParen{\AbTy{|\_|}{|Unit|} |t|}.
     \]
     The right hand side is evaluated as follows.
     \begin{align*}
       &&&\PhantomRel\to
         \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} \App
-          \CParen{\AbTy{|_|}{|Unit|} |t|} \\
-      &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|_|}{|Unit|} |t|} \App |unit| \\
+          \CParen{\AbTy{|\_|}{|Unit|} |t|} \\
+      &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|\_|}{|Unit|} |t|} \App |unit| \\
       &\EqComment{\Rule{E-AppAbs}} &&\to |t|.
     \end{align*}
     Note that it requires two steps to evaluate the desugared form.
@@ -1349,7 +1335,7 @@ Note that this is what we can show; see the errata of the text.
 
 \Ex{11.5.1}
 See |src/bin/lexexercise.rs| for
-  a Rust implementation of simply typed \break lambda-calculus with |unit| and |let|.
+  a Rust implementation of a simply typed lambda-calculus with |unit| and |let|.
 It includes an implementation of small-step evaluation and typing of
   let expressions.
 
@@ -1446,18 +1432,18 @@ If we repeat this structure more times (say, of depth $n$),
       we need the following lemma, which is a generalization of \textsc{Lemma 9.3.8}.
 
     \Lemma{11.8.2.1}
-    If \M{\CtxTyRel{\Gamma}{|v|}{|S|}},
-      \M{\TyRel{|p|}{|S|} \To \Gamma'},
-      and \M{\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}},
-      then \M{\CtxTyRel{\Gamma}{[\It{match}(|p|, |v|)] |t|}{|T|}}. \qed
+    If $\CtxTyRel{\Gamma}{|v|}{|S|}$,
+      $\TyRel{|p|}{|S|} \To \Gamma'$,
+      and $\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}$,
+      then $\CtxTyRel{\Gamma}{[\It{match}(|p|, |v|)] |t|}{|T|}$. \qed
 
-    The lemma is shown by induciton on derivation of \M{\TyRel{|p|}{|S|} \To \Gamma'}.
+    The lemma is shown by induciton on derivation of $\TyRel{|p|}{|S|} \To \Gamma'$.
 
     Type progress is shown by induction on derivation of the type of the term.
     Suppose we have a typing relation
-      \M{\CtxTyRel{\Gamma}{\Let{|p|}{|t|_1} |t|_2}{|T|_2}}.
+      $\CtxTyRel{\Gamma}{\Let{|p|}{|t|_1} |t|_2}{|T|_2}$.
     Since it should be derived by \Rule{T-Let},
-      we have \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_1}} for some type $|T|_1$.
+      we have $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$ for some type $|T|_1$.
     If $|t|_1$ is not a value,
       then $|t|_1$ is evaluated to another term $|t|'_1$ by the induction hypothesis.
     Otherwise, the |let| expression is evaluated by \Rule{E-LetV}. \qed
@@ -1519,35 +1505,37 @@ These rules only evaluate a subterm of |t|,
 
 \Case\Rule{E-IsnilNil}:
 In this case,
-  we can write \M{|t| = |isnil[S] (nil[T])|}.
+  we can write $|t| = |isnil[S] (nil[T])|$.
 Using \Rule{T-Nil} and \Rule{T-Isnil},
-  we derive \M{\TyRel{|t|}{|Bool|}},
+  we derive $\TyRel{|t|}{|Bool|}$,
   while $|t|' = |true|$, whose type is |Bool|.
 
 \Case\Rule{E-IsnilCons}:
-Let \M{
+Let
+  $
     |t| = |isnil| \CBracket{|S|_1} \App \CParen{
       |cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2
     }
-  }
-  and \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
+  $
+  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
 By the inversion lemma for \Rule{T-Isnil}
   (we omit the precise statement and proof here;
    same for that for other typing rules),
   we obtain $|T| = |Bool|$, while we have $|t|' = |false|$, which has type |Bool|.
 
 \Case\Rule{E-HeadCons}:
-Let \M{
+Let
+  $
     |t| = |head| \CBracket{|S|_1} \App \CParen{
       |cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2
     }
-  }
-  and \M{\CtxTyRel{\Gamma}{|t|}{|T|}}.
+  $
+  and $\CtxTyRel{\Gamma}{|t|}{|T|}$.
 Using the inversion lemma for \Rule{T-Head},
-  we obtain \M{\CtxTyRel{\Gamma}{|cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2}{|List S|_1}}
+  we obtain $\CtxTyRel{\Gamma}{|cons| \CBracket{|S|_2} \App |v|_1 \App |v|_2}{|List S|_1}$
   and $|T| = |S|_1$.
 By applying the inversion lemma for \Rule{T-Cons},
-  we further obtain \M{\CtxTyRel{\Gamma}{|v|_1}{|S|_1}}.
+  we further obtain $\CtxTyRel{\Gamma}{|v|_1}{|S|_1}$.
 Since $|t| \to |v|_1$, the type is preserved.
 
 \Case\Rule{E-TailCons}:
@@ -1574,7 +1562,7 @@ All the other annotations can be safely removed,
 
 \Ex{12.1.1}
 For example, given a value |a| of type |A|,
-  applying a function \M{\AbTy{|f|}{|A| \to |A|} |\ f (f a)|} to
+  applying a function $\AbTy{|f|}{|A| \to |A|} |\ f (f a)|$ to
   a very long abstraction term of type $|A|\to|A|$ duplicates the abstraction term,
   which leads to a term of size larger than the original.
 
@@ -1594,10 +1582,10 @@ Abbreviate $\Gamma = |x|_1 |,| \dots |,| |x|_n$ and
 
 \Case\Rule{T-If}:
 In this case, we have
-  \M{|t| = \If{|t|_1}{|t|_2}{|t|_3}},
-  \M{\CtxTyRel{\Gamma}{|t|_1}{|Bool|}},
-  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|}}, and
-  \M{\CtxTyRel{\Gamma}{|t|_3}{|T|}}.
+  $|t| = \If{|t|_1}{|t|_2}{|t|_3}$,
+  $\CtxTyRel{\Gamma}{|t|_1}{|Bool|}$,
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|}$, and
+  $\CtxTyRel{\Gamma}{|t|_3}{|T|}$.
 By the induction hypothesis, $R_{|Bool|}(\sigma |t|_1)$.
 By \textsc{Lemma 12.1.3}, we have $\sigma |t|_1 \to^* |v|'_1$ for some $|v|'_1$.
 If $|v|'_1 = |true|$, $\sigma |t| \to^* \sigma |t|_2$.
@@ -1607,8 +1595,8 @@ The case of $|v|'_1 = |false|$ is similar.
 \Case\Rule{T-Pair}:
 In this case, we have
   $|t| = \Rcd{|t|_1 |,t|_2}$,
-  \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_1}}, and
-  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|_2}}.
+  $\CtxTyRel{\Gamma}{|t|_1}{|T|_1}$, and
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|_2}$.
 By the induction hypothesis,
   $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$.
 Therefore,
@@ -1621,7 +1609,7 @@ By combining it with $R_{|T|_1}(\sigma |t|_1)$ and $R_{|T|_2}(\sigma |t|_2)$,
 
 \Case\Rule{T-Proj1}:
 In this case, we have
-  \M{|t| = |t|_1 |.1|} and \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \times |T|_{12}}}.
+  $|t| = |t|_1 |.1|$ and $\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \times |T|_{12}}$.
 By the induction hypothesis,
   $R_{|T|_{11} \times |T|_{12}}(\sigma |t|_1)$ holds,
   which implies $R_{|T|_{11}}(\sigma |t|_1 |.1|)$.
@@ -1635,7 +1623,7 @@ By the induction hypothesis,
 
 We use the dereference operator |!| without parentheses for readability.
 The precedence of |!| is higher than function applications,
-  i.e., \M{|!x y|} is equivalent to \M{|(!x) y|}.
+  i.e., $|!x y|$ is equivalent to $|(!x) y|$.
 
 \Ex{13.1.1}
 Omitted to avoid drawing...
@@ -1650,7 +1638,7 @@ With this definition,
   resulting in divergence.
 
 \Ex{13.1.3}
-Define an operator \M{|free r|} that takes a reference and frees its storage,
+Define an operator |free r| that takes a reference and frees its storage,
   which will be reused in the use of |ref| operator in the next time.
 Then, the following well-typed program
 \begin{Code}
@@ -1727,7 +1715,7 @@ Given this theorem,
 \Ex{13.5.2}
 Let
   $\Gamma = \emptyset$,
-  \M{\mu = (l \mapsto \AbTy{|x|}{|Unit|} \CParen{|!|l} \App |x|)},
+  $\mu = (l \mapsto \AbTy{|x|}{|Unit|} \CParen{|!|l} \App |x|)$,
   $\Sigma_1 = (l \mapsto |Unit| \to |Unit|)$, and
   $\Sigma_2 = (l \mapsto |Unit| \to |Unit| \to |Unit|)$.
 Then,
@@ -1846,11 +1834,11 @@ If there were such a type,
 
 \Ex{15.2.5}
 It is not a good idea since, e.g., it breaks the progress property as follows.
-Let \M{|t| = \Rcd{\AbTy{|x|}{\Rcd{}} |x,\ | \Rcd{}}}.
-We have \M{\CtxTyRel{}{|t|}{\CParen{\Rcd{} \to \Rcd{}} \times \Rcd{}}}.
+Let $|t| = \Rcd{\AbTy{|x|}{\Rcd{}} |x,\ | \Rcd{}}$.
+We have $\CtxTyRel{}{|t|}{\CParen{\Rcd{} \to \Rcd{}} \times \Rcd{}}$.
 With the rule \Rule{S-ProdWidth},
-  we can derive $\CtxTyRel{}{|t|}{|\{\}| \to |\{\}|}$.
-Therefore, a term \M{|t \{\}|} is well-typed, which is obviously a stuck state.
+  we can derive $\CtxTyRel{}{|t|}{\Rcd{} \to \Rcd{}}$.
+Therefore, a term |t |\Rcd{} is well-typed, which is obviously a stuck state.
 
 \Ex{15.3.1}
 The progress property may break with an additional subtyping rule,
@@ -1859,11 +1847,11 @@ The preservation property may break as well;
   consider adding the following subtyping rule.
 \[ \Sub{|T|_1 \to |T|_2}{|T|_1} \]
 Let $|f| = \AbTy{|x|}{|Top| \to |Unit|} |0|$.
-With the above rule, we can derive \M{\CtxTyRel{}{|f|}{|Top| \to |Unit|}}.
+With the above rule, we can derive $\CtxTyRel{}{|f|}{|Top| \to |Unit|}$.
 Therefore, we have
-  \M{\CtxTyRel{}{|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|}}{|Unit|}}.
+  $\CtxTyRel{}{|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|}}{|Unit|}$.
 However,
-  this term is evaluated as \M{|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|} \to |0|},
+  this term is evaluated as $|f| \App \CParen{\AbTy{|x|}{|Top|} |unit|} \to |0|$,
   which cannot have type |Unit|.
 
 Removing any subtyping rule does not break the progress nor preservation property.
@@ -1925,7 +1913,7 @@ Removing any subtyping rule does not break the progress nor preservation propert
       $\AbTy{|x|}{|S|} |t|$ or $\Rcd{|l|_i |=v|_i \Indices{i\in1..n}}$
       (we can exclude the possibilities of $|v| = |x|$ and $|v| = |x.l|$
        because |v| is a closed value).
-    If \M{\CtxTyRel{}{|v|}{|T|_1 \to |T|_2}},
+    If $\CtxTyRel{}{|v|}{|T|_1 \to |T|_2}$,
       |v| can only take the former form by the inversion lemma.
   \item Similarly shown by the inversion lemma. \qed
 \end{enumerate}
@@ -1934,10 +1922,10 @@ Removing any subtyping rule does not break the progress nor preservation propert
 By induction on evaluation derivations.
 We only need to check for the case that \Rule{E-Downcast} is used for the
   last step of the derivation.
-Let \M{|v as T| \to |v|} be derived by \Rule{E-Downcast}.
-By the premise, we have \M{\CtxTyRel{}{|v|}{|T|}}.
-By \Rule{T-Ascribe}, \M{\CtxTyRel{}{|v as T|}{|T|}}.
-Therefore, the type is preserved by the evaluation step \M{|v as T| \to |v|}. \qed
+Let $|v as T| \to |v|$ be derived by \Rule{E-Downcast}.
+By the premise, we have $\CtxTyRel{}{|v|}{|T|}$.
+By \Rule{T-Ascribe}, $\CtxTyRel{}{|v as T|}{|T|}$.
+Therefore, the type is preserved by the evaluation step $|v as T| \to |v|$. \qed
 
 \Ex{15.5.2}
 \begin{itemize}
@@ -2049,7 +2037,7 @@ can be transformed as follows.
   $}
 \end{Proofs}
 A similar transformation is applied when the record items are permutated so that
-  \Rule{T-Sub} is applied to \M{\CtxTyRel{\Gamma}{|t|_j}{|T|_j}} with $j \neq 1$.
+  \Rule{T-Sub} is applied to $\CtxTyRel{\Gamma}{|t|_j}{|T|_j}$ with $j \neq 1$.
 
 The next derivation
 \begin{Proofs}
@@ -2096,7 +2084,7 @@ This derivation is then transformed as follows. Suppose $|k|_{j_1} = |l|_{i_1}$.
 \end{Proofs}
 
 \Ex{16.2.3}
-Let \M{|s| = \CParen{\AbTy{|x|}{|Top|} |x|} \App \Rcd{}} and $|t| = \Rcd{}$.
+Let $|s| = \CParen{\AbTy{|x|}{|Top|} |x|} \App \Rcd{}$ and $|t| = \Rcd{}$.
 The term |s| is evaluated to |t| by \Rule{E-Abs}.
 While the algorithmic type of |t| is \Rcd{},
   that of |s| is |Top|,
@@ -2111,19 +2099,19 @@ Let us perform case analysis on the last rule used in the derivation.
 
 \Case\Rule{T-Abs}:
 We have $|t| = \AbTy{|x|}{|T|_1} |t|_2$ and $|T| = |T|_1 \to |T|_2$
-  where the premise gives \M{\CtxTyRel{\Gamma, |x:T|_1}{|t|_2}{|T|_2}}.
+  where the premise gives $\CtxTyRel{\Gamma, |x:T|_1}{|t|_2}{|T|_2}$.
 By the induction hypothesis,
-  the premise implies \M{\AlTyRel{\Gamma, |x:T|_1}{|t|_2}{|S|_2}}
+  the premise implies $\AlTyRel{\Gamma, |x:T|_1}{|t|_2}{|S|_2}$
   where $\Sub{|S|_2}{|T|_2}$.
 Using \Rule{TA-Abs},
-  we obtain \M{\AlTyRel{\Gamma}{|t|}{|T|_1 \to |S|_2}}.
+  we obtain $\AlTyRel{\Gamma}{|t|}{|T|_1 \to |S|_2}$.
 Since $\Sub{|T|_1 \to |S|_2}{|T|_1 \to |T|_2}$ by \Rule{S-Refl} and \Rule{S-Arrow},
   the conclusion holds.
 
 \Case\Rule{T-App}:
-We have \M{|t| = |t|_1 \App |t|_2} and $|T| = |T|_{12}$
-  where the premises give \M{\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \to |T|_{12}}} and
-  \M{\CtxTyRel{\Gamma}{|t|_2}{|T|_{11}}}.
+We have $|t| = |t|_1 \App |t|_2$ and $|T| = |T|_{12}$
+  where the premises give $\CtxTyRel{\Gamma}{|t|_1}{|T|_{11} \to |T|_{12}}$ and
+  $\CtxTyRel{\Gamma}{|t|_2}{|T|_{11}}$.
 By the induction hypothesis,
   the premises imply
   $\AlTyRel{\Gamma}{|t|_1}{|S|_1}$ and
@@ -2135,33 +2123,33 @@ By the inversion of subtyping lemma,
   where $\Sub{|T|_{11}}{|S|_{11}}$ and $\Sub{|S|_{12}}{|T|_{12}}$.
 The first subtyping relation gives $\Sub{|S|'_{11}}{|S|_{11}}$.
 Therefore, using \Rule{TA-App},
-  we derive \M{\AlTyRel{\Gamma}{|t|_1 \App |t|_2}{|S|_{12}}}.
+  we derive $\AlTyRel{\Gamma}{|t|_1 \App |t|_2}{|S|_{12}}$.
 Since $\Sub{|S|_{12}}{|T|_{12}}$, this is the conclusion we wanted.
 
 \Case\Rule{T-Sub}:
-The first premise with the induction hypothesis gives \M{\AlTyRel{\Gamma}{|t|}{|T|}}.
+The first premise with the induction hypothesis gives $\AlTyRel{\Gamma}{|t|}{|T|}$.
 The conclusion follows by combining it with the second premise $\Sub{|S|}{|T|}$.
 
 \Case\Rule{T-Rcd}:
 We have $|t| = \Rcd{|l|_i |=t|_i \Indices{i\in1..n}}$ and
   $|T| = \Rcd{|l|_i |:T|_i \Indices{i\in1..n}}$
-  where the premises give \M{\CtxTyRel{\Gamma}{|t|_i}{|T|_i}} for all $i$.
+  where the premises give $\CtxTyRel{\Gamma}{|t|_i}{|T|_i}$ for all $i$.
 By the induction hypothesis,
-  \M{\AlTyRel{\Gamma}{|t|_i}{|S|_i}} with $\Sub{|S|_i}{|T|_i}$ for all $i$.
+  $\AlTyRel{\Gamma}{|t|_i}{|S|_i}$ with $\Sub{|S|_i}{|T|_i}$ for all $i$.
 Using \Rule{TA-Rcd},
-  we obtain \M{
+  we obtain $
     \AlTyRel{\Gamma}{\Rcd{|l|_i |=t|_i \Indices{i\in1..n}}}{\Rcd{|l|_i |:S|_i \Indices{i\in1..n}}}
-  }.
+  $.
 \Rule{S-RcdDepth} gives
   $\Sub{\Rcd{|l|_i |:S|_i \Indices{i\in1..n}}}{\Rcd{|l|_i |:T|_i \Indices{i\in1..n}}}$.
 
 \Case\Rule{T-Proj}:
 We have $|t| = |t|_1 |.l|_{i_1}$ and $|T| = |T|_{i_1}$
   where the premise gives
-  \M{\CtxTyRel{\Gamma}{|t|_1}{\Rcd{|l|_i |:T|_i \Indices{i\in1..n}}}}.
+  $\CtxTyRel{\Gamma}{|t|_1}{\Rcd{|l|_i |:T|_i \Indices{i\in1..n}}}$.
 By the induction hypothesis,
-  \M{\AlTyRel{\Gamma}{|t|_1}{|S|_1}}
-  with \M{\Sub{|S|_1}{\Rcd{|l|_i |:T|_i \Indices{i\in1..n}}}}. \break
+  $\AlTyRel{\Gamma}{|t|_1}{|S|_1}$
+  with $\Sub{|S|_1}{\Rcd{|l|_i |:T|_i \Indices{i\in1..n}}}$.
 Following the discussion in the previous section,
   this subtyping relation can be derived by \Rule{S-Rcd}.
 It implies that $|S|_1$ can be written as $\Rcd{|k|_j |:S|_j \Indices{j\in1..m}}$
@@ -2169,7 +2157,7 @@ It implies that $|S|_1$ can be written as $\Rcd{|k|_j |:S|_j \Indices{j\in1..m}}
   and $\Sub{|S|_j}{|T|_i}$ whenever $|k|_j = |l|_i$.
 In particular, there exists $j_1$ such that $|k|_{j_1} = |l|_{i_1}$.
 By \Rule{TA-Proj},
-  \M{\AlTyRel{\Gamma}{|t|_1 |.l|_{i_1}}{|S|_{j_1}}} is derived.
+  $\AlTyRel{\Gamma}{|t|_1 |.l|_{i_1}}{|S|_{j_1}}$ is derived.
 The type satisfies $\Sub{|S|_{j_1}}{|T|_{i_1}}$. \qed
 
 \end{document}
