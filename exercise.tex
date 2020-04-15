@@ -2187,4 +2187,171 @@ On the other hand, its algorithmic type is $|S| = \Rcd{} \to \Rcd{}$,
 \end{Proofs}
 In the system without \Rule{S-Arrow}, |S| is not a subtype of |T|.
 
+\Ex{16.3.2}
+We show both statements simultaneously by induction on the structure of |S|.
+
+\begin{enumerate}
+  \item We perform case analysis on the form of |S|.
+
+    \Case $|S| = |Top|$:
+    Only |Top| is the supertype of |S|, and is a supertype of |T|,
+      thus $|S| \vee |T| = |Top|$.
+
+    \Case $|S| = |Bool|$:
+    Only |Top| and |Bool| are the supertypes of |S|.
+    If $|T| = |Bool|$, $|S| \vee |T| = |Bool|$.
+    Otherwise, |Bool| is not a supertype of |T|, thus $|S| \vee |T| = |Top|$.
+
+    \Case $|S| = |S|_1 \to |S|_2$:
+    Only |Top| and arrow types may be supertypes of |S|.
+    If |Top| is the only common supertype of |S| and |T|,
+      then $|S| \vee |T| = |Top|$.
+    Suppose there is a common supertype $|U| \neq |Top|$ of |S| and |T|.
+    Then, |U| has the form $|U|_1 \to |U|_2$
+      with $\Sub{|U|_1}{|S|_1}$ and $\Sub{|S|_2}{|U|_2}$.
+    By the inversion lemma of subtyping relations,
+      we can write $|T| = |T|_1 \to |T|_2$
+      where $\Sub{|U|_1}{|T|_1}$ and $\Sub{|T|_2}{|U|_2}$.
+    By the induction hypothesis,
+      there exist types $|J|_1 = |S|_1 \wedge |T|_1$ and $|J|_2 = |S|_2 \vee |T|_2$.
+    By definition, $|J|_1$ is a common subtype of $|S|_1$ and $|T|_1$,
+      and $|J|_2$ is a common supertype of $|S|_2$ and $|T|_2$.
+    Therefore, we derive with \Rule{S-Arrow} that $|J|_1 \to |J|_2$ is
+      a common supertype of $|S|_1 \to |S|_2$ and $|T|_1 \to |T|_2$.
+    We also have $\Sub{|J|_1}{|U|_1}$ and $\Sub{|U|_2}{|J|_2}$
+      by the minimality of $|J|_1$ and the maximality of $|J|_2$.
+    Therefore, we again derive $\Sub{|J|_1 \to |J|_2}{|U|_1 \to |U|_2}$,
+      that means, $\Sub{|J|_1 \to |J|_2} = |S| \vee |T|$.
+
+    \Case $|S| = \Rcd{|l|_i |:S|_i \Indices{i\in1..n}}$:
+    Only |Top| and record types may be supertypes of |S|.
+    If |Top| is the only common supertype of |S| and |T|,
+      then $|S| \vee |T| = |Top|$.
+    Suppose there is a common supertype $|U| \neq |Top|$ of |S| and |T|.
+    Then, |U| has the form $\Rcd{|k|_j |:U|_j \Indices{j\in1..m}}$
+      with $\Set{|k|_j \Indices{j\in1..m}} \subseteq \Set{|l|_i \Indices{i\in1..n}}$
+      and $\Sub{|S|_i}{|U|_j}$ whenever $|l|_i = |k|_j$.
+    By the inversion lemma of subtyping relations,
+      we can write $|T| = \Rcd{|l|'_{i'} \Indices{i'\in1..n'}}$
+      where $\Set{|k|_j \Indices{j\in1..m}} \subseteq \Set{|l|'_{i'} \Indices{i'\in1..n'}}$
+      and $\Sub{|T|_{i'}}{|U|_j}$ whenever $|l|'_{i'} = |k|_j$.
+    For every $j \in 1..m$,
+      there exist $i\in1..n$ and $i'\in1..n'$ such that $|k|_j = |l|_i = |l|'_{i'}$,
+      for which, by the induction hypothesis,
+      there exists a join type $|J|_j = |S|_i \vee |T|_{i'}$.
+    Let $|J| = \Rcd{|k|_j |:J|_j \Indices{j\in1..m}}$.
+    Then, it follows by \Rule{S-Rcd} that $|J|$ is a common supertype of |S| and |T|.
+    Also, for every $j$,
+      by the minimality of $|J|_j$, $\Sub{|J|_j}{|U|_j}$.
+    Therefore, by \Rule{S-Rcd}, we can derive $\Sub{|J|}{|U|}$,
+      which implies that |J| is a join type of |S| and |T|.
+
+  \item We again proceed with case analysis on the form of |S|.
+  
+    \Case $|S| = |Top|$: We immediately have $|S| \wedge |T| = |T|$.
+
+    \Case $|S| = |Bool|$:
+    Only |Bool| is the subtype of |S|.
+    By the assumption, it is also a subtype of |T|,
+      thus the only common subtype of them.
+    Therefore, $|S| \wedge |T| = |Bool|$.
+
+    \Case $|S| = |S|_1 \to |S|_2$:
+    Any subtype of |S| is an arrow type,
+      whose supertypes are only |Top| and arrow types.
+    Therefore, |T| is either of them.
+    If $|T| = |Top|$, then immediately $|S| \wedge |T| = |S|$.
+    Otherwise, |T| has the form $|T|_1 \to |T|_2$.
+    Let $|U| = |U|_1 \to |U|_2$ be a common subtype of |S| and |T|.
+    Then, $|U|_2$ is a common subtype of $|S|_2$ and $|T|_2$.
+    By the induction hypothesis,
+      with the existence of $|U|_2$,
+      there is a meet type $|M|_2 = |S|_2 \wedge |T|_2$.
+    By the induction hypothesis again,
+      there is a join type $|J|_1 = |S|_1 \vee |T|_1$.
+    Let $|M| = |J|_1 \to |M|_2$.
+    Then, |M| is a common subtype of |S| and |T|,
+      and, by the minimality of $|J|_1$ and the maximality of $|M|_2$,
+      we obtain $\Sub{|J|_1}{|U|_1}$ and $\Sub{|U|_2}{|M|_2}$.
+    Therefore, $\Sub{|U|}{|M|}$.
+    Note that |M| is taken independently with |U|,
+      and thus is a meet type of |S| and |T|.
+
+    \Case $|S| = \Rcd{|l|_i |:S|_i \Indices{i\in1..n}}$:
+    Any subtype of |S| is a record type,
+      whose supertypes are only |Top| and record types.
+    Therefore, |T| is either of them.
+    If $|T| = |Top|$, then immediately $|S| \wedge |T| = |S|$.
+    Otherwise, |T| has the form $\Rcd{|l|'_{i'} |:T|'_{i'} \Indices{i'\in1..n'}}$.
+    Let $|U| = \Rcd{|k|_j |:U|_j \Indices{j\in1..m}}$
+      be a common subtype of |S| and |T|.
+    Then, $
+      \Set{|k|_j \Indices{j\in1..m}}
+      \supseteq \Set{|l|_i \Indices{i\in1..n}}
+      \cup \Set{|l|'_{i'} \Indices{i'\in1..n'}}
+    $.
+    We also have $\Sub{|U|_j}{|S|_i}$ whenever $|k|_j = |l|_i$,
+      and $\Sub{|U|_j}{|T|_{i'}}$ whenever $|k|_j = |l|'_{i'}$.
+    Let $\Set{|k|^\star_{j^\star} \Indices{j^\star \in 1..m^\star}}$
+      be the intersection of the label sets of |S| and |T|.
+    Then,
+      by the induction hypothesis,
+      there exists a meet type $|M|_{j^\star} = |S|_i \wedge |T|_{i'}$
+      for every $j^\star$ with $|k|^\star_{j^\star} = |l|_i = |l|'_{i'}$.
+    Let $I = \Set{i \in 1..n \mid \forall j^\star, ~ |l|_i \neq |k|^\star_{j^\star}}$,
+      and $I' = \Set{i' \in 1..{n'} \mid \forall j^\star, ~ |l|'_{i'} \neq |k|^\star_{j^\star}}$.
+    Define $
+      |M| = \Rcd{
+        |k|^\star_{j^\star} |:M|_{j^\star} \Indices{j^\star\in1..{m^\star}}, ~
+        |l|_i |:S|_i \Indices{i\in I}, ~
+        |l|'_{i'} |:T|_{i'} \Indices{i'\in I'}
+      }
+    $.
+    Then, |M| is a common subtype of |S| and |T|,
+      and is a supertype of |U|.
+    Note that |M| is taken independently with |U|,
+      and thus is a meet type of |S| and |T|. \qed
+\end{enumerate}
+
+\Ex{16.3.3}
+|Top|, as this is the only common supertype of |Bool| and \Rcd{}.
+This behavior would not be kind for users.
+When the value that is not discarded is type-checked as |Top| as
+  a join type of branches,
+  it would be better to show a warning.
+
+\Ex{16.3.4}
+Suppose the system does not have |Source| and |Sink| types.
+For any types |S| and |T|,
+  if $|T| = |Ref S|'$ where $|S|'$ is equivalent to |S|,
+  then $|(Ref S)| \vee |T| = |Ref S|$ and $|(Ref S)| \wedge |T| = |Ref S|$.
+Otherwise, $|(Ref S)| \vee |T| = |Top|$, and $|(Ref S)| \wedge |T|$ does not exist.
+
+If we introduce |Source| and |Sink| types,
+  \textsc{Proposition 16.3.2} does not hold anymore,
+  as the following counterexamples show.
+\begin{enumerate}
+  \item
+    Let $|S| = |Ref \{\}|$ and $|T| = |Ref Top|$.
+    Then, both |Source Top| and |Sink \{\}| are supertypes of each of them.
+    Any common subtype of them is a |Ref| type,
+      which cannot be a common supertype of |S| and |T|.
+  \item
+    Let $|S| = |Source Top|$ and $|T| = |Sink \{\}|$.
+    Then, both |Ref \{\}| and |Ref Top| are subtypes of each of them.
+    Any common subtype of |S| and |T| is a |Ref| type,
+      which cannot be a common supertype of |Ref \{\}| and |Ref Top|.
+\end{enumerate}
+
+\Ex{16.4.1}
+We need the following rule:
+\begin{Proofs}
+  \AxiomC{$\AlTyRel{\Gamma}{|t|_1}{|T|_1}$}
+  \AxiomC{$|T|_1 = |Bot|$}
+  \AxiomC{$\AlTyRel{\Gamma}{|t|_2}{|T|_2}$}
+  \AxiomC{$\AlTyRel{\Gamma}{|t|_3}{|T|_3}$}
+  \AxiomC{$|T|_2 \vee |T|_3 = |T|$}
+  \QuinaryInfC{$\AlTyRel{\Gamma}{\If{|t|_1}{|t|_2}{|t|_3}}{|T|}$}
+\end{Proofs}
+
 \end{document}
