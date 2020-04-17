@@ -100,7 +100,11 @@ impl fmt::Display for Error {
         if let Some(span) = self.span {
             write!(f, " at ({:?})", span.range())?;
         }
-        write!(f, ": {}\n", self.summary)
+        write!(f, ": {}\n", self.summary)?;
+        if !self.note.is_empty() {
+            f.write_str(&self.note)?;
+        }
+        Ok(())
     }
 }
 

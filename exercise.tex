@@ -2354,4 +2354,22 @@ We need the following rule:
   \QuinaryInfC{$\AlTyRel{\Gamma}{\If{|t|_1}{|t|_2}{|t|_3}}{|T|}$}
 \end{Proofs}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 17.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{An ML Implementation of Subtyping}
+Rust implementations of subtyping are put at the following locations:
+
+\begin{itemize}
+  \item |src/rcdsubbot.rs|, which is an implementation of the simply typed lambda-calculus
+    with subtyping, records, bottom type, and refined error messages as
+    asked in \textsc{Exercise} 17.3.2 and 17.3.3.
+  \item |src/joinexercise.rs|, which is an implementation of the
+    simply typed lambda-calculus with subtyping, records, and booleans,
+    as asked in \textsc{Exercise} 17.3.1.
+    It includes an implementation of join and meet.
+\end{itemize}
+
+\textsc{Exercise} 17.3.4 is omitted.
+
 \end{document}
