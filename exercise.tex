@@ -27,9 +27,10 @@
 \newcommand\App{\CdSpc}
 \newcommand\Bigstep{\Downarrow}
 \newcommand\Cardi[1]{\vert#1\vert}
-\newcommand\Case{\textit{Case} }
+\newcommand\Case{\It{Case} }
 \newcommand\CaseArm[2]{#1 \To #2 \@ifnextchar\CaseArm{\Cd{ | }}{}}
 \newcommand\CaseOf[1]{|case |#1| of |}
+\newcommand\Cbar[1]{\overline{|#1|}}
 \newcommand\CBracket[1]{\Cd[#1\Cd]}
 \newcommand\Cd[1]{{%
   \newcommand|\Cd@Vert%
@@ -67,7 +68,7 @@
 \newcommand\Indices[1]{{}^{#1}}
 \newcommand\It[1]{\textit{#1}}
 \newcommand\LambdaNB{$\lambda$\textbf{NB}}
-\newcommand\Lemma[1]{\textsc{Lemma #1.}}
+\newcommand\Lemma[1]{\textsc{Lemma #1}}
 \newcommand\Let[2]{|let | #1 = #2 | in |}
 \newcommand\Lm{\lambda}
 \newcommand\N{\mathbb N}
@@ -75,7 +76,7 @@
 \newcommand\Proof{\textsc{Proof}}
 %% TODO(beam2d): Fix spacing of the last line.
 \newenvironment{Proofs}{%
-  \def\BottomSpc{\vspace{0pt}\vspace{0.4em}}%
+  \def\BottomSpc{\vspace{0pt}\vspace{0.5em}}%
   \def\next{\DisplayProof\quad\BottomSpc}%
   \begin{center}%
 }{%
@@ -94,12 +95,13 @@
 \newcommand\RestoreNames{\It{restorenames}}
 \newcommand\Rule[1]{\textsc{#1}}
 \newcommand\RuleLabel[1]{\RightLabel{\Rule{\scriptsize #1}}}
+\newcommand\Sb{\mathrel{\texttt<\hspace{-0.3ex}\texttt:}}
 \newcommand\Set[1]{\{#1\}}
 \newcommand\Store[2]{#1 \mid #2}
-\newcommand\Sb{\mathrel{\texttt<\hspace{-0.3ex}\texttt:}}
-\newcommand\Swap[2]{#2#1}
 \newcommand\Sub[2]{#1 \Sb #2}
+\newcommand\Subcase{\It{Subcase} }
 \newcommand\Subst[1]{[#1]\,}
+\newcommand\Swap[2]{#2#1}
 \newcommand\Theorem{\textsc{Theorem}}
 \newcommand\To{\Rightarrow}
 \newcommand\Ts{\vdash}
@@ -1430,7 +1432,7 @@ If we repeat this structure more times (say, of depth $n$),
     To show it for \Rule{E-LetV},
       we need the following lemma, which is a generalization of \textsc{Lemma 9.3.8}.
 
-    \Lemma{11.8.2.1}
+    \Lemma{11.8.2.1}.
     If $\CtxTyRel{\Gamma}{|v|}{|S|}$,
       $\TyRel{|p|}{|S|} \To \Gamma'$,
       and $\CtxTyRel{\Gamma, \Gamma'}{|t|}{|T|}$,
@@ -2578,6 +2580,16 @@ We can also use the |Ref| trick used in the official solution of this exercise
       (x.id := false; y.id := true; !(x.id));
 \end{Code}
 
+\section{Case Study: Featherweight Java}
+{
+\newcommand\ClassDef[6]{|class |#1| extends |#2| \{|#3| |#4|; |#5| |#6|\}|}
+\newcommand\ClassDefDefault{\ClassDef{|C|}{|D|}{\Cbar C}{\Cbar f}{|K|}{\Cbar M}}
+\newcommand\CT{\It{CT}}
+\newcommand\Fields{\It{fields}}
+\newcommand\Mbody{\It{mbody}}
+\newcommand\Mtype{\It{mtype}}
+\newcommand\Override{\It{override}}
+
 \Ex{19.4.1}
 For any class |C|,
   we can derive $\Sub{|C|}{|Object|}$ from subtyping rules.
@@ -2585,12 +2597,712 @@ For any class |C|,
 \Proof: Assume $|C| \not\Sb |Object|$.
 Define a sequence of types $(|C|_i)_i$ recursively as follows.
 \[ |C|_0 = |C|, \quad
-   \It{CL}(|C|_i) = |class C|_i | extends C|_{i + 1} | \{ | \ldots | \} | \]
+   \CT(|C|_i) = |class C|_i | extends C|_{i + 1} | \{ | \ldots | \} | \]
 By the assumption,
   |Object| does not appear in the sequence,
   and thus $|C|_i$ is well-defined for any index $i \in \N$.
 Since the relation $\Sb$ is antisymmetric,
   the class $|C|_i$ is distinct from each other.
-It contradicts with the finiteness of $\Dom(\It{CT})$. \qed
+It contradicts with the finiteness of $\Dom(\CT)$. \qed
+
+\Ex{19.4.2}
+Some ideas:
+\begin{itemize}
+  \item Drop constructor declarations.
+  \item Simplify the method declaration syntax;
+    e.g., $|C m(|\bar{|C|}| |\bar{|x|}|) = t;|$.
+  \item Remove the |new| keyword; this does not make the syntax ambiguous.
+  \item Unite the cast typing rules into one; e.g.,
+    \begin{Proofs}
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|}{|D|}$}
+      \RuleLabel{T-Cast}
+      \UnaryInfC{$\CtxTyRel{\Gamma}{|(C)t|}{|C|}$}
+    \end{Proofs}
+\end{itemize}
+
+\Ex{19.4.3}
+{
+\newcommand\Meval{\It{meval}}
+\newcommand\Obj[2]{\It{obj}(#1\CParen{#2})}
+
+\paragraph{Syntax:}
+Change method declarations as follows.
+\begin{flalign*}
+  |M| ::=& && \\
+    & |C m(|\Cbar C| |\Cbar x|) \{MB\}| && \\
+  |MB| ::=& && \It{method body with assignments} && \\
+    & |t.f = t; MB| && \\
+    & |return t;| &&
+\end{flalign*}
+Each object becomes a mutable entity,
+  which we represent as an item in a \emph{store}.
+Let us update the terms and values syntax as well.
+\begin{flalign*}
+  |t| ::=& && \\
+    &\vdots && \\
+    &\Meval(|MB|) && \\
+    &l && \\
+  |v| ::=& && \\
+    &\Obj{|C|}{\bar l} && \\
+    &l &&
+\end{flalign*}
+Here, $l$ denotes a \emph{location} in a store.
+Unlike |ref| introduced in Part 13,
+  a location is implicitly dereferenced in each evaluation rule if necessary.
+
+The \Meval{} term is a method body that is being evaluated.
+This term is not written directly in the source code, just like locations.
+
+In this extension,
+  the |new| expression is not a value anymore;
+  it allocates a new object in the store and returns its location.
+To distinguish the object value from the |new| expression,
+  we introduce \It{obj} value that represents the object stored in the location.
+
+\paragraph{Auxiliary functions:}
+We need to update \Mbody{} to include the assignment statements.
+\begin{Proofs}
+  \AxiomC{$\CT(|C|) = \ClassDefDefault$}
+  \AxiomC{$|B m (|\Cbar B| |\Cbar x|) \{MB\}| \in \Cbar M$}
+  \BinaryInfC{$\Mbody(|m|, |C|) = (\Cbar x, |MB|)$}
+  \next
+  \AxiomC{$\CT(|C|) = \ClassDefDefault$}
+  \AxiomC{|m| is not defined in $\Cbar M$}
+  \BinaryInfC{$\Mbody(|m|, |C|) = \Mbody(|m|, |D|)$}
+\end{Proofs}
+Other functions are trivially updated with the new syntax.
+
+\paragraph{Evaluation}
+We largely update the evaluation rules using stores and locations.
+Here, substitution $\sigma = \Subst{\dots}$ is defined recursively by
+  $\sigma(|return t;|) = |return |\sigma(|t|)|;|$ and
+  $
+    \sigma(|t|_1 |.f|_1 | = t|_2 |; MB|) =
+    \CParen{\sigma |t|_1} |.f|_1 | = | \CParen{\sigma |t|_2} |; | \sigma |MB|
+  $.
+\begin{Proofs}
+  \AxiomC{$l \notin \Dom(\mu)$}
+  \RuleLabel{ES-New}
+  \UnaryInfC{$
+    \Store{|new C|\CParen{\Cbar v}}{\mu}
+    \to
+    \Store{l}{(\mu, l \mapsto \Obj{|C|}{\Cbar v})}
+  $}
+  \next
+  \AxiomC{$\Fields(|C|) = \Cbar C| |\Cbar f$}
+  \AxiomC{$\mu(l) = \Obj{|C|}{\Cbar v}$}
+  \RuleLabel{ES-ProjLoc}
+  \BinaryInfC{$\Store{l|.f|_i}{\mu} \to \Store{|v|_i}{\mu}$}
+  \next
+  \AxiomC{$\Mbody(|m|, |C|) = (\Cbar x, |MB|)$}
+  \AxiomC{$\mu(l) = \Obj{|C|}{\Cbar v}$}
+  \RuleLabel{ES-InvkLoc}
+  \BinaryInfC{$
+    \Store{l |.m(|\Cbar u|)|}{\mu} \to
+    \Store{\Meval(\Subst{\Cbar x \mapsto \Cbar u, |this| \mapsto l} |MB|)}{\mu}
+  $}
+  \next
+  \AxiomC{$\Store{|t|_{11} \to |t|'_{11}}{\mu}$}
+  \RuleLabel{ES-EvalLeft}
+  \UnaryInfC{$
+    \Store{\Meval(|t|_{11} |.f|_1 | = t|_{12} |; MB|_2)}{\mu} \to
+    \Store{\Meval(|t|'_{11} |.f|_1 | = t|_{12} |; MB|_2)}{\mu}
+  $}
+  \next
+  \AxiomC{$\Store{|t|_{12} \to |t|'_{12}}{\mu}$}
+  \RuleLabel{ES-EvalRight}
+  \UnaryInfC{$
+    \Store{\Meval(|v|_{11} |.f|_1 | = t|_{12} |; MB|_2)}{\mu} \to
+    \Store{\Meval(|v|_{11} |.f|_1 | = t|'_{12} |; MB|_2)}{\mu}
+  $}
+  \next
+  \AxiomC{$\Fields(|C|) = \Cbar C| |\Cbar f$}
+  \AxiomC{$\mu(l_1) = \Obj{|C|}{\Cbar v}$}
+  \RuleLabel{ES-EvalAssign}
+  \BinaryInfC{$
+    \begin{aligned}
+      &\PhantomRel\to
+      \Store{\Meval(l_1|.f|_i | = v|'_i|; MB|_2)}{\mu} \\
+      &\to
+      \Store{\Meval(|MB|_2)}{\Subst{l_1 \mapsto \Obj{|C|}{
+        |v|_j \Indices{j\in1..i-1} |, |
+        |v|'_i |, |
+        |v|_k \Indices{k\in i+1..n}
+      }}\mu}
+    \end{aligned}
+  $}
+  \next
+  \AxiomC{\hbox{\phantom0}}
+  \RuleLabel{ES-EvalReturn}
+  \UnaryInfC{$\Store{\Meval(|return t|_1|;|)}{\mu} \to \Store{|t|_1}{\mu}$}
+  \next
+  \AxiomC{$\Sub{|C|}{|D|}$}
+  \AxiomC{$\mu(l) = \Obj{|C|}{\Cbar v}$}
+  \RuleLabel{ES-CastLoc}
+  \BinaryInfC{$\Store{|(D)| l}{\mu} \to \Store{l}{\mu}$}
+  \next
+  \AxiomC{$\Store{|t|_0}{\mu} \to \Store{|t|'_0}{\mu}$}
+  \RuleLabel{ES-Field}
+  \UnaryInfC{$\Store{|t|_0 |.f|}{\mu} \to \Store{|t|'_0 |.f|}{\mu}$}
+  \next
+  \AxiomC{$\Store{|t|_0}{\mu} \to \Store{|t|'_0}{\mu}$}
+  \RuleLabel{ES-InvkRecv}
+  \UnaryInfC{$
+    \Store{|t|_0 |.m| \CParen{\Cbar t}}{\mu}
+    \to
+    \Store{|t|'_0 |.m| \CParen{\Cbar t}}{\mu}
+  $}
+  \next
+  \AxiomC{$\Store{|t|_i}{\mu} \to \Store{|t|'_i}{\mu}$}
+  \RuleLabel{ES-InvkArg}
+  \UnaryInfC{$
+    \begin{aligned}
+      &\PhantomRel\to
+        \Store{|v|_0 |.m| \CParen{\Cbar v|, t|_i|, |\Cbar t}}{\mu} \\
+      &\to
+        \Store{|v|_0 |.m| \CParen{\Cbar v|, t|'_i|, |\Cbar t}}{\mu}
+    \end{aligned}
+  $}
+  \next
+  \AxiomC{$\Store{|t|_i}{\mu} \to \Store{|t|'_i}{\mu}$}
+  \RuleLabel{ES-NewArg}
+  \UnaryInfC{$
+    \begin{aligned}
+      &\PhantomRel\to
+        \Store{|new C| \CParen{\Cbar v|, t|_i|, |\Cbar t}}{\mu} \\
+      &\to
+        \Store{|new C| \CParen{\Cbar v|, t|'_i|, |\Cbar t}}{\mu}
+    \end{aligned}
+  $}
+  \next
+  \AxiomC{$\Store{|t|_0}{\mu} \to \Store{|t|'_0}{\mu}$}
+  \RuleLabel{ES-Cast}
+  \UnaryInfC{$\Store{|(D)t|_0}{\mu} \to \Store{|(D)t|'_0}{\mu}$}
+\end{Proofs}
+}
+
+\paragraph{Typing:}
+The typing rules are almost same as the original FJ,
+  except for the method typing.
+\begin{Proofs}
+  \AxiomC{$
+    \begin{aligned}
+      &\CtxTyRel{\Cbar x|:|\Cbar C, |this:C|}{|t|_0}{|E|_0} \\
+      &\CtxTyRel{\Cbar x|:|\Cbar C, |this:C|}{\Cbar t_1}{\Cbar E_1} \\
+      &\CtxTyRel{\Cbar x|:|\Cbar C, |this:C|}{\Cbar t_2 |.| \Cbar f}{\Cbar E_2}
+    \end{aligned}
+  $}
+  \AxiomC{$
+    \begin{aligned}
+      &\Sub{|E|_0}{|C|_0} \qquad \Sub{\Cbar E_1}{\Cbar E_2} \\
+      &\CT(|C|) = |class C extends D \{| \ldots |\}| \\
+      &\Override(|m|, |D|, \Cbar C \to |C|_0)
+    \end{aligned}
+  $}
+  \BinaryInfC{$
+    |C|_0 | m|\CParen{\Cbar C| |\Cbar x}| \{|
+    \Cbar t_2 |.| \Cbar f |=| \Cbar t_1 |; return t|_0|;|
+    |\} OK in C|
+  $}
+\end{Proofs}
+
+\Ex{19.4.4}
+{
+\newcommand\Try{\It{try}}
+\paragraph{Syntax:}
+Change method declarations and terms as follows.
+\begin{flalign*}
+  |M| ::=& && \\
+    & \vdots && \\
+    & |C m| \CParen{\Cbar C| |\Cbar x} | \{ try \{ return t; \} |\Cbar{CA}| \}| && \\
+  |CA| ::=& && \\
+    & |catch (C t) \{ return t; \}| && \\
+  |t| ::=& && \\
+    & \vdots && \\
+    & |throw t| && \\
+    & \Try(|t|, \Cbar E| |\Cbar x| |\Cbar t) &&
+\end{flalign*}
+Here, \Try{} is a term in the |try| block that is being evaluated.
+
+\paragraph{Auxiliary functions:}
+Let us add the following cases to the definition of \Mtype{} and \Mbody{}.
+\begin{Proofs}
+  \AxiomC{$\CT(|C|) = \ClassDefDefault$}
+  \AxiomC{$
+    |B m | \CParen{\Cbar B| |\Cbar x} | \{|
+    |try \{ return t; \} |\Cbar{CA} |\}| \in \Cbar M
+  $}
+  \BinaryInfC{$\Mtype(|m|, |C|) = \Cbar B \to |B|$}
+  \next
+  \AxiomC{$\CT(|C|) = \ClassDefDefault$}
+  \AxiomC{$
+    \begin{aligned}
+      &|B m | \CParen{\Cbar B| |\Cbar x} | \{|
+       |try \{ return t; \} |\Cbar{CA} |\}| \in \Cbar M \\
+      &|CA|_i = |catch | \CParen{|E|_i | y|_i} | \{ return t|_i|; \}|
+    \end{aligned}
+  $}
+  \BinaryInfC{$\Mbody(|m|, |C|) = (\Cbar x, |t|, \Cbar E| |\Cbar y| |\Cbar t)$}
+\end{Proofs}
+
+\paragraph{Evaluation:}
+We add the following rules.
+\begin{Proofs}
+  \AxiomC{$\Mbody(|m|, |C|) = (\Cbar x, |t|, \Cbar E| |\Cbar y| |\Cbar t)$}
+  \RuleLabel{E-Invk-New-Try}
+  \UnaryInfC{$
+    \begin{aligned}
+      \CParen{|new C|\CParen{\Cbar v}} |.m| \CParen{\Cbar u}
+      \to
+      \Try(
+        &\Subst{\Cbar x \mapsto \Cbar u, |this| \mapsto |new C| \CParen{\Cbar v}} |t|_0, \\
+        &\Cbar E| |\Cbar y| |
+         \Subst{\Cbar x \mapsto \Cbar u, |this| \mapsto |new C| \CParen{\Cbar v}} \Cbar t
+      )
+    \end{aligned}
+  $}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Try}
+  \UnaryInfC{$\Try(|v|, \Cbar E| |\Cbar x| |\Cbar t) \to |v|$}
+  \next
+  \AxiomC{$|v| = |new C(|\Cbar t_0|)|$}
+  \AxiomC{$\Sub{|C|}{|E|_j}$}
+  \AxiomC{$\forall i<j, ~ |C| \not\Sb |E|_i$}
+  \RuleLabel{E-Catch}
+  \TrinaryInfC{$
+    \Try(|throw v|, \Cbar E| |\Cbar x| |\Cbar t)
+    \to
+    \Subst{|x|_j \mapsto |v|_j} |t|_j
+  $}
+  \next
+  \AxiomC{$|v| = |new C(|\Cbar t_0|)|$}
+  \AxiomC{$\forall i, ~ |C| \not\Sb |E|_i$}
+  \RuleLabel{E-Try-Throw}
+  \BinaryInfC{$
+    \Try(|throw v|, \Cbar E| |\Cbar x| |\Cbar t)
+    \to
+    |throw v|
+  $}
+  \next
+  \AxiomC{$|t| \to |t|'$}
+  \RuleLabel{E-Throw}
+  \UnaryInfC{$|throw t| \to |throw t|'$}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Throw-Field}
+  \UnaryInfC{$|(throw v).f| \to |throw v|$}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Throw-Invk-Recv}
+  \UnaryInfC{$|(throw v).m(|\Cbar t|)| \to |throw v|$}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Throw-Invk-Arg}
+  \UnaryInfC{$|v|_0|.m(|\Cbar v|, throw v, |\Cbar t|)| \to |throw v|$}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Throw-New}
+  \UnaryInfC{$|new C(|\Cbar v|, throw v, |\Cbar t|)| \to |throw v|$}
+  \next
+  \AxiomC{}
+  \RuleLabel{E-Throw-Cast}
+  \UnaryInfC{$|(D)(throw v)| \to |throw v|$}
+\end{Proofs}
+
+\paragraph{Typing}
+We add the following rule to type |throw| terms.
+\begin{Proofs}
+  \AxiomC{$\CtxTyRel{\Gamma}{|throw t|}{|C|}$}
+\end{Proofs}
+We also add the following case to method typing.
+\begin{Proofs}
+  \AxiomC{$
+    \begin{aligned}
+      &\CtxTyRel{\Cbar x|:|\Cbar C, |this:C|}{|t|}{|C|_0} \\
+      \forall i\in1..n, ~
+      &\CtxTyRel{\Cbar x|:|\Cbar C, |this:C|, |x|_i|:E|_i}{|t|_i}{|C|_i}
+    \end{aligned}
+  $}
+  \AxiomC{$
+    \begin{aligned}
+      &\Sub{|C|_0}{|B|} \\
+      \forall i\in1..n, ~
+      &\Sub{|C|_i}{|B|}
+    \end{aligned}
+  $}
+  \BinaryInfC{$
+    |B m | \CParen{\Cbar C| |\Cbar x} | \{ try \{return t;\} |
+      |catch | \CParen{|E|_i | x|_i} | \{return t|_i|;\} |
+      \Indices{i\in1..n}
+    |\} OK in C|
+  $}
+\end{Proofs}
+}
+
+\Ex{19.4.5}
+We can remove the subtyping premises except for \Rule{T-DCast} and \Rule{T-SCast}.
+
+\Ex{19.4.6}
+\begin{enumerate}
+  \item Let |I| and |J| be metavariables for interfaces,
+    and |S|, |T|, and |U| be metavariables for types including classes and interfaces.
+
+    \paragraph{Syntax:} Redefine the syntax as follows.
+    \begin{flalign*}
+      |CL| ::=& && \\
+      &|class C extends C, |\Cbar I| \{|\Cbar T| |\Cbar f|; K |\Cbar M|\}| && \\
+      |K| ::=& && \\
+        &|C|\CParen{\Cbar T| |\Cbar f}| \{super|\CParen{\Cbar f}|; this.|\Cbar f|=|\Cbar f|;\}| && \\
+      |M| ::=& && \\
+        &|T m| \CParen{\Cbar T| |\Cbar x} |\{return t;\}| && \\
+      |IF| ::=& && \\
+        &|interface I extends |\Cbar I| \{|\Cbar{AM}|\}| && \\
+      |AM| ::=& && \\
+        &|T m| \CParen{\Cbar T| |\Cbar x} |;| && \\
+      |T| ::=& && \\
+        &|C| && \\
+        &|I| && \\
+      |t| ::=& ~ \dots && \\
+      |v| ::=& ~ \dots &&
+    \end{flalign*}
+    Note that an interface may have no superinterface,
+      in which case the |extends| keyword is omitted.
+    The class table \CT{} is extended to also accomodate interface definitions.
+
+    \paragraph{Subtyping}
+    Define the subtyping rules as follows.
+    \begin{Proofs}
+      \AxiomC{$\Sub{|T|}{|T|}$}
+      \next
+      \AxiomC{$\Sub{|S|}{|T|}$}
+      \AxiomC{$\Sub{|T|}{|U|}$}
+      \BinaryInfC{$\Sub{|S|}{|U|}$}
+      \next
+      \AxiomC{$\CT(|C|) = |class C extends D, |\Cbar I| \{| \dots |\}|$}
+      \UnaryInfC{$\Sub{|C|}{|D|}$}
+      \next
+      \AxiomC{$\CT(|C|) = |class C extends D, I|_i \Indices{i\in1..n} | \{| \dots |\}|$}
+      \UnaryInfC{$\Sub{|C|}{|I|_j}$}
+      \next
+      \AxiomC{$\CT(|I|) = |interface I extends I|_i \Indices{i\in1..n} | \{| \dots |\}|$}
+      \UnaryInfC{$\Sub{|I|}{|I|_j}$}
+    \end{Proofs}
+    We omit the subtyping relation $\Sub{|I|}{|Object|}$
+      which exists in Java;
+      one has to explicitly side-cast a term of any interface type to |Object|
+      when needed.
+    Note that any class is still a subtype of |Object|,
+      and thus such a side-cast always succeeds.
+
+    \paragraph{Auxiliary functions:}
+    We update \Mtype{} and \Override{} as follows.
+    \begin{Proofs}
+      \AxiomC{$
+        \CT(|C|) = |class C extends D, |\Cbar I| \{|
+          \Cbar S| |\Cbar f|; K |\Cbar M
+        |\}|
+      $}
+      \AxiomC{$
+        |T m |\CParen{\Cbar T| |\Cbar x}| \{|\dots|\}| \in \Cbar M
+      $}
+      \BinaryInfC{$\Mtype(|m|, |C|) = \Cbar T \to |T|$}
+      \next
+      \AxiomC{$\Mtype(|m|, |C|) = \Cbar S \to |S|_0$
+              implies
+              $\Cbar T = \Cbar S$ and $|T|_0 = |S|_0$}
+      \UnaryInfC{$\Override(|m|, |C|, \Cbar T \to \Cbar T_0)$}
+    \end{Proofs}
+
+    \paragraph{Evaluation:}
+    Update the \Rule{E-CastNew} rule as follows.
+    \begin{Proofs}
+      \AxiomC{$\Sub{|C|}{|T|}$}
+      \RuleLabel{E-CastNew}
+      \UnaryInfC{$
+        \CParen{|T|}\CParen{|new C|\CParen{\Cbar v}}
+        \to
+        |new C|\CParen{\Cbar v}
+      $}
+    \end{Proofs}
+
+    \paragraph{Typing}
+    Finally, update the typing rules as follows.
+    \begin{Proofs}
+      \AxiomC{$|x:T| \in \Gamma$}
+      \RuleLabel{T-Var}
+      \UnaryInfC{$\CtxTyRel{\Gamma}{|x|}{|T|}$}
+      \next
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|_0}{|C|_0}$}
+      \AxiomC{$\Fields(|C|_0) = \Cbar T| |\Cbar f$}
+      \RuleLabel{T-Field}
+      \BinaryInfC{$\CtxTyRel{\Gamma}{|t|_0|.f|_i}{|T|_i}$}
+      \next
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|_0}{|T|_0}$}
+      \AxiomC{$\Mtype(|m|, |T|_0) = \Cbar S \to |T|$}
+      \AxiomC{$\CtxTyRel{\Gamma}{\Cbar t}{\Cbar T}$}
+      \AxiomC{$\Sub{\Cbar T}{\Cbar S}$}
+      \RuleLabel{T-Invk}
+      \QuaternaryInfC{$\CtxTyRel{\Gamma}{|t|_0|.m|\CParen{\Cbar t}}{|T|}$}
+      \next
+      \AxiomC{$\Fields(|C|) = \Cbar S| |\Cbar f$}
+      \AxiomC{$\CtxTyRel{\Gamma}{\Cbar t}{\Cbar T}$}
+      \AxiomC{$\Sub{\Cbar T}{\Cbar S}$}
+      \RuleLabel{T-New}
+      \TrinaryInfC{$\CtxTyRel{\Gamma}{|new C|\CParen{\Cbar t}}{|C|}$}
+      \next
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|_0}{|S|}$}
+      \AxiomC{$\Sub{|S|}{|T|}$}
+      \RuleLabel{T-UCast}
+      \BinaryInfC{$\CtxTyRel{\Gamma}{\CParen{|T|}|t|_0}{|T|}$}
+      \next
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|_0}{|T|}$}
+      \AxiomC{$\Sub{|S|}{|T|}$}
+      \AxiomC{$|S| \neq |T|$}
+      \RuleLabel{T-DCast}
+      \TrinaryInfC{$\CtxTyRel{\Gamma}{\CParen{|S|}|t|_0}{|S|}$}
+      \next
+      \AxiomC{$\CtxTyRel{\Gamma}{|t|_0}{|S|}$}
+      \AxiomC{$|S| \not\Sb |T|$}
+      \AxiomC{$|T| \not\Sb |S|$}
+      \AxiomC{\It{stupid warning}}
+      \RuleLabel{T-SCast}
+      \QuaternaryInfC{$\CtxTyRel{\Gamma}{\CParen{|T|}|t|_0}{|T|}$}
+      \next
+      \AxiomC{$
+        \begin{gathered}
+          \CtxTyRel{\Cbar x|:|\Cbar T, |this:C|}{|t|_0}{|S|_0} \\
+          \CT(|C|) = |class C extends D, |\Cbar I| \{|\dots|\}|
+        \end{gathered}
+      $}
+      \AxiomC{$\Sub{|S|_0}{|T|_0}$}
+      \AxiomC{$
+        \begin{gathered}
+          \Override(|m|, |J|, \Cbar T \to |T|_0) \\
+          |J| = |D |\text{or one of}| |\Cbar I
+        \end{gathered}
+      $}
+      \TrinaryInfC{$
+        |T|_0| m |\CParen{\Cbar T| |\Cbar x}| \{return t|_0|;\} OK in C|
+      $}
+    \end{Proofs}
+
+  \item Suppose the following declarations.
+    \begin{Code}
+  interface A {}
+  interface B {}
+  interface C extends A, B {}
+  interface D extends A, B {}
+    \end{Code}
+    Then, types |C| and |D| have common supertypes |A| and |B|,
+      but no least common supertype.
+
+  \item In Java's conditional expression,
+      one branch must have a supertype of the other's,
+      which is the type of the expression.
+    We cannot relax this rule by type-checking a conditional
+      as a join of the types of branches,
+      since we may have no unique join in general.
+\end{enumerate}
+
+\Ex{19.4.7}
+{
+\newcommand\Super{\It{super}}
+We employ preprocessing on the syntax tree
+  to automatically annotate the class whose method should be invoked
+  with |super| syntax.
+Define the super method call syntax as $|super.m|\CParen{\Cbar t}$.
+For every appearance of this syntax in a class that extends |D|,
+  rewrite this term to $\Super(|D|, |this|)|.m|\CParen{\Cbar t}$.
+
+\paragraph{Syntax:}
+Add the following syntax to terms.
+\begin{flalign*}
+  |t| ::=& && \\
+    & \dots && \\
+    & \Super(|C|, |x|)|.m|\CParen{\Cbar t} &&
+\end{flalign*}
+
+\paragraph{Evaluation:}
+Add the following rule to evaluation.
+\begin{Proofs}
+  \AxiomC{$\Mbody(|m|, |D|) = (\Cbar x, |t|_0)$}
+  \RuleLabel{E-InvkSuper}
+  \UnaryInfC{$
+    \Super(|D|, |new C|\CParen{\Cbar v}) |.m| \CParen{\Cbar u}
+    \to
+    \Subst{\Cbar x \mapsto \Cbar u, |this| \mapsto |new C| \CParen{\Cbar v}} |t|_0
+  $}
+\end{Proofs}
+
+\paragraph{Typing:}
+Add the following rule to term typing.
+\begin{Proofs}
+  \AxiomC{$\Mtype(|m|, |C|_0) = \Cbar D \to |C|$}
+  \AxiomC{$\CtxTyRel{\Gamma}{\Cbar t}{\Cbar C}$}
+  \AxiomC{$\Sub{\Cbar C}{\Cbar D}$}
+  \RuleLabel{T-InvkSuper}
+  \TrinaryInfC{$
+    \CtxTyRel{\Gamma}{\Super(|C|_0, |v|_0) |.m| \CParen{\Cbar t}}{|C|}
+  $}
+\end{Proofs}
+}
+
+\Ex{19.5.1}
+We need the following lemmata.
+
+\Lemma{19.5.1.1}.
+If $\CtxTyRel{\Gamma, |x:C|}{|t|}{|D|}$, $\CtxTyRel{\Gamma}{|t|_0}{|C|'}$,
+  and $\Sub{|C|'}{|C|}$,
+  then $\CtxTyRel{\Gamma}{\Subst{|x| \mapsto |t|_0} |t|}{|D|}$.
+
+\Proof: \textsc{Todo}
+
+\Lemma{19.5.1.2}.
+If $\Mtype(|m|, |C|_0) = \Cbar D \to |C|$ and $\Sub{|D|_0}{|C|_0}$,
+  then $\Mtype(|m|, |D|_0) = \Cbar D \to |C|$.
+
+\Proof: \textsc{Todo}
+
+\It{Proof of Theorem 19.5.1}:
+By induction on typing derivations.
+We perform case analysis on the last rule used in the derivation.
+
+\Case\Rule{T-Var}: Impossible; there is no rule that evaluates a variable.
+
+\Case\Rule{T-Field}: $|t| = |t|_0|.f|_i, ~ |C| = |C|_i$ \\
+  The evaluation rule applied to |t| is either
+  \Rule{E-ProjNew} or \Rule{E-Field}.
+  \begin{itemize}
+    \item \Subcase\Rule{E-ProjNew}:
+        $|t|_0 = |new C|\CParen{\Cbar v}, ~ |t|' = |v|_i$ \\
+      The premises of \Rule{T-Field} give
+        $\CtxTyRel{\Gamma}{|new C|\CParen{\Cbar v}}{|C|_0}$ and
+        $\Fields(|C|_0) = \Cbar C| |\Cbar f$.
+      The former relation is derived only from \Rule{T-New},
+        which gives $|C|_0 = |C|$ and $\CtxTyRel{\Gamma}{\Cbar v}{\Cbar D}$,
+        where $\Cbar D$ satisfies $\Sub{\Cbar D}{\Cbar C}$.
+      Therefore, $\CtxTyRel{\Gamma}{|v|_i}{|D|_i}$ and $\Sub{|D|_i}{|C|_i}$.
+    \item \Subcase\Rule{E-Field}: $|t|_0 \to |t|'_0, ~ |t|' = |t|'_0|.f|_i$ \\
+      The first premise of \Rule{T-Field} gives $\CtxTyRel{\Gamma}{|t|_0}{|C|_0}$.
+      By the induction hypothesis, $\CtxTyRel{\Gamma}{|t|'_0}{|C|'_0}$
+        for some $\Sub{|C|'_0}{|C|_0}$.
+      By definition, $\Fields(|C|'_0)$ includes $\Fields(|C|_0)$.
+      Therefore, applying \Rule{T-Field} to $|t|'_0$ gives
+        $\CtxTyRel{\Gamma}{|t|'_0|.f|_i}{|C|_i}$.
+  \end{itemize}
+
+\Case\Rule{T-Invk}: $|t| = |t|_0|.m|\CParen{\Cbar t}$ \\
+  There are three evaluation rules applicable to |t|.
+  In either case, we use $\CtxTyRel{\Gamma}{|t|_0}{|C|_0}$ that is obtained as
+    the first premise of \Rule{T-Invk}.
+  \begin{itemize}
+    \item \Subcase\Rule{E-InvkNew}:
+        \vtop{
+          $|t|_0 = |new D|\CParen{\Cbar v}$, ~
+          $|t|' = \Subst{\Cbar x \mapsto \Cbar t, |this| \mapsto |new D|\CParen{\Cbar v}} |s|_0$ \\
+          where $\Mbody(|m|, |D|) = (\Cbar x, |s|_0)$
+        } \\
+      Since $|t|_0 = |new D|\CParen{\Cbar v}$,
+        its type is derived only from \Rule{T-New},
+        with which we obtain $|D| = |C|_0$.
+      The second premise of \Rule{T-Invk} gives $\Mtype(|m|, |C|_0) = \Cbar D \to |C|$.
+      Combining the premises of the derivation of \Mbody{} and \Mtype{},
+        we recover the definition of method |m| in the least supertype $|B|_0$ of $|C|_0$
+        that defines |m| as $|M| = |C m| \CParen{\Cbar D| |\Cbar x}| \{return s|_0|;\}|$.
+      The premises of the method typing $|M OK in B|_0$ gives
+        $\CtxTyRel{\Cbar x|:|\Cbar D, |this:B|_0}{|s|_0}{|E|}$
+        where $\Sub{|E|}{|C|}$.
+      Therefore,
+        combining it with the other premises of \Rule{T-Invk} that give
+        $\CtxTyRel{\Gamma}{\Cbar t}{\Cbar C}$ and $\Sub{\Cbar C}{\Cbar D}$,
+        we obtain
+        $\CtxTyRel{\Gamma}{
+           \Subst{\Cbar x \mapsto \Cbar t, |this| \mapsto |new C|_0\CParen{\Cbar v}} |s|_0
+         }{|E|}$ by \Lemma{19.5.1.1}.
+    \item \Subcase\Rule{E-Invk-Recv}:
+        $|t|' = |t|'_0|.m|\CParen{\Cbar t}$ where $|t|_0 \to |t|'_0$ \\
+      By the induction hypothesis, $\CtxTyRel{\Gamma}{|t|'_0}{|D|_0}$ where
+        $\Sub{|D|_0}{|C|_0}$.
+      The second premise of \Rule{T-Invk} gives $\Mtype(|m|, |C|_0) = \Cbar D \to |C|$.
+      By \Lemma{19.5.1.2}, $\Mtype(|m|, |D|_0) = \Cbar D \to |C|$.
+      Therefore, by applying \Rule{T-Invk} to $|t|'_0$,
+        we obtain $\CtxTyRel{\Gamma}{|t|'_0|.m|\CParen{\Cbar t}}{|C|}$.
+    \item \Subcase\Rule{E-Invk-Arg}:
+        \vtop{
+          $
+            |t|_0 = |v|_0, ~
+            \Cbar t = (\Cbar v|, t|_i|, |\Cbar s), ~
+            |t|' = |v|_0|.m|\CParen{\Cbar v|, t|'_i|, |\Cbar s}
+          $
+          where \\
+          $|t|_i \to |t|'_i$
+        }
+      The third premise of \Rule{T-Invk} gives $\CtxTyRel{\Gamma}{|t|_i}{|C|_i}$.
+      By the induction hypothesis, $\CtxTyRel{\Gamma}{|t|'_i}{|C|'_i}$
+        where $\Sub{|C|'_i}{|C|_i}$.
+      By the fourth premise of \Rule{T-Invk} and the transitivity of subtyping,
+        we have $\Sub{|C|'_i}{|D|_i}$.
+      Therefore, by applying \Rule{T-Invk} to $|t|'$,
+        we obtain $\CtxTyRel{\Gamma}{|t|'}{|C|}$.
+  \end{itemize}
+
+\Case\Rule{T-New}: $|t| = |new C|\CParen{\Cbar t}$ \\
+  The evaluation rule applicable to |t| is only \Rule{E-New-Arg},
+    where $|t| = |new C|\CParen{\Cbar v|, t|_i|, |\Cbar s}$
+    and $|t|' = |new C|\CParen{\Cbar v|, t|'_i|, |\Cbar s}$ with $|t|_i \to |t|'_i$.
+  The second premise of \Rule{T-New} gives $\CtxTyRel{\Gamma}{|t|_i}{|C|_i}$.
+  By the induction hypothesis, $\CtxTyRel{\Gamma}{|t|'_i}{|C|'_i}$
+    for some $\Sub{|C|'_i}{|C|_i}$.
+  The other premises of \Rule{T-New} give $\Fields(|C|) = \Cbar D| |\Cbar f$ and
+    $\Sub{\Cbar C}{\Cbar D}$.
+  By the transitivity of subtyping, $\Sub{|C|'_i}{|D|_i}$.
+  Therefore, \Rule{T-New} gives
+    $\CtxTyRel{\Gamma}{|new C|\CParen{\Cbar v|, t|'_i|, |\Cbar s}}{|C|}$.
+
+\Case\Rule{T-UCast}: $|t| = \CParen{|C|}|t|_0$ \\
+  The evaluation rule applicable to |t| is either \Rule{E-CastNew} or \Rule{E-Cast}.
+  \begin{itemize}
+    \item \Subcase\Rule{E-CastNew}: $|t|' = |t|_0 = |new D|\CParen{\Cbar v}$ \\
+      By the first premise of \Rule{T-UCast}, $\CtxTyRel{\Gamma}{|t|_0}{|D|}$.
+      By the premise of \Rule{E-CastNew}, $\Sub{|D|}{|C|}$.
+    \item \Subcase\Rule{E-Cast}:
+        $|t|' = \CParen{|C|}|t|'_0$ where $|t|_0 \to |t|'_0$ \\
+      The premises of \Rule{T-UCast} give
+        $\CtxTyRel{\Gamma}{|t|_0}{|D|}$ and $\Sub{|D|}{|C|}$.
+      By the induction hypothesis, $\CtxTyRel{\Gamma}{|t|'_0}{|E|}$
+        where $\Sub{|E|}{|D|}$.
+      By the transitivity of subtyping, $\Sub{|E|}{|C|}$.
+      By applying \Rule{T-UCast} to $|t|'_0$,
+        we obtain $\CtxTyRel{\Gamma}{\CParen{|C|}|t|'_0}{|C|}$.
+  \end{itemize}
+
+\Case\Rule{T-DCast}: $|t| = \CParen{|C|}|t|_0$ \\
+  Again, the evaluation rule applicable to |t| is
+    either \Rule{E-CastNew} or \Rule{E-Cast}.
+  \begin{itemize}
+    \item \Subcase\Rule{E-CastNew}:
+      Impossible; the premises of \Rule{E-CastNew} and \Rule{T-DCast} contradict.
+    \item \Subcase\Rule{E-Cast}:
+        $|t|' = \CParen{|C|}|t|'_0$ where $|t|_0 \to |t|'_0$ \\
+      The first two premises of \Rule{T-DCast} give
+        $\CtxTyRel{\Gamma}{|t|_0}{|D|}$ and $\Sub{|C|}{|D|}$.
+      By the induction hypothesis,
+        $\CtxTyRel{\Gamma}{|t|'_0}{|E|}$ for some $\Sub{|E|}{|D|}$.
+      Depending on the subtyping relation between |C| and |E|,
+        we can use either of \Rule{T-UCast}, \Rule{T-DCast}, or \Rule{T-SCast}
+        to obtain $\CtxTyRel{\Gamma}{\CParen{|C|}|t|'_0}{|C|}$.
+      Note that, when there is no subtyping relation between |C| and |E|,
+        we need to additionally emit a \It{stupid warning} on type checking $|t|'$.
+      This case may happen when one writes a side cast as a combination of
+        upcasts and downcasts.
+  \end{itemize}
+
+\Case\Rule{T-SCast}: Similar to \Case\Rule{T-DCast}. \qed
+
+\Ex{19.5.5, 19.5.6}
+Omitted.
+
+}
 
 \end{document}
