@@ -70,7 +70,8 @@
 \newcommand\LambdaNB{$\lambda$\textbf{NB}}
 \newcommand\Lemma[1]{\textsc{Lemma #1}}
 \newcommand\Let[2]{|let | #1 = #2 | in |}
-\newcommand\Lm{\lambda}
+\newcommand\Lm{\rlap{$\lambda$}\phantom{\Cd{.}}}
+\newcommand\Mu{\rlap{$\mu$}\phantom{\Cd{.}}}
 \newcommand\N{\mathbb N}
 \newcommand\PhantomRel[1]{\phantom{{}#1{}}}
 \newcommand\Proof{\textsc{Proof}}
@@ -2580,6 +2581,9 @@ We can also use the |Ref| trick used in the official solution of this exercise
       (x.id := false; y.id := true; !(x.id));
 \end{Code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 19.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Study: Featherweight Java}
 {
 \newcommand\ClassDef[6]{|class |#1| extends |#2| \{|#3| |#4|; |#5| |#6|\}|}
@@ -3304,5 +3308,178 @@ We perform case analysis on the last rule used in the derivation.
 Omitted.
 
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 20.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Recursive Types}
+
+\Ex{20.1.1}
+\begin{Code}
+  NatTree = $\Mu$X. <leaf:Unit, node:{Nat, X, X}>;
+
+  leaf = <leaf=unit> as NatTree;
+  node = $\Lm$n:Nat. $\Lm$l:NatTree. $\Lm$r:NatTree.
+             <node={l, n, r}> as NatTree;
+
+  isleaf = $\Lm$t:NatTree. case t of
+                            <leaf=u> $\To$ true
+                          | <node=n> $\To$ false;
+  label = $\Lm$t:NatTree. case t of <leaf=u> $\To$ 0 | <node=n> $\To$ n.1;
+  left = $\Lm$t:NatTree. case t of <leaf=u> $\To$ u | <node=n> $\To$ n.2;
+  right = $\Lm$t:NatTree. case t of <leaf=u> $\To$ u | <node=n> $\To$ n.3;
+
+  dfs = fix (
+      $\Lm$f:NatList$\to$NatTree$\to$NatList.
+      $\Lm$l:NatList. $\Lm$t:NatTree.
+          case t of <leaf=u> $\To$ l
+                  | <node=n> $\To$ cons n.1 (f (f l n.2) n.3)
+  ) nil;
+\end{Code}
+
+\Ex{20.1.2}
+Let $|plus:Nat|\to|Nat|\to|Nat|$ be a function that adds two numbers.
+\begin{Code}
+  fib = fix (
+      $\Lm$f:Nat$\to$Nat$\to$Stream.
+      $\Lm$m:Nat. $\Lm$n:Nat. $\Lm$_:Unit. {n, f n (plus m n)}
+  ) 0 1;
+\end{Code}
+
+\Ex{20.1.3}
+\begin{Code}
+  BackupCounter = $\Mu$C. {get:Nat, inc:Unit$\to$C, dec:Unit$\to$C,
+                           backup:Unit$\to$C, reset:Unit$\to$C};
+  c = let create = fix (
+      $\Lm$f:{x:Nat, b:Nat}$\to$BackupCounter. $\Lm$s:{x:Nat, b:Nat}.
+        {get = s.x,
+         inc = $\Lm$_:Unit. f {x=succ(s.x), b=s.b},
+         dec = $\Lm$_:Unit. f {x=pred(s.x), b=s.b},
+         backup = $\Lm$_:Unit. f {x=s.x, b=s.x},
+         reset = $\Lm$_:Unit. f {x=s.b, b=s.b}}
+  ) in create {x=0, b=0};
+\end{Code}
+
+\Ex{20.1.4}
+Extend the encoding with booleans and conditionals as follows.
+\begin{Code}
+  D = $\Mu$X. <nat:Nat, bool:Bool, fn:X$\to$X>;
+  lam = $\Lm$f:D$\to$D. <fn=f> as D;
+  ap = $\Lm$f:D. $\Lm$a:D.
+           case f of <nat=n> $\To$ diverge$_D$ unit
+                   | <bool=b> $\To$ diverge$_D$ unit
+                   | <fn=f> $\To$ f a;
+  ifels = $\Lm$c:D. $\Lm$t:D. $\Lm$e:D.
+              case c of <bool=b> $\To$ if b then t else e
+                      | <nat=n> $\To$ diverge$_D$ unit
+                      | <fn=f> $\To$ diverge$_D$ unit;
+\end{Code}
+The terms
+\begin{Code}
+  if false then 1 else 0;
+  if false then 1 else false;
+\end{Code}
+  are encoded as
+\begin{Code}
+  ifels (<bool=false> as D) (<nat=1> as D) (<nat=0> as D);
+  ifels (<bool=false> as D) (<nat=1> as D) (<bool=false> as D);
+\end{Code}
+These terms are evaluated to |<nat=0> as D| and |<bool=false> as D|, respectively.
+
+\Ex{20.1.5}
+\begin{Code}
+  D = $\Mu$X. <nat:Nat, fn:X$\to$X, rcd:Nat$\to$X>;
+  lam = $\Lm$f:D$\to$D. <fn=f> as D;
+  ap = $\Lm$f:D. $\Lm$a:D.
+           case f of <nat=n> $\To$ diverge$_D$ unit
+                   | <fn=f> $\To$ f a
+                   | <rcd=r> $\To$ diverge$_D$ unit;
+  rcd = $\Lm$r:Nat$\to$D. <rcd=r> as D;
+  rcdset = $\Lm$f:D. $\Lm$k:Nat. $\Lm$v:D.
+           case f of
+             <nat=n> $\To$ diverge$_D$ unit
+           | <fn=f> $\To$ diverge$_D$ unit
+           | <rcd=r> $\To$ <rcd=$\Lm$n:Nat. if eq n k then v else r n> as D;
+  rcdproj = $\Lm$f:D. $\Lm$k:Nat.
+            case f of
+              <nat=n> $\To$ diverge$_D$ unit
+            | <fn=f> $\To$ diverge$_D$ unit
+            | <rcd=r> $\To$ r k;
+\end{Code}
+
+\Ex{20.2.1}
+Hungry functions:
+\begin{Code}
+  Hungry = $\Mu$A. Nat$\to$A;
+  f = fold[Hungry] (fix ($\Lm$f:Nat$\to$Hungry. $\Lm$n:Nat. fold[Hungry] f))
+\end{Code}
+Streams:
+\begin{Code}
+  Stream = $\Mu$A. Unit$\to${Nat, A};
+  hd = $\Lm$s:Stream. (unfold[Stream] s unit).1;
+  tl = $\Lm$s:Stream. (unfold[Stream] s unit).2;
+  upfrom0 = fold[Stream] (
+      fix (
+          $\Lm$f:Nat$\to$Stream. $\Lm$n:Nat.
+              fold[Stream] ($\Lm$_:Unit. {n, f (succ n)})
+      ) 0
+  );
+\end{Code}
+Processes:
+\begin{Code}
+  Process = $\Mu$A. Nat$\to${Nat, A};
+  p = fold[Process] (fix (
+      $\Lm$f:Nat$\to$Process. $\Lm$acc:Nat. fold[Process] (
+          $\Lm$n:Nat. let newacc = plus acc n in {newacc, f newacc}
+      )
+  ) 0);
+  curr = $\Lm$s:Process. (unfold[Process] s 0).1;
+  send = $\Lm$n:Nat. $\Lm$s:Process. (unfold[Process] s n).2;
+\end{Code}
+Objects:
+\begin{Code}
+  Counter = $\Mu$C. {get:Nat, inc:Unit$\to$C, dec:Unit$\to$C};
+  c = let create = fix ($\Lm$f: {x:Nat}$\to$Counter. $\Lm$s: {x:Nat}.
+                            fold[Counter] {
+                                get = s.x,
+                                inc = $\Lm$_:Unit. f {x=succ(s.x)},
+                                dec = $\Lm$_:Unit. f {x=pred(s.x)}
+                            })
+      in create {x=0};
+\end{Code}
+Fixed-point:
+\begin{Code}
+  fix$_T$ = $\Lm$f:T$\to$T.
+      ($\Lm$x:($\Mu$A.A$\to$T). f (unfold[$\Mu$A.A$\to$T] x x))
+      (fold[$\Mu$A.A$\to$T] ($\Lm$x:($\Mu$A.A$\to$T). f (unfold[$\Mu$A.A$\to$T] x x)));
+  diverge$_T$ = $\Lm$_:Unit. fix$_T$ ($\Lm$x:T. x);
+\end{Code}
+Untyped lambda-calculus:
+\begin{Code}
+  D = $\Mu$X. X$\to$X;
+  lam = fold[D];
+  ap = unfold[D];
+\end{Code}
+
+\Ex{20.2.2}
+\textsc{Progress}:
+By induction on typing derivations.
+We perform case analysis on the last rule used in the derivations.
+
+\Case\Rule{T-Fld}: Immediate by the induction hypothesis.
+
+\Case\Rule{T-Unfld}:
+  The premise $\CtxTyRel{\Gamma}{|t|_1}{\Subst{|X|\mapsto|U|}|T|_1}$ is
+    derived only by \Rule{T-Fld},
+    and thus we can apply \Rule{E-UnfldFld} to proceed the evaluation.
+
+\textsc{Preservation}:
+By induction on evaluation derivations.
+We again perform case analysis on the last rule used in the derivations.
+
+\Case\Rule{E-UnfldFld}:
+Immediate by combining \Rule{T-Fld} and \Rule{T-Unfld}.
+
+\Case\Rule{E-Fld, E-Unfld}: Immediate by the induction hypothesis.  \qed
 
 \end{document}
