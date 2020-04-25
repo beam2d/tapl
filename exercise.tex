@@ -59,6 +59,7 @@
 \newcommand\CtxxTyRel[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
 \newcommand\DShift{\mathop\uparrow}
 \newcommand\Dom{\It{dom}}
+\newcommand\EmptySeq{\bullet}
 \newcommand\EqComment[1]{[\text{\small #1}]}
 \newcommand\EqDef{\stackrel{\text{def}}{=}}
 \newcommand\Ex[1]{\subsection*{Exercise #1}}
@@ -74,6 +75,7 @@
 \newcommand\Mu{\rlap{$\mu$}\phantom{\Cd{.}}}
 \newcommand\N{\mathbb N}
 \newcommand\PhantomRel[1]{\phantom{{}#1{}}}
+\newcommand\Pow{\mathcal P}
 \newcommand\Proof{\textsc{Proof}}
 %% TODO(beam2d): Fix spacing of the last line.
 \newenvironment{Proofs}{%
@@ -108,6 +110,7 @@
 \newcommand\Ts{\vdash}
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
 \newcommand\TyRel[2]{#1 | : | #2}
+\newcommand\Uc{\mathcal U}
 \newcommand\Where{~ \text{where} ~}
 
 \makeatother
@@ -3481,5 +3484,52 @@ We again perform case analysis on the last rule used in the derivations.
 Immediate by combining \Rule{T-Fld} and \Rule{T-Unfld}.
 
 \Case\Rule{E-Fld, E-Unfld}: Immediate by the induction hypothesis.  \qed
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 21.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Metatheory of Recursive Types}
+
+\Ex{21.1.7}
+\begin{align*}
+  E_2(\emptyset) &= \Set{a} & E_2(\Set{a, b}) &= \Set{a, c} \\
+  E_2(\Set{a}) &= \Set{a} & E_2(\Set{a, c}) &= \Set{a, b} \\
+  E_2(\Set{b}) &= \Set{a} & E_2(\Set{b, c}) &= \Set{a, b} \\
+  E_2(\Set{c}) &= \Set{a, b} & E_2(\Set{a, b, c}) &= \Set{a, b, c}
+\end{align*}
+The $E_2$-closed sets are $\Set{a}$ and $\Set{a, b, c}$.
+The $E_2$-consistent stes are $\emptyset$, $\Set{a}$, and $\Set{a, b, c}$.
+The extreme fixed points are $\mu E_2 = \Set{a}$ and $\nu E_2 = \Set{a, b, c}$.
+
+\Ex{21.1.9}
+\textsc{Ordinary induction on natural numbers}:
+Suppose that a predicate $P$ on the natural numbers satisfies $P(0)$ and,
+  for all $i$, $P(i)$ implies $P(i + 1)$.
+Let $S_P = \Set{i \in \N \mid P(i)}$.
+Define a monotone function $F$ on $\Pow(\N)$ by
+  $F(S) = \Set{0} \cup \Set{i + 1 \mid i \in S}$.
+By the conditions on $P$, 
+  $F(S_P) \subseteq S_P$, i.e., $S_P$ is $F$-closed.
+Therefore, by the principle of induction, $\mu F \subseteq S_P$.
+By the definition of natural numbers,
+  $\mu F = \N$, and thus $S_P = \N$.
+
+\textsc{Lexicographic induction}:
+{ \newcommand\NN{\N\times\N}
+Suppose that a predicate $P$ on the pairs of natural numbers satisfies,
+  for every $(i, j)$, $P(i, j)$ if $P(i', j')$ holds for all $(i', j') < (i, j)$.
+Let $S_P = \Set{(i, j) \in \NN \mid P(i, j)}$.
+Define a monotone function $F$ on $\Pow(\NN)$ by
+  $F(S) = \Set{(i, j) \in \NN \mid \forall (i', j') < (i, j), ~ (i', j') \in S}$.
+By the condition on $P$, $F(S_P) \subseteq S_P$, i.e., $S_P$ is $F$-closed.
+Therefore, by the principle of induction, $\mu F \subseteq S_P$.
+Assume $\mu F \neq \NN$ to derive contradiction.
+Then, there exists $(k, l) = \min(\NN \setminus \mu F)$.
+All the pairs smaller than $(k, l)$ belong to $\mu F$,
+  and thus $(k, l) \in F(\mu F)$.
+However, since $\mu F$ is $F$-closed, $(k, l) \in \mu F$, which contradicts.
+Therefore, we obtain $\mu F = \NN$,
+  and thus $S_P = \NN$. \qed
+}
 
 \end{document}
