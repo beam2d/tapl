@@ -99,12 +99,14 @@
 \newcommand\Rule[1]{\textsc{#1}}
 \newcommand\RuleLabel[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand\Sb{\mathrel{\texttt<\hspace{-0.3ex}\texttt:}}
+\newcommand\Sc{\mathcal S}
 \newcommand\Set[1]{\{#1\}}
 \newcommand\Store[2]{#1 \mid #2}
 \newcommand\Sub[2]{#1 \Sb #2}
 \newcommand\Subcase{\It{Subcase} }
 \newcommand\Subst[1]{[#1]\,}
 \newcommand\Swap[2]{#2#1}
+\newcommand\Tc{\mathcal T}
 \newcommand\Theorem{\textsc{Theorem}}
 \newcommand\To{\Rightarrow}
 \newcommand\Ts{\vdash}
@@ -3530,6 +3532,82 @@ All the pairs smaller than $(k, l)$ belong to $\mu F$,
 However, since $\mu F$ is $F$-closed, $(k, l) \in \mu F$, which contradicts.
 Therefore, we obtain $\mu F = \NN$,
   and thus $S_P = \NN$. \qed
+}
+
+\Ex{21.2.2}
+Define $\Uc$ and $F$ as follows
+  (Here, $\Set{1, 2}^* \to \Set{\to, \times, |Top|}$ denotes the set of all
+   partial functions from $\Set{1, 2}^*$ to $\Set{\to, \times, |Top|}$).
+\begin{align*}
+  \Uc &= \Set{|T| \in \Set{1, 2}^* \to \Set{\to, \times, |Top|}
+              \mid \EmptySeq \in \Dom(|T|), ~
+                   (\pi, \sigma) \in \Dom(|T|) \To \sigma \in \Dom(|T|)}, \\
+  F(S) &= \Set{|Top|} \cup
+          \Set{|T|_1 \times |T|_2 \mid |T|_1, |T|_2 \in S} \cup
+          \Set{|T|_1 \to |T|_2 \mid |T|_1, |T|_2 \in S}.
+\end{align*}
+
+Proof sketch of $\mu F = \Tc_f$ and $\nu F = \Tc$:
+
+Since $\Tc_f$ is $F$-closed, $\mu F \subseteq \Tc_f$ by the principle of induction.
+By the definition of tree types,
+  any finite tree type |T| is written as either |Top|, $|T|_1 \times |T|_2$,
+  or $|T|_1 \to |T|_2$.
+Due to the finiteness,
+  recursive applications of such decomposition stop at some point;
+  i.e., they hit to the |Top| case at finite depths.
+Therefore, |T| belongs to $F^n(\emptyset)$ for some finite $n$,
+  i.e, $|T| \in \mu F$, and thus $\mu F = \Tc_f$.
+
+We also have that $\Tc$ is $F$-consistent,
+  and thus $\Tc \subseteq \nu F$ by the principle of coinduction.
+If $|T| \in \Uc \setminus \Tc$,
+  then |T| is not written in a form of either |Top|, $|T|_1 \times |T|_2$, or
+  $|T|_1 \to |T|_2$,
+  and thus $|T| \notin \nu F$ since $\nu F$ is $F$-consistent.
+Therefore, $\nu F = \Tc$. \qed
+
+\Ex{21.3.3}
+A pair $(|Top|, |Top| \times |Top|)$ does not belong to $\nu S$.
+
+\Ex{21.3.4}
+Let $|T| = |Top| \to \CParen{|Top| \to \CParen{|Top| \to \dots}}$.
+Then, a pair $(|T|, |T|)$ is related by $\nu S$ but not by $\mu S$.
+It can be shown by observing that, to generate this pair with $S$,
+  only the third rule could be used,
+  for which we need both $(|Top|, |Top|)$ and $(|T|, |T|)$ in the fixed point.
+The latter is the very original pair,
+  and thus it cannot be generated inductively starting from the empty set.
+It is also obvious that adding this pair to the set keeps the set fixed-point,
+  and thus it still belongs to $\nu S$.
+
+In the universe of finite trees, we have $\nu S_f = \mu S_f$.
+
+\Ex{21.3.8}
+Let $D = \Set{(|T|, |T|) \mid |T| \in \Tc}$.
+To show that $D$ is $S$-consistent,
+  let $|T| \in \Tc$ and show that $(|T|, |T|) \in S(D)$
+  by case analysis on the shape of |T|.
+
+\Case $|T| = |Top|$: Immediate.
+
+\Case $|T| = |T|_1 \times |T|_2$:
+  Since $(|T|_1, |T|_1), (|T|_2, |T|_2) \in D$,
+    we have $(|T|_1 \times |T|_2, |T|_1 \times |T|_2) \in S(D)$.
+
+\Case $|T| = |T|_1 \to |T|_2$: Similar to the previous case.
+
+Therefore, $D \subseteq S(D)$, i.e., $D$ is $S$-consistent.
+By the principle of coinduction, $D \subseteq \mu S$,
+  i.e., $\mu S$ is reflexive. \qed
+
+\Ex{21.4.2}
+{ \newcommand\TR{\It{TR}}
+For any $(x, y) \in \Uc \times \Uc$,
+  we can take $z = x$ to have $(x, z), (z, y) \in \Uc \times \Uc$.
+Therefore, $\TR(\Uc \times \Uc) = \Uc \times \Uc$,
+  which implies $F^\TR(\Uc \times \Uc) = \Uc \times \Uc$.
+That is, $\Uc \times \Uc$ is the largest fixed point of $F^\TR$. \qed
 }
 
 \end{document}
