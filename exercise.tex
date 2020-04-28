@@ -57,8 +57,9 @@
 \newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
 \newcommand\Ctxx[3]{#2 \vdash^{#1} #3}
 \newcommand\CtxxTyRel[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
-\newcommand\DShift{\mathop\uparrow}
+\newcommand\DShift{\Up}
 \newcommand\Dom{\It{dom}}
+\newcommand\Down{\mathop{\downarrow}}
 \newcommand\EmptySeq{\bullet}
 \newcommand\EqComment[1]{[\text{\small #1}]}
 \newcommand\EqDef{\stackrel{\text{def}}{=}}
@@ -74,18 +75,21 @@
 \newcommand\Lm{\rlap{$\lambda$}\phantom{\Cd{.}}}
 \newcommand\Mu{\rlap{$\mu$}\phantom{\Cd{.}}}
 \newcommand\N{\mathbb N}
+\newcommand\Otherwise{\It{Otherwise}}
 \newcommand\PhantomRel[1]{\phantom{{}#1{}}}
 \newcommand\Pow{\mathcal P}
 \newcommand\Proof{\textsc{Proof}}
 %% TODO(beam2d): Fix spacing of the last line.
 \newenvironment{Proofs}{%
   \def\BottomSpc{\vspace{0pt}\vspace{0.5em}}%
+  \def\nexth{\DisplayProof\quad}
   \def\next{\DisplayProof\quad\BottomSpc}%
   \begin{center}%
 }{%
   \DisplayProof%
   \end{center}%
 }
+\newcommand\Pto{\rightharpoonup}
 \newcommand\Rcd[1]{\Cd\{#1\Cd\}}
 \newcommand\RemoveNames{\It{removenames}}
 \newcommand\Repeat[2]{%
@@ -105,6 +109,7 @@
 \newcommand\Sub[2]{#1 \Sb #2}
 \newcommand\Subcase{\It{Subcase} }
 \newcommand\Subst[1]{[#1]\,}
+\newcommand\Support{\mathop{\It{support}}}
 \newcommand\Swap[2]{#2#1}
 \newcommand\Tc{\mathcal T}
 \newcommand\Theorem{\textsc{Theorem}}
@@ -113,6 +118,7 @@
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
 \newcommand\TyRel[2]{#1 | : | #2}
 \newcommand\Uc{\mathcal U}
+\newcommand\Up{\mathop\uparrow}
 \newcommand\Where{~ \text{where} ~}
 
 \makeatother
@@ -3535,11 +3541,9 @@ Therefore, we obtain $\mu F = \NN$,
 }
 
 \Ex{21.2.2}
-Define $\Uc$ and $F$ as follows
-  (Here, $\Set{1, 2}^* \to \Set{\to, \times, |Top|}$ denotes the set of all
-   partial functions from $\Set{1, 2}^*$ to $\Set{\to, \times, |Top|}$).
+Define $\Uc$ and $F$ as follows.
 \begin{align*}
-  \Uc &= \Set{|T| \in \Set{1, 2}^* \to \Set{\to, \times, |Top|}
+  \Uc &= \Set{|T| \in \Set{1, 2}^* \Pto \Set{\to, \times, |Top|}
               \mid \EmptySeq \in \Dom(|T|), ~
                    (\pi, \sigma) \in \Dom(|T|) \To \sigma \in \Dom(|T|)}, \\
   F(S) &= \Set{|Top|} \cup
@@ -3609,5 +3613,63 @@ Therefore, $\TR(\Uc \times \Uc) = \Uc \times \Uc$,
   which implies $F^\TR(\Uc \times \Uc) = \Uc \times \Uc$.
 That is, $\Uc \times \Uc$ is the largest fixed point of $F^\TR$. \qed
 }
+
+\Ex{21.5.2}
+Let $x \in \Tc_f \times \Tc_f$ and $X \subseteq \Tc_f \times \Tc_f$.
+There are four cases of the form of $x$.
+
+\Case$x = (|T|, |Top|)$ where $|T| \in \Tc_f$ \\
+Then, $x \in S_f(\emptyset)$.
+Obviously, $\emptyset \subseteq X$.
+
+\Case$x = (|S|_1 \times |S|_2, |T|_1 \times |T|_2)$ where $(|S|_1, |T|_1), (|S|_2, |T|_2) \in \mu S_f$ \\
+Then, $x \in S_f(\Set{(|S|_1, |T|_1), (|S|_2, |T|_2)})$.
+If $x \in S_f(X)$, then $\Set{(|S|_1, |T|_1), (|S|_2, |T|_2)} \subseteq X$.
+
+\Case$x = (|S|_1 \to |S|_2, |T|_1 \to |T|_2)$ where $(|T|_1, |S|_1), (|S|_2, |T|_2) \in \mu S_f$ \\
+Then, $x \in S_f(\Set{(|T|_1, |S|_1), (|S|_2, |T|_2)})$.
+If $x \in S_f(X)$, then $\Set{(|T|_1, |S|_1), (|S|_2, |T|_2)} \subseteq X$.
+
+\Otherwise \\
+By the definition of $S_f$, $x \notin S_f(X)$ for any $X$.
+
+Therefore, the monotone function $S_f$ is invertible, and its support function is defined as follows.
+\[
+  \Support_{S_f}(x) =
+  \begin{cases}
+    ~ \emptyset &
+      x = (|T|, |Top|), ~ |T| \in \Tc_f \\
+    ~ \Set{(|S|_1, |T|_1), (|S|_2, |T|_2)} &
+      x = (|S|_1 \times |S|_2, |T|_1 \times |T|_2), ~
+      (|S|_1, |T|_1), (|S|_2, |T|_2) \in \mu\Tc_f \\
+    ~ \Set{(|T|_1, |S|_1), (|S|_2, |T|_2)} &
+      x = (|S|_1 \to |S|_2, |T|_1 \to |T|_2), ~
+      (|T|_1, |S|_1), (|S|_2, |T|_2) \in \mu\Tc_f \\
+    ~ \Up & \text{otherwise} \\
+  \end{cases}
+\]
+
+By replacing $\Tc_f$ with $\Tc$,
+  we obtain a proof of the monotone function $S$ being invertible and its support function.
+
+\Ex{21.5.4}
+The inference rules corresponding to the generating function $E$ are as follows.
+
+\begin{Proofs}
+  \AxiomC{$a$} \AxiomC{$i$} \BinaryInfC{$h$} \nexth
+  \AxiomC{$b$} \AxiomC{$c$} \BinaryInfC{$a$} \nexth
+  \AxiomC{$e$} \UnaryInfC{$b$} \nexth
+  \AxiomC{$b$} \UnaryInfC{$d$} \nexth
+  \AxiomC{$d$} \UnaryInfC{$e$} \nexth
+  \AxiomC{$f$} \AxiomC{$g$} \BinaryInfC{$c$} \nexth
+  \AxiomC{$g$} \UnaryInfC{$f$} \nexth
+  \AxiomC{} \UnaryInfC{$g$}
+\end{Proofs}
+
+The second, fourth, and last rules give $E(\Set{b, c}) = \Set{g, a, d}$,
+  and the first and last rules give $E(\Set{a, i}) = \Set{h, g}$.
+There are three fixed points of this generating function:
+  $\Set{c, f, g}$, $\Set{b, c, d, e, f, g}$, and $\Set{a, b, c, d, e, f, g}$,
+  and thus the first one is $\mu E$ and the last one is $\nu E$.
 
 \end{document}
