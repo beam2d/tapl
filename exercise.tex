@@ -2,11 +2,14 @@
 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{bussproofs}
+\usepackage[a4paper, total={6in, 9in}]{geometry}
 \usepackage{listings}
 \usepackage{mathtools}
 \usepackage{newpxmath,newpxtext}
 \usepackage{parskip}
+\usepackage{tikz}
 \usepackage{xstring}
+\usetikzlibrary{arrows.meta}
 
 \makeatletter
 
@@ -629,13 +632,13 @@ Evaluation rules are as follows.
 \begin{Proofs}
   \AxiomC{$|t|_1 \to |t|'_1$}
   \UnaryInfC{$|t|_1 \App |t|_2 \to |t|'_1 \App |t|_2$}
-  \next
+  \nexth
   \AxiomC{$|t|_2 \to |t|'_2$}
   \UnaryInfC{$|t|_1 \App |t|_2 \to |t|_1 \App |t|'_2$}
-  \next
+  \nexth
   \AxiomC{$|t| \to |t|'$}
   \UnaryInfC{$\Ab x |t| \to \Ab x |t|'$}
-  \next
+  \nexth
   \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
 \end{Proofs}
 
@@ -657,13 +660,13 @@ Evaluation rules are as follows.
 \begin{Proofs}
   \AxiomC{$|na|_1 \to |na|'_1$}
   \UnaryInfC{$|na|_1 \App |t|_2 \to |na|'_1 \App |t|_2$}
-  \next
+  \nexth
   \AxiomC{$|t|_2 \to |t|'_2$}
   \UnaryInfC{$|nanf|_1 \App |t|_2 \to |nanf|_1 \App |t|'_2$}
-  \next
+  \nexth
   \AxiomC{$|t| \to |t|'$}
   \UnaryInfC{$\Ab x |t| \to \Ab x |t|'$}
-  \next
+  \nexth
   \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
 \end{Proofs}
 
@@ -672,7 +675,7 @@ Syntax is not changed. Evaluation rules are as follows.
 \begin{Proofs}
   \AxiomC{$|t|_1 \to |t|'_1$}
   \UnaryInfC{$|t|_1 \App |t|_2 \to |t|'_1 \App |t|_2$}
-  \next
+  \nexth
   \AxiomC{$\CParen{\Ab x |t|_1} \App |t|_2 \to [|x| \mapsto |t|_2] |t|_1$}
 \end{Proofs}
 
@@ -712,7 +715,7 @@ Augment the evaluation relation with the following rules.
 \Ex{5.3.8}
 \begin{Proofs}
   \AxiomC{$\Ab x |t| \Bigstep \Ab x |t|$}
-  \next
+  \nexth
   \AxiomC{$|t|_1 \Bigstep \Ab x |t|'_1$}
   \AxiomC{$|t|_2 \Bigstep |v|_2$}
   \AxiomC{$[|x| \mapsto |v|_2] |t|'_1 \Bigstep |v|_3$}
@@ -898,13 +901,12 @@ We overload the notation $\RemoveNames_\Gamma(|x|)$ for a variable |x| to
   denote the index of |x| in $\Gamma$ counting from the right.
 Then, $\RemoveNames_\Gamma$ commutes with substitution;
   i.e., for any ordinary terms |t|, |s|, and variable |x|,
-  \begin{align}
-    &\PhantomRel=
-      \RemoveNames_\Gamma([|x| \mapsto |s|] |t|) \notag \\
-    &= [\RemoveNames_\Gamma(|x|) \mapsto \RemoveNames_\Gamma(|s|)]
+  \begin{equation}
+    \RemoveNames_\Gamma([|x| \mapsto |s|] |t|)
+    = [\RemoveNames_\Gamma(|x|) \mapsto \RemoveNames_\Gamma(|s|)]
       \RemoveNames_\Gamma(|t|).
       \label{eq:6.2.8}
-  \end{align}
+  \end{equation}
 
 {
 \newcommand\Rem{\It{rem}}
@@ -1069,7 +1071,7 @@ Therefore, there is no finite sequence of symbols that conform to the language o
 \Ex{9.2.2}
 1. Let $\Gamma = b$ be a typing context with only one binding
     $b = \TyRel{|f|}{|Bool| \to |Bool|}$.
-\begin{Proofs} \scriptsize
+\begin{Proofs}
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
@@ -1083,7 +1085,7 @@ Therefore, there is no finite sequence of symbols that conform to the language o
 \end{Proofs}
 
 2. Let $b = \TyRel{|f|}{|Bool| \to |Bool|}$ and $\Gamma = (b, \TyRel{|x|}{|Bool|})$.
-\begin{Proofs} \small
+\begin{Proofs}
   \AxiomC{$b \in \Gamma$}
   \RuleLabel{T-Var}
   \UnaryInfC{$\Ctx{\Gamma}{b}$}
@@ -1248,8 +1250,8 @@ Define $|t|_1 = |unit|$ and
   for $n = 1, 2, \dots$.
 It is obvious that the size of $|t|_n$ grows linearly with $n$.
 Evaluation of $|t|_{n + 1}$ proceeds as follows.
-\begin{align*}
-  &&&\PhantomRel\to |t|_{n + 1} \\
+\begin{alignat*}{2}
+  && \quad &\PhantomRel\to |t|_{n + 1} \\
   &\EqComment{\Rule{E-AppAbs}} &&\to
     \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App
     \CParen{ \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App |unit|} \\
@@ -1259,7 +1261,7 @@ Evaluation of $|t|_{n + 1}$ proceeds as follows.
     \CParen{\AbTy{|x|}{|Unit|} |t|_n} \App |unit| \\
   &\EqComment{\Rule{E-AppAbs}} &&\to |t|_n \\
   &\EqComment{evaluate $|t|_n$} &&\to^* |unit|.
-\end{align*}
+\end{alignat*}
 During the evaluation,
   $|t|_n$ is evaluated twice,
   so we can show by induction that the number of steps to evaluate $|t|_n$ is $O(2^n)$.
@@ -1335,13 +1337,13 @@ Note that this is what we can show; see the errata of the text.
         \CParen{\AbTy{|\_|}{|Unit|} |t|}.
     \]
     The right hand side is evaluated as follows.
-    \begin{align*}
-      &&&\PhantomRel\to
+    \begin{alignat*}{2}
+      &&\quad&\PhantomRel\to
         \CParen{\AbTy{|x|}{|Unit| \to |T|} ~|x unit|} \App
           \CParen{\AbTy{|\_|}{|Unit|} |t|} \\
       &\EqComment{\Rule{E-AppAbs}} &&\to \CParen{\AbTy{|\_|}{|Unit|} |t|} \App |unit| \\
       &\EqComment{\Rule{E-AppAbs}} &&\to |t|.
-    \end{align*}
+    \end{alignat*}
     Note that it requires two steps to evaluate the desugared form.
     Equivalence of typing is straightforward.
 \end{itemize}
@@ -1418,7 +1420,7 @@ If we repeat this structure more times (say, of depth $n$),
       \AxiomC{}
       \RuleLabel{PT-Var}
       \UnaryInfC{$\TyRel{|x|}{|T|} \To \TyRel{|x|}{|T|}$}
-      \next
+      \nexth
       \AxiomC{for each $i$ ~ $\TyRel{|p|_i}{|T|_i} \To \Gamma_i$}
       \RuleLabel{PT-Rcd}
       \UnaryInfC{$
@@ -1781,19 +1783,27 @@ We may just erase the type annotation on evaluation
 \begin{Proofs}
   \AxiomC{}
   \RuleLabel{S-RcdPerm}
-  \UnaryInfC{$\PhantomRel\Sb \Rcd{|x:Nat,y:Nat,z:Nat|}$}
-  \noLine\UnaryInfC{$\Sb \Rcd{|y:Nat,x:Nat,z:Nat|}$}
+  \UnaryInfC{$
+    \begin{aligned}
+      &\PhantomRel\Sb \Rcd{|x:Nat,y:Nat,z:Nat|} \\
+      &\Sb \Rcd{|y:Nat,x:Nat,z:Nat|}
+    \end{aligned}
+  $}
   \AxiomC{}
   \RuleLabel{S-RcdWidth}
-  \UnaryInfC{\Rcd{|y:Nat,x:Nat,z:Nat|}}
-  \noLine\UnaryInfC{$\Sb \Rcd{|y:Nat|}$}
+  \UnaryInfC{$
+    \begin{aligned}
+      &\PhantomRel\Sb \Rcd{|y:Nat,x:Nat,z:Nat|} \\
+      &\Sb \Rcd{|y:Nat|}
+    \end{aligned}
+  $}
   \RuleLabel{S-Trans}
   \BinaryInfC{$\Sub{\Rcd{|x:Nat,y:Nat,z:Nat|}}{\Rcd{|y:Nat|}}$}
 \end{Proofs}
 
 \Ex{15.2.2}
 There is another derivation that uses subtyping of |f| instead of |xy| as follows.
-\begin{Proofs} \small
+\begin{Proofs}
   \AxiomC{$\vdots$}
   \UnaryInfC{$\CtxTyRel{}{|f|}{|Rx| \to |Nat|}$}
   \AxiomC{}
@@ -2643,11 +2653,11 @@ Some ideas:
 \paragraph{Syntax:}
 Change method declarations as follows.
 \begin{flalign*}
-  |M| ::=& && \\
-    & |C m(|\Cbar C| |\Cbar x|) \{MB\}| && \\
-  |MB| ::=& && \It{method body with assignments} && \\
-    & |t.f = t; MB| && \\
-    & |return t;| &&
+  |M| ::=& &\\
+    & |C m(|\Cbar C| |\Cbar x|) \{MB\}| & \\
+  |MB| ::=& & \It{method body with assignments} \\
+    & |t.f = t; MB| & \\
+    & |return t;| &
 \end{flalign*}
 Each object becomes a mutable entity,
   which we represent as an item in a \emph{store}.
@@ -3499,12 +3509,12 @@ Immediate by combining \Rule{T-Fld} and \Rule{T-Unfld}.
 \section{Metatheory of Recursive Types}
 
 \Ex{21.1.7}
-\begin{align*}
-  E_2(\emptyset) &= \Set{a} & E_2(\Set{a, b}) &= \Set{a, c} \\
-  E_2(\Set{a}) &= \Set{a} & E_2(\Set{a, c}) &= \Set{a, b} \\
-  E_2(\Set{b}) &= \Set{a} & E_2(\Set{b, c}) &= \Set{a, b} \\
-  E_2(\Set{c}) &= \Set{a, b} & E_2(\Set{a, b, c}) &= \Set{a, b, c}
-\end{align*}
+\begin{alignat*}{4}
+  &E_2(\emptyset) &&= \Set{a} & \qquad &E_2(\Set{a, b}) &&= \Set{a, c} \\
+  &E_2(\Set{a}) &&= \Set{a} && E_2(\Set{a, c}) &&= \Set{a, b} \\
+  &E_2(\Set{b}) &&= \Set{a} && E_2(\Set{b, c}) &&= \Set{a, b} \\
+  &E_2(\Set{c}) &&= \Set{a, b} && E_2(\Set{a, b, c}) &&= \Set{a, b, c}
+\end{alignat*}
 The $E_2$-closed sets are $\Set{a}$ and $\Set{a, b, c}$.
 The $E_2$-consistent stes are $\emptyset$, $\Set{a}$, and $\Set{a, b, c}$.
 The extreme fixed points are $\mu E_2 = \Set{a}$ and $\nu E_2 = \Set{a, b, c}$.
@@ -3671,5 +3681,27 @@ The second, fourth, and last rules give $E(\Set{b, c}) = \Set{g, a, d}$,
 There are three fixed points of this generating function:
   $\Set{c, f, g}$, $\Set{b, c, d, e, f, g}$, and $\Set{a, b, c, d, e, f, g}$,
   and thus the first one is $\mu E$ and the last one is $\nu E$.
+
+\Ex{21.5.6}
+Not necessarily.
+Consider a generating function $F$ on the universe
+  $\N$ depicted by the following graph.
+
+\begin{center}
+  \begin{tikzpicture}
+    \node (0) at (0, 0) {$0$};
+    \node (1) at (1, 0) {$1$};
+    \node (2) at (2, 0) {$2$};
+    \node (n) at (3, 0) {$\dots$};
+    \draw[->] (1) -- (0);
+    \draw[->] (2) -- (1);
+    \draw[->] (n) -- (2);
+  \end{tikzpicture}
+\end{center}
+
+In this system,
+  $\mu F = \Set{0}$ and $\nu F = \N$.
+Therefore, all positive integers belong to $\nu F \setminus \mu F$,
+  while there is no cycle.
 
 \end{document}
