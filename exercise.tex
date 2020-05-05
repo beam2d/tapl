@@ -20,6 +20,13 @@
 \catcode`|=\active
 \def|#1|{\Cd{#1}}
 
+\newcommand\Map[2]{\Map@#1#2\relax}
+\newcommand\Map@[2]{#1#2\@ifnextchar\relax{}{\Map@#1}}
+
+% Define \cA, ..., \cZ
+\newcommand\@DefCal[1]{\expandafter\newcommand\csname c#1\endcsname{\mathcal#1}}
+\Map{\@DefCal}{ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+
 \newcommand\Ab[1]{\Ab@Impl#1\relax}
 \newcommand\Ab@Impl[1]{\Ab@One#1|.|\@ifnextchar\relax{}{\Ab@Impl}}
 \newcommand\Ab@One[1]{\lambda|#1|}
@@ -107,7 +114,6 @@
 \newcommand\Rule[1]{\textsc{#1}}
 \newcommand\RuleLabel[1]{\RightLabel{\Rule{\scriptsize #1}}}
 \newcommand\Sb{\mathrel{\texttt<\hspace{-0.3ex}\texttt:}}
-\newcommand\Sc{\mathcal S}
 \newcommand\Set[1]{\{#1\}}
 \newcommand\Store[2]{#1 \mid #2}
 \newcommand\Sub[2]{#1 \Sb #2}
@@ -115,14 +121,12 @@
 \newcommand\Subst[1]{[#1]\,}
 \newcommand\Support{\mathop{\It{support}}}
 \newcommand\Swap[2]{#2#1}
-\newcommand\Tc{\mathcal T}
 \newcommand\Theorem{\textsc{Theorem}}
 \newcommand\To{\Rightarrow}
 \newcommand\True{\It{true}}
 \newcommand\Ts{\vdash}
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
 \newcommand\TyRel[2]{#1 | : | #2}
-\newcommand\Uc{\mathcal U}
 \newcommand\Up{\mathop\uparrow}
 \newcommand\Where{~ \text{where} ~}
 
@@ -749,46 +753,46 @@ Define a family of sets $S_{ni}, ~n, i \in \N$ inductively as follows.
          & \hspace{20em} n \in \N, ~i \in \N \setminus \Set{0}
 \end{align*}
 Then, define a family of sets
-  $\mathcal S = \Set{\mathcal S_0, \mathcal S_1, \mathcal S_2, \dots}$ by
-  $\mathcal S_n = \bigcup_i S_{ni}, ~n \in \N$.
-Each set $\mathcal S_n$ in this family coincides with $\mathcal T_n$.
+  $\cS = \Set{\cS_0, \cS_1, \cS_2, \dots}$ by
+  $\cS_n = \bigcup_i S_{ni}, ~n \in \N$.
+Each set $\cS_n$ in this family coincides with $\cT_n$.
 
 \Proof:
-We first prove $S_{ni} \subseteq \mathcal T_n$ for all $n$ by induction on $i$.
-By definition, it holds $S_{n, 0} \subseteq \mathcal T_n$.
+We first prove $S_{ni} \subseteq \cT_n$ for all $n$ by induction on $i$.
+By definition, it holds $S_{n, 0} \subseteq \cT_n$.
 For $i>0$, suppose $|t| \in S_{ni}$.
 There are three cases to consider.
 \begin{itemize}
   \item If $|t| \in S_{n, i - 1}$, by the induction hypothesis,
-      we have $|t| \in \mathcal T_n$.
+      we have $|t| \in \cT_n$.
   \item If $|t| = \Abn1 |s|$ for some $|s| \in S_{n + 1, i - 1}$,
-      by the induction hypothesis, we have $|s| \in \mathcal T_{n + 1}$.
+      by the induction hypothesis, we have $|s| \in \cT_{n + 1}$.
     Following \textsc{Definition 6.1.2.2},
-      we obtain $|t| = \in \mathcal T_{n}$.
+      we obtain $|t| = \in \cT_{n}$.
   \item Otherwise, we can write $|t| = \CParen{|s|_1 \App |s|_2}$
       for some $|s|_1, |s|_2 \in S_{n, i - 1}$.
-    By the induction hypothesis, we have $|s|_1, |s|_2 \in \mathcal T_n$.
+    By the induction hypothesis, we have $|s|_1, |s|_2 \in \cT_n$.
     Following \textsc{Definition 6.1.2.3},
-      we obtain $|t| \in \mathcal T_n$.
+      we obtain $|t| \in \cT_n$.
 \end{itemize}
-Therefore, $S_{ni} \subseteq \mathcal T_n$ holds for all $n, i$.
-We thus obtain $\mathcal S_n = \bigcup_i S_{ni} \subseteq \mathcal T_n$.
+Therefore, $S_{ni} \subseteq \cT_n$ holds for all $n, i$.
+We thus obtain $\cS_n = \bigcup_i S_{ni} \subseteq \cT_n$.
 
-Next, we prove $\mathcal T_n \subseteq \mathcal S_n$ for all $n$.
+Next, we prove $\cT_n \subseteq \cS_n$ for all $n$.
 To prove it, we show that
   the three conditions of \textsc{Definition 6.1.2} hold
-  when replacing $\mathcal T_n$ with $\mathcal S_n$.
-Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathcal S_n$.
+  when replacing $\cT_n$ with $\cS_n$.
+Then, by the minimality of $\cT_n$, we get $\cT_n \subseteq \cS_n$.
 \begin{enumerate}
-  \item By definition, it holds that $|k| \in S_{n,0} \subseteq \mathcal S_n$
+  \item By definition, it holds that $|k| \in S_{n,0} \subseteq \cS_n$
       whenever $0 \le |k| < n$.
-  \item If $|t| \in \mathcal S_n$, there exists $i$ such that $|t| \in S_{ni}$.
-    By definition, it holds $\Abn1 |t| \in S_{n - 1, i + 1} \subseteq \mathcal S_{n - 1}$.
-  \item If $|t|_1, |t|_2 \in \mathcal S_n$,
+  \item If $|t| \in \cS_n$, there exists $i$ such that $|t| \in S_{ni}$.
+    By definition, it holds $\Abn1 |t| \in S_{n - 1, i + 1} \subseteq \cS_{n - 1}$.
+  \item If $|t|_1, |t|_2 \in \cS_n$,
       there exist $i_1, i_2$ such that $|t|_1 \in S_{ni_1}$ and $|t|_2 \in S_{ni_2}$.
     Let $i = \max\Set{i_1, i_2}$,
       then we have $|t|_1, |t|_2 \in S_{ni}$.
-    By definition, we have $\CParen{|t|_1 \App |t|_2} \in S_{n, i + 1} \subseteq \mathcal S_n$.
+    By definition, we have $\CParen{|t|_1 \App |t|_2} \in S_{n, i + 1} \subseteq \cS_n$.
 \end{enumerate}
 \qed
 
@@ -802,7 +806,7 @@ Then, by the minimality of $\mathcal T_n$, we get $\mathcal T_n \subseteq \mathc
         &&= \RemoveNames_\Gamma(|t|_1) \CdSpc \RemoveNames_\Gamma(|t|_2).
     \end{alignat*}
   \item Let $\It{newname}(\Gamma)$ be
-      the first variable name in $\mathcal V \setminus \Dom(\Gamma)$.
+      the first variable name in $\cV \setminus \Dom(\Gamma)$.
     \begin{alignat*}{3}
       &\RestoreNames_\Gamma(|k|)
         &&= |x|_{|k|}
@@ -3553,9 +3557,9 @@ Therefore, we obtain $\mu F = \NN$,
 }
 
 \Ex{21.2.2}
-Define $\Uc$ and $F$ as follows.
+Define $\cU$ and $F$ as follows.
 \begin{align*}
-  \Uc &= \Set{|T| \in \Set{1, 2}^* \Pto \Set{\to, \times, |Top|}
+  \cU &= \Set{|T| \in \Set{1, 2}^* \Pto \Set{\to, \times, |Top|}
               \mid \EmptySeq \in \Dom(|T|), ~
                    (\pi, \sigma) \in \Dom(|T|) \To \sigma \in \Dom(|T|)}, \\
   F(S) &= \Set{|Top|} \cup
@@ -3563,9 +3567,9 @@ Define $\Uc$ and $F$ as follows.
           \Set{|T|_1 \to |T|_2 \mid |T|_1, |T|_2 \in S}.
 \end{align*}
 
-Proof sketch of $\mu F = \Tc_f$ and $\nu F = \Tc$:
+Proof sketch of $\mu F = \cT_f$ and $\nu F = \cT$:
 
-Since $\Tc_f$ is $F$-closed, $\mu F \subseteq \Tc_f$ by the principle of induction.
+Since $\cT_f$ is $F$-closed, $\mu F \subseteq \cT_f$ by the principle of induction.
 By the definition of tree types,
   any finite tree type |T| is written as either |Top|, $|T|_1 \times |T|_2$,
   or $|T|_1 \to |T|_2$.
@@ -3573,15 +3577,15 @@ Due to the finiteness,
   recursive applications of such decomposition stop at some point;
   i.e., they hit to the |Top| case at finite depths.
 Therefore, |T| belongs to $F^n(\emptyset)$ for some finite $n$,
-  i.e, $|T| \in \mu F$, and thus $\mu F = \Tc_f$.
+  i.e, $|T| \in \mu F$, and thus $\mu F = \cT_f$.
 
-We also have that $\Tc$ is $F$-consistent,
-  and thus $\Tc \subseteq \nu F$ by the principle of coinduction.
-If $|T| \in \Uc \setminus \Tc$,
+We also have that $\cT$ is $F$-consistent,
+  and thus $\cT \subseteq \nu F$ by the principle of coinduction.
+If $|T| \in \cU \setminus \cT$,
   then |T| is not written in a form of either |Top|, $|T|_1 \times |T|_2$, or
   $|T|_1 \to |T|_2$,
   and thus $|T| \notin \nu F$ since $\nu F$ is $F$-consistent.
-Therefore, $\nu F = \Tc$. \qed
+Therefore, $\nu F = \cT$. \qed
 
 \Ex{21.3.3}
 A pair $(|Top|, |Top| \times |Top|)$ does not belong to $\nu S$.
@@ -3600,9 +3604,9 @@ It is also obvious that adding this pair to the set keeps the set fixed-point,
 In the universe of finite trees, we have $\nu S_f = \mu S_f$.
 
 \Ex{21.3.8}
-Let $D = \Set{(|T|, |T|) \mid |T| \in \Tc}$.
+Let $D = \Set{(|T|, |T|) \mid |T| \in \cT}$.
 To show that $D$ is $S$-consistent,
-  let $|T| \in \Tc$ and show that $(|T|, |T|) \in S(D)$
+  let $|T| \in \cT$ and show that $(|T|, |T|) \in S(D)$
   by case analysis on the shape of |T|.
 
 \Case $|T| = |Top|$: Immediate.
@@ -3619,18 +3623,18 @@ By the principle of coinduction, $D \subseteq \mu S$,
 
 \Ex{21.4.2}
 { \newcommand\TR{\It{TR}}
-For any $(x, y) \in \Uc \times \Uc$,
-  we can take $z = x$ to have $(x, z), (z, y) \in \Uc \times \Uc$.
-Therefore, $\TR(\Uc \times \Uc) = \Uc \times \Uc$,
-  which implies $F^\TR(\Uc \times \Uc) = \Uc \times \Uc$.
-That is, $\Uc \times \Uc$ is the largest fixed point of $F^\TR$. \qed
+For any $(x, y) \in \cU \times \cU$,
+  we can take $z = x$ to have $(x, z), (z, y) \in \cU \times \cU$.
+Therefore, $\TR(\cU \times \cU) = \cU \times \cU$,
+  which implies $F^\TR(\cU \times \cU) = \cU \times \cU$.
+That is, $\cU \times \cU$ is the largest fixed point of $F^\TR$. \qed
 }
 
 \Ex{21.5.2}
-Let $x \in \Tc_f \times \Tc_f$ and $X \subseteq \Tc_f \times \Tc_f$.
+Let $x \in \cT_f \times \cT_f$ and $X \subseteq \cT_f \times \cT_f$.
 There are four cases of the form of $x$.
 
-\Case$x = (|T|, |Top|)$ where $|T| \in \Tc_f$ \\
+\Case$x = (|T|, |Top|)$ where $|T| \in \cT_f$ \\
 Then, $x \in S_f(\emptyset)$.
 Obviously, $\emptyset \subseteq X$.
 
@@ -3650,18 +3654,18 @@ Therefore, the monotone function $S_f$ is invertible, and its support function i
   \Support_{S_f}(x) =
   \begin{cases}
     ~ \emptyset &
-      x = (|T|, |Top|), ~ |T| \in \Tc_f \\
+      x = (|T|, |Top|), ~ |T| \in \cT_f \\
     ~ \Set{(|S|_1, |T|_1), (|S|_2, |T|_2)} &
       x = (|S|_1 \times |S|_2, |T|_1 \times |T|_2), ~
-      (|S|_1, |T|_1), (|S|_2, |T|_2) \in \mu\Tc_f \\
+      (|S|_1, |T|_1), (|S|_2, |T|_2) \in \mu\cT_f \\
     ~ \Set{(|T|_1, |S|_1), (|S|_2, |T|_2)} &
       x = (|S|_1 \to |S|_2, |T|_1 \to |T|_2), ~
-      (|T|_1, |S|_1), (|S|_2, |T|_2) \in \mu\Tc_f \\
+      (|T|_1, |S|_1), (|S|_2, |T|_2) \in \mu\cT_f \\
     ~ \Up & \text{otherwise} \\
   \end{cases}
 \]
 
-By replacing $\Tc_f$ with $\Tc$,
+By replacing $\cT_f$ with $\cT$,
   we obtain a proof of the monotone function $S$ being invertible and its support function.
 
 \Ex{21.5.4}
@@ -3722,7 +3726,7 @@ If $\Lfp_F(X) = \False$,
   then either $\Support(X) \Up$ or
   $X \neq \emptyset$ and $\Lfp_F(\Support(X)) = \False$ hold.
 If $\Support(X) \Up$,
-  then $X \not\subseteq F(Y)$ for any $Y \subseteq \Uc$.
+  then $X \not\subseteq F(Y)$ for any $Y \subseteq \cU$.
 By choosing $Y = \mu F$, we obtain $X \not\subseteq F(\mu F) = \mu F$.
 If $X \neq \emptyset$ and $\Lfp_F(\Support(X)) = \False$,
   by the induction hypothesis, $\Support(X) \not\subseteq \mu F$.
@@ -3732,7 +3736,7 @@ Since $\Support(X) \Down$,
 If $\It{pred}^n(X) = \emptyset$ for some $n \in \N$, $\Lfp(X)$ is defined.
 Therefore, if $F$ has no loop and a finite depth
   (i.e., there is no infinite chain in the graph),
-  $\Lfp_F(X)$ terminates for any finite $X \subseteq \Uc$.
+  $\Lfp_F(X)$ terminates for any finite $X \subseteq \cU$.
 }
 
 \end{document}
