@@ -67,6 +67,7 @@
 \newcommand\EqComment[1]{[\text{\small #1}]}
 \newcommand\EqDef{\stackrel{\text{def}}{=}}
 \newcommand\Ex[1]{\subsection*{Exercise #1}}
+\newcommand\False{\It{false}}
 \newcommand\FV{\It{FV}}
 \newcommand\If[3]{|if |#1| then |#2| else |#3}
 \newcommand\Implies{\ \text{implies}\ }
@@ -117,6 +118,7 @@
 \newcommand\Tc{\mathcal T}
 \newcommand\Theorem{\textsc{Theorem}}
 \newcommand\To{\Rightarrow}
+\newcommand\True{\It{true}}
 \newcommand\Ts{\vdash}
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
 \newcommand\TyRel[2]{#1 | : | #2}
@@ -3703,5 +3705,34 @@ In this system,
   $\mu F = \Set{0}$ and $\nu F = \N$.
 Therefore, all positive integers belong to $\nu F \setminus \mu F$,
   while there is no cycle.
+
+\Ex{21.5.13}
+{\newcommand\Lfp{\mathop{\It{lfp}}}
+Let us prove each statement by induction on the recursive structure
+  of a run of the algorithm.
+
+If $\Lfp_F(X) = \True$,
+  then either $X = \emptyset$ or $\Lfp_F(\Support(X)) = \True$ holds.
+If $X = \emptyset$, then immediately $X \subseteq \mu F$.
+If $\Lfp_F(\Support(X)) = \True$,
+  by the induction hypothesis, $\Support(X) \subseteq \mu F$.
+By \Lemma{21.5.8}, $X \subseteq \mu F$.
+
+If $\Lfp_F(X) = \False$,
+  then either $\Support(X) \Up$ or
+  $X \neq \emptyset$ and $\Lfp_F(\Support(X)) = \False$ hold.
+If $\Support(X) \Up$,
+  then $X \not\subseteq F(Y)$ for any $Y \subseteq \Uc$.
+By choosing $Y = \mu F$, we obtain $X \not\subseteq F(\mu F) = \mu F$.
+If $X \neq \emptyset$ and $\Lfp_F(\Support(X)) = \False$,
+  by the induction hypothesis, $\Support(X) \not\subseteq \mu F$.
+Since $\Support(X) \Down$,
+  $X \not\subseteq \mu F$ by \Lemma{21.5.8}. \qed
+
+If $\It{pred}^n(X) = \emptyset$ for some $n \in \N$, $\Lfp(X)$ is defined.
+Therefore, if $F$ has no loop and a finite depth
+  (i.e., there is no infinite chain in the graph),
+  $\Lfp_F(X)$ terminates for any finite $X \subseteq \Uc$.
+}
 
 \end{document}
