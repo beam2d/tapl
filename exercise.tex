@@ -64,9 +64,8 @@
 \newcommand\CParen[1]{\Cd(#1\Cd)}
 \newcommand\Ctx[2]{#1 \Ts #2}
 \newcommand\CtxTyRel[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
+\newcommand\CtxTRC[5]{\CtxTyRel{#1}{#2}{#3} \mid_{#4} #5}
 \newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
-\newcommand\Ctxx[3]{#2 \vdash^{#1} #3}
-\newcommand\CtxxTyRel[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
 \newcommand\DShift{\Up}
 \newcommand\Dom{\It{dom}}
 \newcommand\Down{\mathop{\downarrow}}
@@ -123,6 +122,7 @@
 \newcommand\Swap[2]{#2#1}
 \newcommand\Theorem{\textsc{Theorem}}
 \newcommand\To{\Rightarrow}
+\newcommand\Todo{\textsc{Todo}}
 \newcommand\True{\It{true}}
 \newcommand\Ts{\vdash}
 \newcommand\Tsto{\mathrel{\vdash\mkern-9mu\hbox{\usefont{U}{lasy}{m}{n}\symbol{41}}}}
@@ -986,7 +986,7 @@ In the argument of $\DShift^{-1}$ in \Rule{E-AppAbs},
 Therefore, the negative shift does not cause any ill-formed terms.
 
 \Ex{6.3.2}
-\textsc{Todo}
+\Todo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section 7.
@@ -1273,7 +1273,10 @@ During the evaluation,
   so we can show by induction that the number of steps to evaluate $|t|_n$ is $O(2^n)$.
 \qed
 
-\Ex{11.3.2}
+\Ex{11.3.2}{
+\newcommand\Ctxx[3]{#2 \vdash^{#1} #3}
+\newcommand\CtxxTyRel[4]{\Ctxx{#1}{#2}{\TyRel{#3}{#4}}}
+
 Let $e : \lambda^E \to \lambda^I$ be the elaboration function.
 We show for typing and evaluation both by induction on structure of |t|.
 
@@ -1327,6 +1330,7 @@ In this case,
   where the name |x| is chosen arbitrarily from the outside of $\FV(|t|_{12})$.
 It is then derived that $e(|t|') = e(|t|_{12})$, while we have $|t| \to |t|_{12}$.
 Note that this is what we can show; see the errata of the text.
+}
 
 \Ex{11.4.1}
 \begin{itemize}
@@ -1778,7 +1782,7 @@ We may just erase the type annotation on evaluation
   to correctly type terms after any evaluation involving |error|,
   and the difficulty remains unsolved.
 
-\Ex{14.3.1, 14.3.2, 14.3.3} \textsc{Todo}.
+\Ex{14.3.1, 14.3.2, 14.3.3} \Todo.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % section 15.
@@ -3187,13 +3191,13 @@ If $\CtxTyRel{\Gamma, |x:C|}{|t|}{|D|}$, $\CtxTyRel{\Gamma}{|t|_0}{|C|'}$,
   and $\Sub{|C|'}{|C|}$,
   then $\CtxTyRel{\Gamma}{\Subst{|x| \mapsto |t|_0} |t|}{|D|}$.
 
-\Proof: \textsc{Todo}
+\Proof: \Todo
 
 \Lemma{19.5.1.2}.
 If $\Mtype(|m|, |C|_0) = \Cbar D \to |C|$ and $\Sub{|D|_0}{|C|_0}$,
   then $\Mtype(|m|, |D|_0) = \Cbar D \to |C|$.
 
-\Proof: \textsc{Todo}
+\Proof: \Todo
 
 \It{Proof of Theorem 19.5.1}:
 By induction on typing derivations.
@@ -3860,5 +3864,203 @@ The opposite subtyping also holds.
 \end{align*}
 Indeed, |S| and |T| have the same tree type.
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 22.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Type Reconstruction}
+
+\Ex{22.2.3}
+\begin{align*}
+  &(\Subst{|X| \mapsto |Z| \to |W| \to |V|,
+           |Y| \mapsto |Z| \to |W|},
+    \CParen{|Z| \to |W| \to |V|} \to
+    \CParen{|Z| \to |W|} \to
+    |Z| \to
+    |V|) \\
+  &(\Subst{|X| \mapsto |Z| \to |Nat| \to |Nat|,
+           |Y| \mapsto |Z| \to |Nat|},
+    \CParen{|Z| \to |Nat| \to |Nat|} \to
+    \CParen{|Z| \to |Nat|} \to
+    |Z| \to
+    |Nat|) \\
+  &(\Subst{|X| \mapsto |Z| \to \CParen{|Z| \to |Z|} \to |Z|,
+           |Y| \mapsto |Z| \to |Z| \to |Z|},
+    \CParen{|Z| \to \CParen{|Z| \to |Z|} \to |Z|} \to
+    \CParen{|Z| \to |Z| \to |Z|} \to
+    |Z| \to
+    |Z|)
+\end{align*}
+
+\Ex{22.3.3}
+ vcdfdgdd756We omit some premises of \Rule{CT-App} that check the constraints.
+Let $\Gamma = |x:X|, |y:Y|, |z:Z|$.
+\begin{Proofs}
+  \AxiomC{$|x:X| \in \Gamma$}
+  \RuleLabel{CT-Var}
+  \UnaryInfC{$\CtxTRC\Gamma{|x|}{|X|}{\emptyset}{\Set{}}$}
+  \AxiomC{$|z:Z| \in \Gamma$}
+  \RuleLabel{CT-Var}
+  \UnaryInfC{$\CtxTRC\Gamma{|z|}{|Z|}{\emptyset}{\Set{}}$}
+  \RuleLabel{CT-App}
+  \BinaryInfC{$\CtxTRC\Gamma{|x z|}{|X|'}{\Set{|X|'}}{\Set{|X| = |Z| \to |X|'}}$}
+  \AxiomC{$|y:Y| \in \Gamma$}
+  \RuleLabel{CT-Var}
+  \UnaryInfC{$\CtxTRC\Gamma{|y|}{|Y|}{\emptyset}{\Set{}}$}
+  \AxiomC{$|z:Z| \in \Gamma$}
+  \RuleLabel{CT-Var}
+  \UnaryInfC{$\CtxTRC\Gamma{|z|}{|Z|}{\emptyset}{\Set{}}$}
+  \RuleLabel{CT-App}
+  \BinaryInfC{$\CtxTRC\Gamma{|y z|}{|Y|'}{\Set{|Y|'}}{\Set{|Y| = |Z| \to |Y|'}}$}
+  \RuleLabel{CT-App}
+  \BinaryInfC{$
+    \CtxTRC\Gamma{|(x z) (y z)|}{|X|''}{\Set{|X|', |Y|', |X|''}}{
+      \Set{|X| = |Z| \to |X|', |Y| = |Z| \to |Y|', |X|' = |Y|' \to |X|''}
+    }
+  $}
+  \RuleLabel{CT-Abs}
+  \UnaryInfC{$
+    \CtxTRC{|x:X|, |y:Y|}{\Lm|z:Z. (x z) (y z)|}{|X|''}{
+      \Set{|X|', |Y|', |X|''}
+    }{
+      \Set{|X| = |Z| \to |X|', |Y| = |Z| \to |Y|', |X|' = |Y|' \to |X|''}
+    }
+  $}
+  \RuleLabel{CT-Abs}
+  \UnaryInfC{$
+    \CtxTRC{|x:X|}{\Lm|y:Y. |\Lm|z:Z. (x z) (y z)|}{|X|''}{
+      \Set{|X|', |Y|', |X|''}
+    }{
+      \Set{|X| = |Z| \to |X|', |Y| = |Z| \to |Y|', |X|' = |Y|' \to |X|''}
+    }
+  $}
+  \RuleLabel{CT-Abs}
+  \UnaryInfC{$
+    \CtxTRC{}{\Lm|x:X. |\Lm|y:Y. |\Lm|z:Z. (x z) (y z)|}{|X|''}{
+      \Set{|X|', |Y|', |X|''}
+    }{
+      \Set{|X| = |Z| \to |X|', |Y| = |Z| \to |Y|', |X|' = |Y|' \to |X|''}
+    }
+  $}
+\end{Proofs}
+
+\Ex{22.3.9}{
+\newcommand\CtxFTRC[6]{#1 \vdash_{#2} \TyRel{#3}{#4} \mid_{#5} #6}
+For a sequence of variable names $F$,
+  let us write
+  $\Set{F...} \EqDef \Set{|X| \mid |X| \text{\ appears in\ } F}$.
+We also write $F \setminus F' \EqDef \Set{F...} \setminus \Set{F'...}$
+  for notational simplicity.
+The following rules define the "threaded" constraint typing.
+\begin{Proofs}
+  \AxiomC{$|x:T| \in \Gamma$}
+  \RuleLabel{TCT-Var}
+  \UnaryInfC{$\CtxFTRC\Gamma F{|x|}{|T|}{F}{\Set{}}$}
+  \nexth
+  \AxiomC{$\CtxFTRC{\Gamma, |x:T|_1}{F}{|t|_2}{|T|_2}{F'}{C}$}
+  \RuleLabel{TCT-Abs}
+  \UnaryInfC{$
+    \CtxFTRC\Gamma F{\Lm|x:T|_1|. t|_2}{|T|_1 \to |T|_2}{F'}{C}
+  $}
+  \next
+  \AxiomC{$\begin{aligned}
+    &\CtxFTRC\Gamma{F_1}{|t|_1}{|T|_1}{F_2}{C_1} \\
+    &\CtxFTRC\Gamma{F_2}{|t|_2}{|T|_2}{F_3}{C_2}
+  \end{aligned}$}
+  \AxiomC{$\begin{gathered}
+    F_3 = |X|, F_3' \\
+    C' = C_1 \cup C_2 \cup \Set{|T|_1 = |T|_2 \to |X|}
+  \end{gathered}$}
+  \RuleLabel{TCT-App}
+  \BinaryInfC{$\CtxFTRC\Gamma{F_1}{|t|_1\ |t|_2}{|X|}{F_3'}{C'}$}
+  \nexth
+  \AxiomC{\phantom{$\begin{gathered}\mid\\\mid\end{gathered}$}}
+  \RuleLabel{TCT-Zero}
+  \UnaryInfC{$\CtxFTRC\Gamma{F}{|0|}{|Nat|}{F}{C}$}
+  \next
+  \AxiomC{$\CtxFTRC\Gamma F{|t|_1}{|T|}{F'}{C}$}
+  \AxiomC{$C' = C \cup \Set{|T| = |Nat|}$}
+  \RuleLabel{TCT-Succ}
+  \BinaryInfC{$\CtxFTRC\Gamma F{|succ t|_1}{|Nat|}{F'}{C'}$}
+  \next
+  \AxiomC{$\CtxFTRC\Gamma F{|t|_1}{|T|}{F'}{C}$}
+  \AxiomC{$C' = C \cup \Set{|T| = |Nat|}$}
+  \RuleLabel{TCT-Pred}
+  \BinaryInfC{$\CtxFTRC\Gamma F{|pred t|_1}{|Nat|}{F'}{C'}$}
+  \next
+  \AxiomC{$\CtxFTRC\Gamma F{|t|_1}{|T|}{F'}{C}$}
+  \AxiomC{$C' = C \cup \Set{|T| = |Nat|}$}
+  \RuleLabel{TCT-IsZero}
+  \BinaryInfC{$\CtxFTRC\Gamma F{|iszero t|_1}{|Bool|}{F'}{C'}$}
+  \nexth
+  \AxiomC{\phantom{$\mid$}}
+  \RuleLabel{TCT-True}
+  \UnaryInfC{$\CtxFTRC\Gamma F{|true|}{|Bool|}{F}{\Set{}}$}
+  \next
+  \AxiomC{\phantom{$\mid$}}
+  \RuleLabel{TCT-False}
+  \UnaryInfC{$\CtxFTRC\Gamma F{|false|}{|Bool|}{F}{\Set{}}$}
+  \next
+  \AxiomC{$\begin{gathered}
+    \CtxFTRC\Gamma{F_1}{|t|_1}{|T|_1}{F_2}{C_1} \\
+    \CtxFTRC\Gamma{F_2}{|t|_2}{|T|_2}{F_3}{C_2}
+  \end{gathered}$}
+  \AxiomC{$\begin{gathered}
+    \CtxFTRC\Gamma{F_3}{|t|_3}{|T|_3}{F_4}{C_3} \\
+    C' = C_1 \cup C_2 \cup C_3 \cup \Set{|T|_1 = |Bool|, |T|_2 = |T|_3}
+  \end{gathered}$}
+  \RuleLabel{TCT-If}
+  \BinaryInfC{$
+    \CtxFTRC\Gamma{F_1}{\If{|t|_1}{|t|_2}{|t|_3}}{|T|_2}{F_4}{C'}
+  $}
+\end{Proofs}
+Equivalence to the original constraint typing is stated as follows.
+
+\Theorem\ 1:
+If $\CtxTRC\Gamma{|t|}{|S|}{\cX}{C}$,
+  then there exists a permutation $F$ of $\cX$ such that
+  $\CtxFTRC\Gamma F{|t|}{|S|}{\bullet}{C}$.
+
+\Theorem\ 2:
+If $\CtxFTRC\Gamma F{|t|}{|S|}{F'}{C}$
+  where $F$ does not contain any names mentioned in $\Gamma$ and |t|,
+  then $\CtxTRC\Gamma{|t|}{|S|}{F \setminus F'}{C}$.
+
+Each theorem is shown by straight forward induction
+  on (threaded) constraint typing derivations.
+}
+
+\Ex{22.3.10} \Todo
+
+\Ex{22.3.11}
+Add the following rule to constraint typing.
+\begin{Proofs}
+  \AxiomC{$\CtxTRC\Gamma{|t|_1}{|T|}{\cX}{C}$}
+  \AxiomC{$|X| \notin \Gamma$, $|t|_1$, or $\cX$}
+  \AxiomC{$C' = C \cup \Set{|T| = |X| \to |X|}$}
+  \RuleLabel{CT-Fix}
+  \TrinaryInfC{$\CtxTRC\Gamma{|fix t|_1}{|X|}{\cX \cup \Set{|X|}}{C'}$}
+\end{Proofs}
+
+\Ex{22.4.3}
+The original ones on the left side, the principal unifiers on the right.
+\begin{alignat*}{2}
+  &\Set{|X| = |Nat|, |Y| = |X| \to |X|}
+    &\qquad&\Subst{|X| \mapsto |Nat|, |Y| \mapsto |Nat| \to |Nat|} \\
+  &\Set{|Nat| \to |Nat| = |X| \to |Y|}
+    &&\Subst{|X| \mapsto |Nat|, |Y| \mapsto |Nat|} \\
+  &\Set{|X| \to |Y| = |Y| \to |Z|, |Z| = |U| \to |W|}
+    &&\Subst{|X| \mapsto |U| \to |W|,
+             |Y| \mapsto |U| \to |W|,
+             |Z| \mapsto |U| \to |W|} \\
+  &\Set{|Nat| = |Nat| \to |Y|}
+    &&\text{no unifier exists} \\
+  &\Set{|Y| = |Nat| \to |Y|}
+    &&\text{no unifier exists} \\
+  &\Set{}
+    &&\Subst{}
+\end{alignat*}
+
+\Ex{22.4.6} \Todo
 
 \end{document}
