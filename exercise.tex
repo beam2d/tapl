@@ -4063,4 +4063,40 @@ The original ones on the left side, the principal unifiers on the right.
 
 \Ex{22.4.6} \Todo
 
+\Ex{22.5.3}
+\[
+  \CParen{|Z| \to |Y|' \to |X|'}
+  \to \CParen{|Z| \to |Y|'}
+  \to |Z| \to |X|'
+\]
+
+\Ex{22.5.5} \Todo
+
+\Ex{22.5.6}
+With record types, a principal type may not exist for some terms
+  anymore.
+For example, consider a term $\Lm|x:X. x.l|$ for some label |l|.
+Then,
+  $\Rcd{|l:Y|} \to |Y|$, $\Rcd{|l:Y, l|'|:Y|'} \to |Y|$,
+  $\Rcd{|l:Y, l|'|:Y|'|, l|''|:Y|''} \to |Y|$, and so on,
+  are all possible types of the term,
+  each of which is not less specific than the others.
+Similar observations are also applied to the ordering of keys;
+  for example, a term $\Lm|x:X. (x.l) (x.k)|$ could have a type
+  $\Rcd{|l:Y| \to |Z, k:Y|}$ or $\Rcd{|k:Y, l:Y| \to |Z|}$,
+  each of which is not less specific than the other.
+
+To deal with the first problem,
+  we may consider introducing variables for record entries.
+For example, the term $\Lm|x:X. x.l|$ can have a type
+  $\Rcd{|l:Y, Z...|} \to |Y|$,
+  where the variable |Z| suffixed with |...| indicates that any
+  number of key-type pairs could be substituted to it.
+As for the second problem,
+  we may extend the above mentioned |Z...| variables so that
+  if the term is typed by a record with a |Z...| variable,
+  then the order of keys are also generalized.
+
+\Ex{22.5.7} \Todo
+
 \end{document}
