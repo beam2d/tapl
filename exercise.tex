@@ -4099,4 +4099,422 @@ As for the second problem,
 
 \Ex{22.5.7} \Todo
 
+\Ex{22.7.1} \Todo
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 23.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Universal Types}
+
+\Ex{23.4.1}
+Here are the typing derivations of these terms.
+\begin{Proofs}
+  \AxiomC{$|x:X| \in |X|, |x:X|$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel{|X|, |x:X|}{|x|}{|X|}$}
+  \RuleLabel{T-Abs}
+  \UnaryInfC{$\CtxTyRel{|X|}{\Lm|x:X. x|}{|X|\to|X|}$}
+  \RuleLabel{T-TAbs}
+  \UnaryInfC{$\CtxTyRel{}{\Lm|X. |\Lm|x:X. x|}{\forall|X. X|\to|X|}$}
+\end{Proofs}
+Let $\Gamma = |X|, |f:X|\to|X|, |a:X|$ in the following tree.
+\begin{Proofs}
+  \AxiomC{$|f:X|\to|X| \in \Gamma$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel\Gamma{|f|}{|X|\to|X|}$}
+  \AxiomC{$|f:X|\to|X| \in \Gamma$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel\Gamma{|f|}{|X|\to|X|}$}
+  \AxiomC{$|a:X| \in \Gamma$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel\Gamma{|a|}{|X|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTyRel\Gamma{|f a|}{|X|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTyRel\Gamma{|f (f a)|}{|X|}$}
+  \RuleLabel{T-Abs}
+  \UnaryInfC{$\CtxTyRel{|X|, |f:X|\to|X|}{\Lm|a:X. f (f a)|}{|X| \to |X|}$}
+  \RuleLabel{T-Abs}
+  \UnaryInfC{$\CtxTyRel{|X|}{\Lm|f:X|\to|X. |\Lm|a:X. f (f a)|}{
+    |(X| \to |X)| \to |X| \to |X|
+  }$}
+  \RuleLabel{T-TAbs}
+  \UnaryInfC{$\CtxTyRel{}{\Lm|X. |\Lm|f:X|\to|X. |\Lm|a:X. f (f a)|}{
+    \forall|X. (X| \to |X)| \to |X| \to |X|
+  }$}
+  \next
+  \AxiomC{$|x:|\forall|X.X|\to|X| \in |x:|\forall|X.X|\to|X|$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel{|x:|\forall|X.X|\to|X|}{|x|}{\forall|X. X|\to|X|}$}
+  \RuleLabel{T-TApp}
+  \UnaryInfC{$\CtxTyRel{|x:|\forall|X.X|\to|X|}{|x [|\forall|X.X|\to|X]|}{
+    \CParen{\forall|X. X|\to|X|} \to \CParen{\forall|X. X|\to|X|}
+  }$}
+  \AxiomC{$|x:|\forall|X.X|\to|X| \in |x:|\forall|X.X|\to|X|$}
+  \RuleLabel{T-Var}
+  \UnaryInfC{$\CtxTyRel{|x:|\forall|X.X|\to|X|}{|x|}{\forall|X. X|\to|X|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTyRel{|x:|\forall|X.X|\to|X|}{|x [|\forall|X.X|\to|X] x|}{
+    \forall|X. X|\to|X|
+  }$}
+  \RuleLabel{T-Abs}
+  \UnaryInfC{$\CtxTyRel{}{\Lm|x:|\forall|X.X|\to|X. x [|\forall|X.X|\to|X] x|}{
+    \CParen{\forall|X. X|\to|X|} \to \CParen{\forall|X. X|\to|X|}
+  }$}
+\end{Proofs}
+Let $|T|_|X| = (|X| \to |X|) \to |X| \to |X|$ in the following derivation,
+  in which we omit subtrees for deriving
+  $\CtxTyRel{|X|}{|double|}{\forall|X. T|_|X|}$, which is given above.
+Note that we have $|T|_|X| \to |T|_|X| = \Subst{|X| \mapsto |X| \to |X|}|T|_|X|$.
+\begin{Proofs}
+  \AxiomC{$\vdots$}
+  \UnaryInfC{$\CtxTyRel{|X|}{|double|}{|T|_|X|}$}
+  \RuleLabel{T-TApp}
+  \UnaryInfC{$\CtxTyRel{|X|}{|double [X| \to |X]|}{|T|_|X| \to |T|_|X|}$}
+  \AxiomC{$\vdots$}
+  \UnaryInfC{$\CtxTyRel{|X|}{|double|}{|T|_|X|}$}
+  \RuleLabel{T-TApp}
+  \UnaryInfC{$\CtxTyRel{|X|}{|double [X]|}{|T|_|X|}$}
+  \RuleLabel{T-App}
+  \BinaryInfC{$\CtxTyRel{|X|}{|double [X|\to|X] (double [X])|}{|T|_|X|}$}
+  \RuleLabel{T-TAbs}
+  \UnaryInfC{$\CtxTyRel{}{\Lm|X. double [X|\to|X] (double [X])|}{
+    \forall|X. T|_|X|
+  }$}
+\end{Proofs}
+
+\Ex{23.4.2}
+I omit the derivation here since it does not fit to the page width.
+Informal description:
+  the definition of |map| starts with $\Lm|X. |\Lm|Y. |\Lm|f: X|\to|Y.|$,
+  which tells us that |map| has a type
+  $\forall|X. |\forall|Y. |\CParen{|X|\to|Y|}\to\dots$
+  as derived by \Rule{T-TAbs} and \Rule{T-Abs}.
+The return type of this form is inferred by looking through the application of
+  |fix| operator,
+  which is applied to a function of type
+  $|(List X| \to |List Y)| \to |List X| \to |List Y|$.
+By the definition of |fix|, its return type is $|List X| \to |List Y|$.
+Combining it with the form given above yields
+  $\forall|X. |\forall|Y. |\CParen{|X|\to|Y|}\to|List X|\to|List Y|$,
+  which is the type shown in the textbook.
+
+\Ex{23.4.3}
+\begin{Code}
+  reverse = $\Lm$X. fix (
+      $\Lm$f:List X$\to$List X$\to$List X. $\Lm$r:List X. $\Lm$l:List X.
+          if isnil [X] l then
+              r
+          else
+              f (cons [X] (head [X] l) r) (tail [X] l)
+  ) (nil [X]);
+\end{Code}
+
+\Ex{23.4.4}
+Here is a simple implementation of insertion sort.
+\begin{Code}
+  insert_sorted = $\Lm$X. $\Lm$le:X$\to$X$\to$Bool. fix (
+      $\Lm$f:X$\to$List X$\to$List X. $\Lm$x:X. $\Lm$l:List X.
+          if isnil [X] l then
+              cons [X] x l
+          else
+              let h = head [X] l in
+              if le x h then
+                  cons [X] x l
+              else
+                  cons [X] h (f x (tail [X] l))
+  );
+  sort = $\Lm$X. $\Lm$le:X$\to$X$\to$Bool. fix (
+      $\Lm$f:List X$\to$List X. $\Lm$l:List X.
+          if isnil [X] l then
+              l
+          else
+              insert_sorted [X] le (head [X] l) (f (tail [X] l))
+  );
+\end{Code}
+
+\Ex{23.4.5}
+\begin{Code}
+  and = $\Lm$b:CBool. $\Lm$c:CBool. $\Lm$X. $\Lm$t:X. $\Lm$f:X. b [X] (c [X] t f) f;
+\end{Code}
+
+\Ex{23.4.6}
+\begin{Code}
+  iszero = $\Lm$n:CNat. c [CBool] ($\Lm$b:CBool. fls) tru;
+\end{Code}
+
+\Ex{23.4.7}
+|ctimes|: Given |m:CNat|, |n:CNat|, and $|s:X|\to|X|$,
+  the term |n [X] (m [X] s)| has the type $|X|\to|X|$,
+  yielding the type printed in the textbook.
+The definition reads that
+  |ctimes m n [X] s z| applies |m [X] s| to |z| repeatedly for |n| times.
+Since the function |m [X] s| applies |s| for |m| times to the argument,
+  repeating it |n| times ends up with $|m| \times |n|$ applications of |s|.
+
+|cexp|: Given |m:CNat| and |n:CNat|,
+  the term $|n [X|\to|X]|$ has the type $|CNat| \to |CNat|$,
+  which verifies the type of |cexp| shown in the textbook.
+The correctness of the definition is best understood by induction on |n|.
+Obviously, $|cexp c|_0| m| = \Lm|X. c|_0| [X| \to |X] (m [X])| = |c|_0 = |m|^|0|$.
+For general |n|, we have
+\begin{align*}
+  |cexp (csucc n) m|
+  &= \Lm|X. csucc n [X| \to |X] (m [X])| \\
+  &= \Lm|X. |\Lm|s:X| \to |X. m [X] (n [X| \to |X] m s)| \\
+  &= |ctimes m (n [X| \to |X] m)|.
+\end{align*}
+The conclusion follows by combining it with the induction hypothesis
+  $|n [X|\to|X] m| = |m|^{|n|}$.
+
+\Ex{23.4.8}
+\begin{Code}
+  pairNat = $\Lm$m:CNat. $\Lm$n:CNat. $\Lm$X. $\Lm$f:(CNat$\to$CNat$\to$X). f m n;
+  fstNat = $\Lm$p:PairNat. p [CNat] ($\Lm$m:CNat. $\Lm$n:CNat. m);
+  sndNat = $\Lm$p:PairNat. p [CNat] ($\Lm$m:CNat. $\Lm$n:CNat. n);
+\end{Code}
+
+\Ex{23.4.9}
+\begin{Code}
+  pred =
+      let f = $\Lm$p:PairNat. pairNat (csucc (fstNat p)) (fstNat p) in
+      $\Lm$n:CNat.
+          sndNat (n [PairNat] f (pairNat c$_0$ c$_0$));
+\end{Code}
+
+\Ex{23.4.10}
+An annotated definition of |vpred| is as follows.
+\begin{Code}
+  k = $\Lm$X. $\Lm$x:X. $\Lm$y:X$\to$X. x;
+  i = $\Lm$X. $\Lm$x:X. x;
+  vpred = $\Lm$n:CNat. $\Lm$X. $\Lm$s:X$\to$X. $\Lm$z:X.
+      n [(X$\to$X)$\to$X] ($\Lm$p:(X$\to$X)$\to$X. $\Lm$q:X$\to$X. q (p s)) (k [X] z) (i [X]);
+\end{Code}
+Let us show the correctness of this definition.
+Let
+\[ |f| = \Lm|X. |\Lm|s:X| \to |X. |
+         \Lm|p:(X| \to |X)| \to |X. |\Lm|q:X| \to |X. q (p s)|. \]
+First, we have
+\begin{align*}
+  |vpred c|_0| [X] s z|
+  &= |c|_0| [(X| \to |X)| \to |X] (f [X] s) (k [X] z) (i [X])| \\
+  &\to^* |k [X] z (i [X])| \\
+  &\to^* |z|.
+\end{align*}
+For general |n|, |vpred (csucc n)| is computed as follows.
+\begin{align*}
+  &\PhantomRel= |vpred (csucc n) [X] s z| \\
+  &= |csucc n [(X| \to |X)| \to |X] (f [X] s) (k [X] z) (i [X])| \\
+  &\to^* |f [X] s (n [(X| \to |X)| \to |X] (f [X] s) (k [X] z)) (i [X])| \\
+  &\to^* |i [X] (n [(X| \to |X)| \to |X] (f [X] s) (k [X] z)) s| \\
+  &\to^* |n [(X| \to |X)| \to |X] (f [X] s) (k [X] z) s|.
+\end{align*}
+A crucial observation is that the final term
+  $|n [(X| \to |X)| \to |X] (f [X] s) (k [X] z) s|$
+  and |n [X] s z| are evaluated to the same value.
+Let us show it by induction on |n|.
+For $|n| = |c|_0$, we have
+\[
+  |c|_0| [(X| \to |X)| \to |X] (f [X] s) (k [X] z) s|
+  \to^* |k [X] z s|
+  \to^* |z|
+\]
+  which is also obtained by evaluating $|c|_0| [X] s z|$.
+Suppose the form is equivalent to |n [X] s z| for a given |n|.
+Then,
+\begin{align*}
+  &\PhantomRel{\to^*} |csucc n [(X| \to |X)| \to |X] (f [X] s) (k [X] z) s| \\
+  &\to^* |f [X] s (n [(X| \to |X)| \to |X] (f [X] s) (k [X] z)) s| \\
+  &\to^* |s ((n [(X| \to |X)| \to |X] (f [X] s) (k [X] z)) s)|.
+\end{align*}
+By the induction hypothesis,
+  this term and |s (n [X] s z)|, and thus |csucc n [X] s z|,
+  are evaluated to the same value, concluding the induction.
+Therefore, any Church numeral |n| is behaviorally equivalent to
+  |vpred (csucc n)|,
+  which, combined with $|vpred c|_0$ being equivalent to $|c|_0$,
+  veryfies that |vpred| is a correct implementation of the |pred| function on
+  Church numerals.
+
+Informal explanation of the implementation:
+let us see the lambda applications just as a sequence of terms.
+Then, |f [X] s| copies |s| to the end of the sequence,
+  pulling the last term to the left-most place.
+At the initial state,
+  the last term is |i [X]|, which does nothing,
+  while from the second application of |f [X] s|,
+  the last term is always |s|.
+Therefore,
+  the overall computation goes like adding one |i [X]| and
+  $|n| - 1$ times of |s|,
+  which matches to the definition of $|n| - 1$ as a Church numeral.
+The |k [X] z| term is used to make up the final argument |z| of the sequence,
+  i.e., it realizes the correctness of $|vpred c|_0$.
+
+\Ex{23.4.11}
+\begin{Code}
+  head_df = $\Lm$X. $\Lm$l:List X. $\Lm$df:X. l [X] ($\Lm$hd:X. $\Lm$tl:X. hd) df;
+\end{Code}
+
+\Ex{23.4.12}
+\begin{Code}
+  insert = $\Lm$X. $\Lm$le:X$\to$X$\to$Bool. $\Lm$l:List X. $\Lm$x:X.
+      fst [List X] [Bool] (
+          l [Pair (List X) Bool] (
+              $\Lm$y:X. $\Lm$p:Pair (List X) Bool.
+                  let tl = fst [List X] [Bool] p in
+                  let not_done = snd [List X] [Bool] p in
+                  if and not_done (le y x) then
+                      pair [List X] [Bool] (cons [X] y (cons [X] x tl)) false
+                  else
+                      pair [List X] [Bool] (cons [X] y tl) not_done
+          ) (pair [List X] [Bool] (nil [X]) true)
+      );
+
+  sort = $\Lm$X. $\Lm$le:X$\to$X$\to$Bool. $\Lm$l:List X.
+      l [List X] ($\Lm$x:X. $\Lm$tl:List X. insert [X] le tl x) (nil [X]);
+\end{Code}
+
+\Ex{23.5.1}
+By induction on the evaluation derivations
+  with case analysis on the last rule used in the derivations.
+
+\Case\Rule{E-App1}: $|t| = |t|_1\ |t|_2$, $|t|' = |t|_1'\ |t|_2$ \\
+The type $|T|_{12}$ of the term $|t|_1\ |t|_2$ is derived by \Rule{T-App},
+  whose promise gives
+  $\CtxTyRel\Gamma{|t|_1}{|T|_{11} \to |T|_{12}}$ and
+  $\CtxTyRel\Gamma{|t|_2}{|T|_{11}}$ for some $|T|_{11}$ and $|T|_{12}$.
+By the induction hypothesis,
+  the premise $|t|_1 \to |t|_1'$ of \Rule{E-App1} preserves the type,
+  i.e., $\CtxTyRel\Gamma{|t|_1'}{|T|_{11} \to |T|_{12}}$.
+Therefore, we obtain with \Rule{T-App} that
+  $\CtxTyRel\Gamma{|t|_1'\ |t|_2}{|T|_{12}}$.
+
+\Case\Rule{E-App2}: $|t| = |v|_1\ |t|_2$, $|t|' = |v|_1\ |t|_2'$ \\
+Similar to the \Rule{E-App1} case.
+
+\Case\Rule{E-AppAbs}:
+  $|t| = \CParen{\Lm|X:T|_{11}|. t|_{12}}\ |v|_2$,
+  $|t|' = \Subst{|x| \mapsto |v|_2} |t|_{12}$ \\
+The type $|T|_{12}$ of the term |t| is derived by \Rule{T-App},
+  whose promise gives
+  $\CtxTyRel\Gamma{\Lm|x:T|_{11}|. t|_{12}}{|T|_{11}' \to |T|_{12}}$ and
+  $\CtxTyRel\Gamma{|v|_2}{|T|_{11}'}$.
+The type of the term $\Lm|x:T|_{11}|. t|_{12}$ is then derived by \Rule{T-Abs},
+  which forces $|T|_{11}' = |T|_{11}$.
+In particular, we have $\CtxTyRel\Gamma{|v|_2}{|T|_{11}}$.
+The promise of this rule also provides
+  $\CtxTyRel{\Gamma, |x:T|_{11}}{|t|_{12}}{|T|_{12}}$,
+  with which we obtain
+  $\CtxTyRel\Gamma{\Subst{|x| \mapsto |v|_2} |t|_{12}}{|T|_{12}}$.
+
+\Case\Rule{E-TApp}:
+  $|t| = |t|_1\ |[T|_2|]|$, $|t|' = |t|_1'\ |[T|_2|]|$ \\
+The type of the term |t| is derived by \Rule{T-TApp},
+  which gives $\CtxTyRel\Gamma{|t|_1}{\forall|X. T|_{12}}$
+  and $\CtxTyRel\Gamma{|t|}{\Subst{|X| \mapsto |T|_2} |T|_{12}}$.
+By the induction hypothesis,
+  the promise of \Rule{E-TApp}, $|t|_1 \to |t|_1'$ preserves the type,
+  i.e., $\CtxTyRel\Gamma{|t|_1'}{\forall|X. T|_{12}}$.
+Therefore,
+  by applying \Rule{T-TApp} to the term $|t|'$,
+  we obtain $\CtxTyRel\Gamma{|t|'}{\Subst{|X| \mapsto |T|_2} |T|_{12}}$.
+
+\Case\Rule{E-TappTabs}:
+  $|t| = \CParen{\Lm|X. t|_{12}}\ |[T|_2|]|$,
+  $|t|' = \Subst{|X| \mapsto |T|_2} |t|_{12}$ \\
+The type of the term |t| is again derived by \Rule{T-TApp},
+  which gives $\CtxTyRel\Gamma{\Lm|X. t|_{12}}{\forall|X. T|_{12}}$
+  and $\CtxTyRel\Gamma{\CParen{\Lm|X. t|_{12}}\ |[T|_2|]|}{\Subst{|X| \mapsto |T|_2} |T|_{12}}$.
+The former typing relation is derived by \Rule{T-TAbs},
+  whose promise gives $\CtxTyRel{\Gamma, |X|}{|t|_{12}}{|T|_{12}}$.
+We need the following lemma to conclude the proof.
+
+\Lemma:
+  Given $\CtxTyRel{\Gamma, |X|, \Gamma'}{|t|}{|T|}$ and a type $|S|$,
+  it holds that
+  $\CtxTyRel{
+    \Gamma, \Subst{|X| \mapsto |S|} \Gamma'
+  }{
+    \Subst{|X| \mapsto |S|} |t|
+  }{\Subst{|X| \mapsto |S|} |T|}$.
+
+\Proof:
+  By induction on typing derivations.
+  Basically, applying the same rule as the last rule used to derive
+    the type of |t| works.
+  The cases of \Rule{T-App}, \Rule{T-TAbs}, and \Rule{T-TApp} are
+    straight-forward.
+  The \Rule{T-Var} case is shown by considering two cases of either or not
+    $|x:T|$ includes |X|.
+  In particular, if it includes |X|,
+    it should appear in $\Gamma'$,
+    thus the substitution works correctly.
+  In the \Rule{T-Abs} case,
+    the additional context in the premise $|x:T|_1$ appears in $\Gamma'$,
+    thus again the substitution works. \qed
+
+\Ex{23.5.2}
+By induction on the typing derivations with case analysis on the last rule
+  used in the derivations.
+
+\Case\Rule{T-Var}: $|t| = |x|$ \\
+It contradicts with the assumption that |t| is a closed term.
+
+\Case\Rule{T-Abs}: $|t| = \Lm|x:T|_1|. t|_2$ \\
+Immediate, as an abstraction is a value.
+
+\Case\Rule{T-App}: $|t| = |t|_1\ |t|_2$ \\
+The premises give
+  $\CtxTyRel{}{|t|_1}{|T|_{11} \to |T|_{12}}$ and
+  $\CtxTyRel{}{|t|_2}{|T|_{11}}$
+  (note that the context is empty, as |t| is a closed term).
+By the induction hypothesis,
+  each of $|t|_1$ and $|t|_2$ is a value or can take an evaluation step.
+If either is not a value,
+  we can apply \Rule{E-App1} or \Rule{E-App2} to take a step on |t|.
+
+Suppose both are values.
+Then,
+  the type of $|t|_1$ is derived by either \Rule{T-Abs} or \Rule{T-TApp}
+  (note that, since the context is empty, there is no chance of
+   using \Rule{T-Var} here).
+We can show that the type is derived by \Rule{T-Abs}
+  followed by arbitrary number of interleaving \Rule{T-TApp} and \Rule{T-TAbs}
+  by induction on the derivation,
+  which indicates that $|t|_1$ is an abstraction.
+If the very rule deriving the type is \Rule{T-Abs},
+  then the conclusion follows immediately.
+Suppose the last rule used is \Rule{T-TApp}.
+Then, $|t|_1$ is a type abstraction,
+  whose type $\forall|X.T|_{11}'$ is derived by \Rule{T-TAbs}.
+The conclusion of \Rule{T-TAbs} gives the shape of $|t|_1$ as $\Lm|X. t|_1'$.
+By the induction hypothesis,
+  the typing relation $\CtxTyRel{X}{|t|_1'}{|T|_{11}'}$
+  is derived by \Rule{T-Abs} followed by interleaving \Rule{T-TApp} and \Rule{T-TAbs},
+  concluding the induction
+  (note here again that \Rule{T-Var} does not appear in the sequence,
+   since the context only consists of type variables and does not include
+   any typing statement of variables).
+Therefore, $|t|_1$ is an abstraction,
+  and thus we can apply \Rule{E-AppAbs} to the term $|t| = |t|_1\ |t|_2$.
+
+\Case\Rule{T-TAbs}: $|t| = \Lm|X. t|_2$ \\
+Immediate, as a type abstraction is a value.
+
+\Case\Rule{T-TApp}: $|t| = |t|_1\ |[T|_2|]|$ \\
+The premise gives $\CtxTyRel{}{|t|_1}{\forall|X. T|_{12}}$.
+By the induction hypothesis,
+  it either is a value or can take a step.
+If it can take a step as $|t|_1 \to |t|_1'$,
+  then we can also take a step on |t| using \Rule{E-TApp}.
+Suppose that $|t|_1$ is a value,
+  i.e., either an abstraction or a type abstraction.
+If it is an abstraction,
+  then its type is derived by \Rule{T-Abs},
+  whose conclusion gives that $\forall|X. T|_{12}$ is an arrow type,
+  which cannot happen.
+Therefore, $|t|_1$ is a type abstraction,
+  with which we can apply \Rule{E-TappTabs} to the term |t|. \qed
+
 \end{document}
