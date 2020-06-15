@@ -4517,4 +4517,276 @@ If it is an abstraction,
 Therefore, $|t|_1$ is a type abstraction,
   with which we can apply \Rule{E-TappTabs} to the term |t|. \qed
 
+\Ex{23.6.3}
+{
+\newcommand\Erase{\mathop{\It{erase}}}
+\newcommand\Lml{\It{leftmost-leaf}}
+\begin{enumerate}
+  \item %%% 1
+    By induction on typing derivations.
+    Suppose $\CtxTyRel\Gamma{|t|}{|T|}$.
+    
+    If |t| is already exposed, we can just take $|s| = |t|$.
+
+    If |t| is a type abstraction $\Lm|X. t|'$,
+      its type is derived by \Rule{T-TAbs},
+      which provides $\CtxTyRel{\Gamma, |X|}{|t|'}{|T|'}$.
+    By the induction hypothesis,
+      there is a well-typed exposed term |s| such that
+      $\Erase(|s|) = \Erase(|t|') = \Erase(|t|)$.
+
+    If |t| is a type application $|t|'\ |[S]|$,
+      its type is derived by \Rule{T-TApp},
+      which provides $\CtxTyRel\Gamma{|t|'}{\forall|X. T|'}$.
+    By the induction hypothesis,
+      there is a well-typed exposed term |s| such that
+      $\Erase(|s|) = \Erase(|t|') = \Erase(|t|)$. \qed
+
+  \item %%% 2
+    By induction on typing derivations.
+
+    If |t| is already exposed, we can take
+      $\Cbar X = \bullet$, $\Cbar A = \bullet$, and $|u| = |t|$.
+
+    If |t| is a type abstraction $\Lm|X. t|'$,
+      its type is derived by \Rule{T-TAbs},
+      whose promise provides $\CtxTyRel{\Gamma, |X|}{|t|'}{|T|'}$.
+    By the induction hypothesis,
+      there is a term $|s|' = \Lm\Cbar X|. (u [|\Cbar A|])|$
+      where |u| is an exposed term, $\CtxTyRel{\Gamma, |X|}{|s|'}{|T|'}$,
+      and $\Erase(|s|') = \Erase(|t|')$.
+    Applying \Rule{T-TAbs} to this term yields
+      $\CtxTyRel\Gamma{\Lm|X. s|'}{\forall|X. T|'}$.
+    Therefore, $|s| = \Lm|X. s|'$ satisfies the conditions,
+      as $\Erase(|s|) = \Erase(|s|') = \Erase(|t|') = \Erase(|t|)$.
+
+    If |t| is a type application $|t|'\ |[S]|$,
+      its type is derived by \Rule{T-TApp},
+      whose promise provides $\CtxTyRel\Gamma{|t|'}{\forall|X. T|'}$.
+    By the induction hypothesis,
+      there is a term $|s|' = \Lm\Cbar X|. (u [|\Cbar A|])|$
+      where |u| is an exposed term, $\CtxTyRel\Gamma{|s|'}{\forall|X. T|'}$,
+      and $\Erase(|s|') = \Erase(|t|')$.
+    Applying \Rule{T-TApp} to this term yields
+      $\CtxTyRel\Gamma{|s|'\ |[S]|}{|T|}$.
+    If $\Cbar X = \bullet$,
+      then $|s| = |s|'\ |[S]|$ satisfies the conditions,
+      as $\Erase(|s|) = \Erase(|s|') = \Erase(|t|') = \Erase(|t|)$.
+    If $\Cbar X$ is not empty,
+      decompose it as $\Cbar X = |X|, \Cbar X'$.
+    Then,
+      the term $|t| = \Lm|X. |\Lm\Cbar X'|. (u [|\Cbar A|]) [S]|$
+      can be evaluated by \Rule{E-TappTabs} into
+      $\Subst{|X| \mapsto |S|} \Lm\Cbar X'|. (u [|\Cbar A|])|$,
+      which has the same type |T| as stated by the type preservation theorem.
+    Therefore, we can take $|s| = \Lm\Cbar X'|. (u [|\Cbar A|])|$
+      to satisfy the conditions. \qed
+
+  \item %%% 3
+    By the definition of the $\Erase$ function,
+      when $|t|$ is an exposed term
+      (i.e., only the first three cases of the definition of $\Erase$ function
+       can be applied directly to $\Erase(|t|)$),
+      the form $\Erase(|t|) = |m n|$ is only realized by
+      $\Erase(|s u|) = \Erase(|s|)\ \Erase(|u|)$ case,
+      thus $\Erase(|s|) = |m|$ and $\Erase(|u|) = |n|$.
+    The type of |s u| is derived by \Rule{T-App},
+      whose premises provide the typing relations for |s| and |u|. \qed
+
+  \item %%% 4
+    As we saw in 2,
+      there is some term |t| of the form
+      $\Lm\Cbar Y|. | \CParen{|s|\ \CBracket{\Cbar C}}$
+      such that |s| is an exposed term,
+      $\Erase(|t|) = |x x|$,
+      and $\CtxTyRel\Gamma{|t|}{|U|}$.
+    By backtracking the derivation of this typing relation,
+      we obtain
+      $\CtxTyRel{\Gamma, \Cbar Y}{|s|}{\forall\Cbar Y'|.S|}$
+      where $\Subst{\Cbar Y' \mapsto \Cbar C} |S| = |U|$.
+    Since |s| is exposed and $\Erase(|s|) = |x x|$,
+      we can use 3 to obtain the form $|s| = |s|_1\ |s|_2$
+      where $\CtxTyRel{\Gamma, \Cbar Y}{|s|_1}{|S|_1 \to \forall\Cbar Y'|.S|}$
+      and $\CtxTyRel{\Gamma, \Cbar Y}{|s|_2}{|S|_1}$ for some type $|S|_1$,
+      and $\Erase(|s|_1) = \Erase(|s|_2) = |x|$.
+    By applying 2 again,
+      we obtain exposed terms $|s|_1'$ and $|s|_2'$ both erased to |x|
+      that satisfy typing relations of the form
+      \begin{alignat*}{2}
+        &\CtxTyRel{\Gamma, \Cbar Y, \Cbar Y_1}{|s|_1'}{\forall\Cbar Y_1'|.S|_1'}
+        &\text{\ where\ }
+        &\Subst{\Cbar Y_1' \mapsto \Cbar A} |S|_1' = |S|_1 \to \forall\Cbar Y'|.S|, \\
+        &\CtxTyRel{\Gamma, \Cbar Y, \Cbar Y_2}{|s|_2'}{\forall\Cbar Y_2'|.S|_2'}
+        &\text{\ where\ }
+        &\Subst{\Cbar Y_2' \mapsto \Cbar B} |S|_2' = |S|_1.
+      \end{alignat*}
+    Since $|s|_1'$ and $|s|_2'$ are both exposed and erased to a variable |x|,
+      we have $|s|_1' = |s|_2' = |x|$.
+    Therefore, these typing relations are derived directly by \Rule{T-Var},
+      which provides $|T| = \forall\Cbar Y_1'|.S|_1' = \forall \Cbar Y_2'|.S|_2'$
+      and $\Cbar Y, \Cbar Y_1, \Cbar Y_2 = \bullet$.
+    Since $\Subst{\Cbar Y_1' \mapsto \Cbar A} |S|_1'$, which is an arrow type,
+      is not a universal type, neither is $|S|_1'$.
+    Therefore, $|Y|_2'$ is a prefix of $\Cbar Y_1'$;
+      i.e., we can write
+      $\Cbar Y_1' = \Cbar X_1 \Cbar X_2$ and $\Cbar Y_2' = \Cbar X_1$.
+    There are, then, two cases for the shape of $|S|_1'$.
+    \begin{itemize}
+      \item \Case Type variable $|S|_1' = |X|$:
+          in this case, $|X| \in |X|_1|X|_2$.
+        We can then write $|T| = \forall\Cbar X_1\Cbar X_2|.X|$,
+          which corresponds to the case (a).
+      \item \Case Arrow type $|S|_1' = |T|_1 \to |T|_2$:
+          in this case, by inversion of typing,
+          we have $\Subst{\Cbar X_1 \Cbar X_2 \mapsto \Cbar A} |T|_1 = |S|_1$,
+          $\Subst{\Cbar X_1 \Cbar X_2 \mapsto \Cbar A} |T|_2 = \forall |Y|'|.S|$,
+          and
+          $\Subst{\Cbar X_1 \mapsto \Cbar B}(\forall\Cbar X_2|. T|_1 \to |T|_2)
+            = |S|_1$.
+        Combining the first and third equations,
+          we obtain
+          $\Subst{\Cbar X_1\Cbar X_2 \mapsto \Cbar A} |T|_1
+            = \Subst{\Cbar X_1 \mapsto \Cbar B}(\forall\Cbar X_2|. T|_1 \to |T|_2)$.
+        We can then write $|T| = \forall\Cbar X_1\Cbar X_2|.T|_1 \to |T|_2$,
+          which corresponds to the case (b).
+    \end{itemize}
+
+  \item %%% 5
+    Using 2,
+      we can obtain a term |t| of the form
+      $\Lm\Cbar X|. |\CParen{|u|\ \CBracket{\Cbar A}}$
+      with an exposed term |u|
+      where $\CtxTyRel\Gamma{|t|}{|S|}$ and $\Erase(|t|) = \Lm|x.m|$.
+    Since $\Erase(|u|) = \Erase(|t|) = \Lm|x.m|$ and |u| is exposed,
+      |u| is an abstraction term.
+    It also indicates that $\Cbar A$ is empty,
+      and therefore |t| has the form $\Lm\Cbar X|.|\Lm|x:S|_1|. u|'$.
+    If this term is well-typed,
+      the inner term $|u|'$ is typed as
+      $\CtxTyRel{\Gamma, \Cbar X, |x:S|_1}{|u|'}{|S|_2}$
+      for some type $|S|_2$,
+      from which we obtain
+      $\CtxTyRel\Gamma{\Lm\Cbar X|.|\Lm|x:S|_1|. u|'}{\forall\Cbar X|.S|_1 \to |S|_2}$.
+    The conclusion follows by the uniqueness of typing.
+
+  \item %%% 6
+    By induction on the structure of $|T|_1$ with case analysis on its form.
+    \begin{itemize}
+      \item \Case $|T|_1 = |W|$:
+        If |W| is not in $\Cbar X_1 \Cbar X_2$,
+          the left hand side of the assumption equals to $\forall\Cbar Y|.W|$,
+          which does not include any arrow while the other side of the equation
+          has at least one arrow,
+          leading to contradiction.
+      \item \Case $|T|_1 = |S|_1 \to |S|_2$:
+        By the inversion lemma,
+          we have
+          $\Subst{\Cbar X_1\Cbar X_2\mapsto\Cbar A} |S|_1
+            = \Subst{\Cbar X_1\mapsto\Cbar B}(\forall\Cbar Y|.S|_1 \to |S|_2)$
+          up to renaming free type variables.
+        By the induction hypothesis,
+          $\Lml(|S|_1) = |X|_i$ for some $|X|_i \in \Cbar X_1\Cbar X_2$.
+        The conclusion follows by $\Lml(|T|_1) = \Lml(|S|_1)$.
+      \item \Case $|T|_1 = \forall|X.S|$:
+        By replacing $\Cbar Y$ with $(\Cbar Y, |X|)$,
+          we can apply the induction hypothesis to obtain the conclusion.
+    \end{itemize}
+
+  \item %%% 7
+    Assume that |omega| is well-typed.
+    By 1 and 3, we can write
+      \begin{alignat*}{2}
+        &\CtxTyRel\Gamma{|t|_1}{|T| \to |U|},
+        &\qquad
+        \Erase(|t|_1) &= \Lm|x.x x|,
+        \\
+        &\CtxTyRel\Gamma{|t|_2}{|T|},
+        &\qquad
+        \Erase(|t|_2) &= \Lm|y.y y|
+      \end{alignat*}
+      for some context $\Gamma$, terms $|t|_1$, $|t|_2$, and types |T|, |U|.
+    By applying 5 to $|t|_2$,
+      |T| has the form $\forall\Cbar X|.T|_1 \to |T|_2$
+      for some $\Cbar X$, $|T|_1$, and $|T|_2$.
+    Applying 2 to $|t|_1$ and $|t|_2$ respectively yields the following forms
+      \begin{alignat*}{2}
+        &\CtxTyRel\Gamma{
+          \Lm\Cbar X_1|.| \CParen{|t|_1'\ \CBracket{\Cbar A_1}}
+        }{|T| \to |U|},
+        &\qquad
+        \Erase(|t|_1') &= \Lm|x.x x|,
+        \\
+        &\CtxTyRel\Gamma{\Lm\Cbar X_2|.| \CParen{|t|_2'\ \CBracket{\Cbar A_2}}}{|T|},
+        &
+        \Erase(|t|_2') &= \Lm|y.y y|
+      \end{alignat*}
+      for some exposed terms $|t|_1'$, $|t|_2'$,
+      sequences of type variables $\Cbar X_1$, $\Cbar X_2$,
+      and sequences of types $\Cbar A_1$, $\Cbar A_2$.
+    Since $|t|_1'$ and $|t|'_2$ are exposed terms erased to abstractions,
+      they are both abstractions themselves.
+    Therefore, $\Cbar A_1$ and $\Cbar A_2$ are both empty.
+    Moreover, the first typing relation tells us that
+      $\Lm\Cbar X_1|.| \CParen{|t|_1'\ \CBracket{\Cbar A_1}}$
+      has an arrow type,
+      and therefore $\Cbar X_1$ is also empty.
+    The relations are thus simplified to
+      \[
+        \CtxTyRel\Gamma{|t|_1'}{|T| \to |U|},
+        \qquad
+        \CtxTyRel\Gamma{\Lm\Cbar X_2|.t|_2'}{|T|}.
+      \]
+    Since $|t|_1'$ is an abstraction of type $|U| \to |T|$ under $\Gamma$,
+      we can write $|t|_1' = \Lm|x:U.u|$,
+      from which we can obtain the following relations using \Rule{T-Abs}:
+      \[
+        \CtxTyRel{\Gamma, |x:T|}{|u|}{|U|},
+        \qquad
+        \Erase(|u|) = |x x|.
+      \]
+    Since |T| has the form $\forall\Cbar X|.T|_1 \to |T|_2$,
+      the case 4(b) holds for |u|.
+    Therefore, by 6,
+      $\Lml(|T|_1) = |X|_i$ for some $|X|_i \in \Cbar X$.
+    Now, let us analyze $|t|_2'$.
+    Substituting $|T| = \forall\Cbar X|.T|_1 \to |T|_2$
+      to the typing relation of $\Lm\Cbar X_2|.t|_2'$ yields
+      \[ \CtxTyRel\Gamma{\Lm\Cbar X_2|.t|_2'}{\forall\Cbar X|.T|_1 \to |T|_2}. \]
+    As we saw, $|t|_2'$ is an abstraction term,
+      and thus the derivation of the above typing relation provides us that
+      $\Cbar X_2 = \Cbar X$ and we can write $|t|_2' = \Lm|y:T|_1|.s|$ where
+      \[
+        \CtxTyRel{\Gamma, \Cbar X, |y:T|_1}{|s|}{|T|_2},
+        \qquad
+        \Erase(|s|) = |y y|.
+      \]
+    By 4, we have two cases in the form of $|T|_1$.
+    \begin{itemize}
+      \item[(a)]
+        $|T|_1 = \forall\Cbar X'|.X|_i'$ where $|X|_i' \in \Cbar X'$ \\
+        In this case, we immediately obtain $\Lml(|T|_1) = |X|_i'$.
+      \item[(b)]
+        $|T|_1 = \forall\Cbar X_1'\Cbar X_2'|.T|_{11} \to |T|_{12}$
+        where $
+          \Subst{\Cbar X_1'\Cbar X_2' \mapsto \Cbar A} |T|_{11} =
+          \Subst{\Cbar X_1' \mapsto \Cbar B}(\forall\Cbar Z|.T|_{11} \to |T|_{12})
+        $ \\
+        By 6, we obtain $\Lml(|T|_{11}) = |X|_i'$
+          for some $|X|_i' \in \Cbar X_1'\Cbar X_2'$.
+    \end{itemize}
+    Either case contradicts with $\Lml(|T|_1) = |X|_i$,
+      as both $\Cbar X'$ in the case (a) and $\Cbar X_1'\Cbar X_2'$ in the case (b)
+      are bound at the different place from $\Cbar X$,
+      whose members do not overlap.
+\end{enumerate}
+}
+
+\Ex{23.7.1}
+\begin{Code}
+  let r = $\Lm$X. ref ($\Lm$x:X. x) in (
+    (r [Nat] := $\Lm$x:Nat. succ x);
+    (!(r [Bool])) true
+  );
+\end{Code}
+
 \end{document}
