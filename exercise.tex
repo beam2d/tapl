@@ -66,7 +66,7 @@
 \newcommand\CtxTyRel[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
 \newcommand\CtxTRC[5]{\CtxTyRel{#1}{#2}{#3} \mid_{#4} #5}
 \newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
-\newcommand\DShift{\Up}
+\newcommand\DShift{\Up{}}
 \newcommand\Dom{\It{dom}}
 \newcommand\Down{\mathop{\downarrow}}
 \newcommand\EmptySeq{\bullet}
@@ -4788,5 +4788,111 @@ Therefore, $|t|_1$ is a type abstraction,
     (!(r [Bool])) true
   );
 \end{Code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 24.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Existential Types}
+
+\Ex{24.1.1}
+We can only extract values of type |X| from |p6| and |p7|,
+  which is unknown by the user of the value,
+  and thus cannot be used in any way.
+The cases |p4| and |p5| are usable in this sense
+  because we can extract a |Nat| value by applying the |f| field to the
+  |a| field.
+The case |p8| is not useful as the packaged type is fully visible,
+  and the usage is not different from non-existential type
+  $\Rcd{|a:Nat, f:Nat|\to|Nat|}$.
+
+\Ex{24.2.1}
+\begin{Code}
+  numStackADT = {*List Nat, {
+      new = nil [Nat],
+      push = cons [Nat],
+      top = head [Nat],
+      pop = tail [Nat],
+      isempty = isnil [Nat]
+  }} as {$\exists$NumStack, {
+      new: NumStack,
+      push: Nat $\to$ NumStack $\to$ NumStack,
+      top: NumStack $\to$ Nat,
+      pop: NumStack $\to$ NumStack,
+      isempty: NumStack $\to$ Bool
+  }};
+
+  let {NumStack, numStack} = numStackADT in
+  numStack.top (numStack.push 1 (numStack.push 2 numStack.new));
+\end{Code}
+
+\Ex{24.2.2}
+\begin{Code}
+  mutCounterADT = {*Ref Nat, {
+      new = $\Lm$_:Unit. ref 1,
+      get = $\Lm$r:Ref Nat. !r,
+      inc = $\Lm$r:Ref Nat. r := succ (!r)
+  }} as {$\exists$MutCounter, {
+      new: Unit $\to$ MutCounter,
+      get: MutCounter $\to$ Nat,
+      inc: MutCounter $\to$ Unit
+  }};
+\end{Code}
+
+\Ex{24.2.5}
+Since each object has its own representation type,
+  two objects that we want to pass to the |union| object
+  have different representation types unless they are the very same object.
+It prevents us from calling the |union| method in a useful way.
+
+\Ex{24.3.1}
+\begin{Code}
+  {$\exists$X, T} $\EqDef$ $\forall$Y. ($\forall$X. T$\to$Y)$\to$Y;
+  let {*X, x} = s in t $\EqDef$ s [S] ($\Lm$X. $\Lm$x:T. t);
+\end{Code}
+
+\Ex{24.3.2}
+Denote the encoding of terms, types, and typing contexts
+  in System F with existential types using universal types as
+  $f$, $F$, and $\cF$, respectively.
+
+What we need to verify are
+\begin{itemize}
+  \item For any term |t|, type |T|, and typing context $\Gamma$
+      in System F with existential types,
+      $\CtxTyRel\Gamma{|t|}{|T|}$ implies $\CtxTyRel{\cF(\Gamma)}{f(|t|)}{F(|T|)}$.
+  \item Suppose we have $\CtxTyRel{}{|t|}{|T|}$ for a closed term |t| and type |T|
+      in System F with existential types.
+    Let |v| be some value in this system.
+    Then, $|t| \to^\star |v|$ implies $f(|t|) \to^\star f(|v|)$.
+\end{itemize}
+
+\Ex{24.3.3}
+Omitted.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 25.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{An ML Implementation of System F}
+
+\Todo: Implement System F.
+
+\Ex{25.2.1}
+\begin{alignat*}{2}
+  \DShift_c^d(|k|) &=
+    \begin{cases}
+      ~|k| & |k| < c \\
+      ~|k| + d & |k| \ge c,
+    \end{cases} &\qquad
+  \DShift_c^d(|T|_1 \to |T|_2) &= \DShift_c^d(|T|_1) \to \DShift_c^d(|T|_2), \\
+  \DShift_c^d(\forall|.T|) &= \forall|.| \DShift_{c+1}^d(|T|), &
+  \DShift_c^d(\Rcd{\exists|,T|}) &= \Rcd{\exists|,| \DShift_{c+1}^d(|T|)}.
+\end{alignat*}
+
+\Ex{25.4.1}
+Because another substitution is performed after the first substitution.
+In other words,
+  at the first substitution,
+  the symbol substituted away is not of the zero-th index,
+  which is used by the type variable.
 
 \end{document}
