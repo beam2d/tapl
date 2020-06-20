@@ -66,6 +66,7 @@
 \newcommand\CtxTyRel[3]{\Ctx{#1}{\TyRel{#2}{#3}}}
 \newcommand\CtxTRC[5]{\CtxTyRel{#1}{#2}{#3} \mid_{#4} #5}
 \newcommand\CtxSto[3]{\Ctx{\Store{#1}{#2}}{#3}}
+\newcommand\CtxSub[3]{\Ctx{#1}{\Sub{#2}{#3}}}
 \newcommand\DShift{\Up{}}
 \newcommand\Dom{\It{dom}}
 \newcommand\Down{\mathop{\downarrow}}
@@ -3893,7 +3894,7 @@ Indeed, |S| and |T| have the same tree type.
 \end{align*}
 
 \Ex{22.3.3}
- vcdfdgdd756We omit some premises of \Rule{CT-App} that check the constraints.
+We omit some premises of \Rule{CT-App} that check the constraints.
 Let $\Gamma = |x:X|, |y:Y|, |z:Z|$.
 \begin{Proofs}
   \AxiomC{$|x:X| \in \Gamma$}
@@ -4894,5 +4895,272 @@ In other words,
   at the first substitution,
   the symbol substituted away is not of the zero-th index,
   which is used by the type variable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% section 26.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Bounded Quantification}
+
+\Ex{26.2.1}
+\begin{Proofs}
+  \AxiomC{$\Sub{|X|}{|B|} \in \Gamma$}
+  \RuleLabel{S-TVar}
+  \UnaryInfC{$\CtxSub\Gamma{|X|}{|B|}$}
+  \AxiomC{$\Sub{|Y|}{|X|} \in \Gamma$}
+  \RuleLabel{S-TVar}
+  \UnaryInfC{$\CtxSub\Gamma{|Y|}{|X|}$}
+  \AxiomC{$\Sub{|X|}{|B|} \in \Gamma$}
+  \RuleLabel{S-TVar}
+  \UnaryInfC{$\CtxSub\Gamma{|X|}{|B|}$}
+  \RuleLabel{S-Trans}
+  \BinaryInfC{$\CtxSub\Gamma{|Y|}{|B|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$\CtxSub\Gamma{|B| \to |Y|}{|X| \to |B|}$}
+\end{Proofs}
+
+\Ex{26.2.2}
+The following relations hold in full $\text F_{\Sb}$ but not in kernel $\text F_{\Sb}$.
+\[
+  \CtxSub{}{\forall|X.X|}{\forall|X<:\{\}.X|}, \qquad
+  \CtxSub{}{\forall|X.| \forall|Y.X| \to |Y|}{\forall|X.| \forall|Y<:X.Y| \to |X|}
+\]
+
+\Ex{26.2.3}
+Omitted
+
+\Ex{26.3.1}
+We show it in kernel $\text F_{\Sb}$.
+In full $\text F_{\Sb}$,
+  we just need to derive $\CtxSub\Gamma{|Top|}{|Top|}$ with \Rule{S-Refl}.
+\begin{Proofs}
+  \AxiomC{$\CtxSub{\Gamma, |X|}{|S|_1}{|T|_1}$}
+  \AxiomC{$\CtxSub{\Gamma, |X|}{|S|_2}{|T|_2}$}
+  \AxiomC{}
+  \RuleLabel{S-Refl}
+  \UnaryInfC{$\CtxSub{\Gamma, |X|}{|X|}{|X|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$\CtxSub{\Gamma, |X|}{|T|_2 \to |X|}{|S|_2 \to |X|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$\CtxSub{\Gamma, |X|}{|T|_1 \to |T|_2 \to |X|}{|S|_1 \to |S|_2 \to |X|}$}
+  \AxiomC{}
+  \RuleLabel{S-Refl}
+  \UnaryInfC{$\CtxSub{\Gamma, |X|}{|X|}{|X|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$
+    \CtxSub{\Gamma,|X|}{
+      \CParen{|S|_1 \to |S|_2 \to |X|} \to |X|
+    }{
+      \CParen{|T|_1 \to |T|_2 \to |X|} \to |X|
+    }
+  $}
+  \RuleLabel{S-All}
+  \UnaryInfC{$\CtxSub\Gamma{|Pair|\ |S|_1\ |S|_2}{|Pair|\ |T|_1\ |T|_2}$}
+\end{Proofs}
+
+\Ex{26.3.4}
+\begin{Code}
+  spluszz = $\Lm$n:SZero. $\Lm$m:SZero.
+                $\Lm$X. $\Lm$S<:X. $\Lm$Z<:X. $\Lm$s:X$\to$S. $\Lm$z:Z.
+                    n [X] [S] [Z] s (m [X] [S] [Z] s z);
+  spluspn = $\Lm$n:SPos. $\Lm$m:SNat.
+                $\Lm$X. $\Lm$S<:X. $\Lm$Z<:X. $\Lm$s:X$\to$S. $\Lm$z:Z.
+                    n [X] [S] [X] s (m [X] [S] [Z] s z);
+\end{Code}
+
+\Ex{26.3.5}
+\begin{Code}
+  SBool = $\forall$X. $\forall$T<:X. $\forall$F<:X. T$\to$F$\to$X;
+  STrue = $\forall$X. $\forall$T<:X. $\forall$F<:X. T$\to$F$\to$T;
+  SFalse = $\forall$X. $\forall$T<:X. $\forall$F<:X. T$\to$F$\to$F;
+  tru = $\Lm$X. $\Lm$T<:X. $\Lm$F<:X. $\Lm$t:T. $\Lm$f:F. t;
+  fls = $\Lm$X. $\Lm$T<:X. $\Lm$F<:X. $\Lm$t:T. $\Lm$f:F. f;
+  notft = $\Lm$b:SFalse. $\Lm$X. $\Lm$T<:X. $\Lm$F<:X. $\Lm$t:T. $\Lm$f:F. b [X] [F] [T] f t;
+  nottf = $\Lm$b:STrue. $\Lm$X. $\Lm$T<:X. $\Lm$F<:X. $\Lm$t:T. $\Lm$f:F. b [X] [F] [T] f t;
+\end{Code}
+
+\Ex{26.3.6}
+The |Pair| and record examples can be formulated in the simpler system.
+
+\Ex{26.4.3}
+When the last rule applied to the given relation is
+  \Rule{S-All}, \Rule{T-Abs}, or \Rule{T-TAbs},
+  we need to permutate the rightmost two items of the context in the premise to
+  apply the induction hypothesis.
+
+\Ex{26.4.5}
+\begin{enumerate}
+  \item By induction on subtyping derivations.
+    Cases except for \Rule{S-TVar} are shown by
+      straight forward application of the induction hypothesis.
+    For the \Rule{S-TVar} case,
+      we have $|S| = |Y|$ for some variable |Y|.
+    If $|Y| \neq |X|$, then $|Y:T| \in \Gamma, \Delta$
+      and thus the premise is satisfied.
+    If $|Y| = |X|$, then $\CtxSub{\Gamma, |X<:P|, \Delta}{|Y|}{|T|}$
+      is derived by \Rule{S-Trans} and the induction hypothesis.
+  \item By induction on typing derivations.
+    Cases except for \Rule{T-Var} are shown by
+      straight forward application of the induciton hypothesis.
+    The \Rule{T-Var} case is shown by combining
+      1 and \Rule{T-Sub} with the induction hypothesis.
+\end{enumerate}
+
+\Ex{26.4.11}
+We first show 4, and then the other cases.
+Each case is shown by induction on the subtyping derivation
+  with case analysis on its last step.
+\begin{itemize}
+  \item[4.]
+    The \Rule{S-Refl} and \Rule{S-Top} cases are immediate.
+    For the \Rule{S-Trans} case,
+      applying the induction hypothesis to the first premise and then the second
+      yields $|T| = |Top|$.
+    Other rules cannot derive $\CtxSub\Gamma{|Top|}{|T|}$.
+
+  \item[1.]
+    \Case\Rule{S-Refl}: $|T| = |S|_1 \to |S|_2$ \\
+      Immediate by applying \Rule{S-Refl} to $|S|_1$ and $|S|_2$.
+
+    \Case\Rule{S-Trans}:
+        $\CtxSub\Gamma{|S|_1 \to |S|_2}{|U|}$, $\CtxSub\Gamma{|U|}{|T|}$ \\
+      Apply the induction hypothesis on the left premise.
+      If $|U| = |Top|$, we have $|T| = |Top|$ by the second premise with 4.
+      Otherwise, $|U| = |T|_1' \to |T|_2'$
+        with $\CtxSub\Gamma{|T|_1'}{|S|_1}$ and $\CtxSub\Gamma{|S|_2}{|T|_2'}$.
+      Applying the induction hypothesis on the right premise yields
+        either $|T| = |Top|$ or else
+        $|T| = |T|_1 \to |T|_2$
+        with $\CtxSub\Gamma{|T|_1}{|T|_1'}$ and $\CtxSub\Gamma{|T|_2'}{|T|_2}$.
+      The conclusion follows by applying \Rule{S-Trans} in the latter case.
+    
+    \Case\Rule{S-Top}: $|T| = |Top|$ \\
+      Immediate.
+
+    \Case\Rule{S-Arrow}:
+      $|T| = |T|_1 \to |T|_2$,
+          $\CtxSub\Gamma{|T|_1}{|S|_1}$, $\CtxSub\Gamma{|S|_2}{|T|_2}$ \\
+      Immediate.
+
+    \Case\Rule{S-TVar}, \Rule{S-All}: Cannot occur.
+
+  \item[2.]
+    The \Rule{S-Refl}, \Rule{S-Trans}, and \Rule{S-Top} cases are similar to 1.
+    The \Rule{S-All} case holds immediately.
+    The \Rule{S-TVar} and \Rule{S-Arrow} cases never occur.
+
+  \item[3.]
+    The \Rule{S-Refl}, \Rule{S-Trans}, and \Rule{S-Top} cases are similar to 1.
+    The \Rule{S-TVar} case holds immediately with \Rule{S-Trans}.
+    The \Rule{S-Arrow} and \Rule{S-All} cases never occur.
+\end{itemize}
+
+\Ex{26.4.16}
+Omitted.
+
+\Ex{26.5.1}
+\begin{Proofs}
+  \AxiomC{$\CtxSub\Gamma{|S|_1}{|T|_1}$}
+  \AxiomC{$\CtxSub{\Gamma, |X<:S|_1}{|S|_2}{|T|_2}$}
+  \RuleLabel{S-Some}
+  \BinaryInfC{
+    $\CtxSub\Gamma{\Rcd{\exists|X<:S|_1|,S|_2}}{\Rcd{\exists|X<:T|_1|,T|_2}}$
+  }
+\end{Proofs}
+
+\Ex{26.5.2}
+In pure System F,
+  |T| can be either
+  $\Rcd{\exists|X,| \Rcd{|a:Nat,b:Nat|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:X,b:Nat|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:Nat,b:X|}}$, or
+  $\Rcd{\exists|X,| \Rcd{|a:X,b:X|}}$.
+In the system with subtyping and bounded existentials,
+  |T| can be either of the above examples,
+  either of
+  $\Rcd{\exists|X,| \Rcd{|a:Nat,b:Top|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:Top,b:Nat|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:X,b:Top|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:Top,b:X|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:Top,b:Top|}}$
+  $\Rcd{\exists|X,| \Rcd{|a:Nat|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:Top|}}$,
+  $\Rcd{\exists|X,| \Rcd{|a:X|}}$,
+  $\Rcd{\exists|X,| \Rcd{|b:Nat|}}$,
+  $\Rcd{\exists|X,| \Rcd{|b:Top|}}$,
+  $\Rcd{\exists|X,| \Rcd{|b:X|}}$,
+  $\Rcd{\exists|X,| \Rcd{}}$,
+  or $\Rcd{\exists|X,Top|}$,
+  those with bounds |X<:Nat| at each existential quantifier,
+  or those with permutating the record keys.
+
+\Ex{26.5.3}
+To accomplish the conditions,
+  we need to unpack |counterADT| on defining |resetCounterADT|,
+  which has the type like $\Rcd{\exists|ResetCounter<:Counter, |\Rcd{\cdots}}$.
+Clients of these two ADTs then unpack |counterADT| and |resetCounterADT|.
+However,
+  then the newly unpacked |Counter| type has no connection with
+  the |Counter| appearing in the definition of |resetCounterADT|
+  because they are unpacked separately in two different places.
+
+If we are allowed to add one more function to the record part of |counterADT|,
+  then we can accomplish the goal by providing |resetCounterADT| through
+  |counterADT| as follows.
+\begin{Code}
+  counterADT = {*Nat, {
+    new = 1, get = $\Lm$i:Nat. i, inc = $\Lm$i:Nat. succ i,
+    resetCounterADT = {*Nat, {
+      new = 1, get = $\Lm$i:Nat. i, inc = $\Lm$i:Nat. succ i, reset = $\Lm$_:Nat. 1
+    }} as {$\exists$ResetCounter<:Nat, {
+      new: ResetCounter, get: ResetCounter$\to$Nat,
+      inc: ResetCounter$\to$ResetCounter, reset: ResetCounter$\to$ResetCounter
+    }}
+  }} as {$\exists$Counter<:Nat, {
+    new: Counter, get: Counter$\to$Nat, inc: Counter$\to$Counter,
+    resetCounterADT: {$\exists$ResetCounter<:Counter, {
+      new: ResetCounter, get: ResetCounter$\to$Nat,
+      inc: resetCounter$\to$ResetCounter, reset: ResetCounter$\to$ResetCounter
+    }}
+  }};
+\end{Code}
+
+\Ex{26.5.4}
+Encode existential type, package, and unpacking expression as follows.
+\begin{align*}
+  \Rcd{\exists|X<:S,T|}
+  &\EqDef \forall|Y. |\CParen{\forall|X<:S. T|\to|Y|} \to |Y| \\
+  \Rcd{|*U,t|}| as |\Rcd{\exists|X<:S,T|}
+  &\EqDef \Lm|Y. |\Lm|f:|\CParen{\forall|X<:S. T|\to|Y|}|. f [U] t| \\
+  |let \{X,x\}=t in s|
+  &\EqDef |t [U] |\CParen{\Lm|X<:S.|\Lm|x:T. s|}
+\end{align*}
+  where, in the encoding of unpacking expression,
+  we used that |t| has the type $\Rcd{\exists|X<:S,T|}$ and |s| has the type |U|.
+The subtyping rule \Rule{S-Some} is derived as follows.
+\begin{Proofs}
+  \AxiomC{$\CtxSub{\Gamma,|Y|,|X<:U|}{|S|_2}{|T|_2}$}
+  \AxiomC{}
+  \RuleLabel{S-Refl}
+  \UnaryInfC{$\CtxSub{\Gamma,|Y|,|X<:U|}{|Y|}{|Y|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$\CtxSub{\Gamma,|Y|,|X<:U|}{|T|_2 \to |Y|}{|S|_2 \to |Y|}$}
+  \RuleLabel{S-All}
+  \UnaryInfC{$
+    \CtxSub{\Gamma,|Y|}{\forall|X<:U. T|_2\to|Y|}{\forall|X<:U. S|_2\to|Y|}
+  $}
+  \AxiomC{}
+  \RuleLabel{S-Refl}
+  \UnaryInfC{$\CtxSub{\Gamma,|Y|}{|Y|}{|Y|}$}
+  \RuleLabel{S-Arrow}
+  \BinaryInfC{$
+    \CtxSub{\Gamma,|Y|}
+    {\CParen{\forall|X<:U. S|_2\to|Y|} \to |Y|}
+    {\CParen{\forall|X<:U. T|_2\to|Y|} \to |Y|}
+  $}
+  \RuleLabel{S-All}
+  \UnaryInfC{$\CtxSub\Gamma{\Rcd{\exists|X:U,S|_2}}{\Rcd{\exists|X<:U,T|_2}}$}
+\end{Proofs}
+Since |Y| does not appear in $|S|_2$ and $|T|_2$,
+  the correct premise is obtained by weakening.
 
 \end{document}
